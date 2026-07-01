@@ -1,0 +1,45 @@
+---
+description: Goblin Warrens master design — hard rules and milestone gate
+alwaysApply: true
+---
+
+# Master design gate
+
+Full document: **`docs/goblin-warrens-design.md`**
+
+## When this applies
+
+Every design, feature, refactor, or scope decision. Read the relevant section before coding.
+
+## North star
+
+Above-ground goblin colony survival builder. Grow a filthy camp into a monster warren. Light RTS controls for clarity; **warren management is primary**.
+
+## Never without explicit user reversal
+
+- Underground / tunnel / cave-layer / digging mechanics
+- Converting the game back to pure RTS
+- Removing colony-survival systems to simplify combat
+- Rewriting or breaking the gather-return-store worker loop
+- Skipping milestone order (§37) to build advanced systems early
+
+## Thematic names ≠ underground
+
+Warren, Pit, Den, Burial Grounds, pit traps = **above-ground** visuals and buildings.
+
+## MVP target
+
+Survive 7 days and repel the first human raid. Prove goblin management is fun, dangerous, and memorable.
+
+## Implementation order (summary)
+
+1. Worker loop (preserve existing)
+2. Selection + right-click commands
+3. Building placement + construction
+4. Food + population
+5. Breeder Hut + Foblins
+6. Combat → raids → magic → burial → 7-day demo loop
+
+## Acceptance criteria (every feature)
+
+Files changed · added · preserved · how to test · limitations · next step.

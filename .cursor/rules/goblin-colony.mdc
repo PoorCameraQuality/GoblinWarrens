@@ -1,0 +1,55 @@
+---
+description: Goblin Warrens — master design rules and engineering quick reference
+globs:
+  - "**/*.gd"
+  - "**/*.tscn"
+  - "**/*.tres"
+alwaysApply: true
+---
+
+# Goblin Warrens — project rules
+
+Read **`docs/goblin-warrens-design.md` first** — it is the highest design authority.
+Read `AGENTS.md` for the engineering contract.
+
+## Project
+
+- **Goblin Warrens**: 3D above-ground goblin colony survival builder with siege-defense and light RTS controls.
+- Godot 4.6, GDScript primary.
+- Main playable scene: `scenes/colony.tscn`.
+- 2.5D grid sim under a 3D RTS camera (`AStarGrid2D` via `movement_adapter.gd`).
+
+## Hard design rules (non-negotiable)
+
+1. **No underground mechanics** — no tunnels, cave layers, digging, or multi-layer maps.
+2. **Colony survival first, RTS second** — the warren is the heart of the game.
+3. **Preserve gather-return-store loop** — incremental refactors only unless told otherwise.
+4. **Milestone order** — worker loop → selection/commands → placement → food/pop → … (design doc §37).
+
+## Architecture
+
+- Pathfinding: `AStarGrid2D` only, via `scripts/agents/movement_adapter.gd`.
+- Autoloads: `Log`, `Bus`, `Defs`, `Services` — no others without ADR.
+- Static data: Resources in `data/` or `scripts/core/defs.gd`.
+- UI must not mutate simulation directly; route through services/commands.
+
+## Before coding
+
+1. Read relevant section of `docs/goblin-warrens-design.md`.
+2. Restate goal, milestone, files to touch, risks, tests.
+3. Minimal diff first.
+4. No raw `print` — use `Log.info/warn/error`.
+
+## Task template
+
+```
+Task: [one sentence]
+Design ref: goblin-warrens-design.md §[section], Milestone [N]
+Scope: files allowed / forbidden
+Goal: player-visible + technical outcome
+Tests: smoke checks
+```
+
+## After coding (design doc §38)
+
+Report: files changed, added, preserved behavior, test steps, limitations, next step.
