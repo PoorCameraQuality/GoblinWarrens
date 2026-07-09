@@ -66,6 +66,29 @@ func _init() -> void:
 		quit(1)
 		return
 
+	if plan_a1.foliage_plan == null:
+		push_error("[mapgen-smoke] missing foliage_plan")
+		quit(1)
+		return
+	var foliage_a1 = plan_a1.foliage_plan
+	var foliage_a2 = plan_a2.foliage_plan
+	if foliage_a1.chunks.size() < 1:
+		push_error("[mapgen-smoke] foliage produced zero grass chunks")
+		quit(1)
+		return
+	if foliage_a1.chunks.size() != foliage_a2.chunks.size():
+		push_error("[mapgen-smoke] foliage chunk count nondeterministic for same seed")
+		quit(1)
+		return
+	var _FoliagePlanner := preload("res://scripts/world/foliage/foliage_planner.gd")
+	var warren_probe: Dictionary = _FoliagePlanner.probe_density(
+		plan_a1, config_a, plan_a1.warren_cell, foliage_a1.blocker_cells
+	)
+	if float(warren_probe.get("density", 1.0)) > 0.01:
+		push_error("[mapgen-smoke] grass density under warren should be suppressed")
+		quit(1)
+		return
+
 	if not TerrainPalette.all_macro_textures_present():
 		push_warning("[mapgen-smoke] macro textures incomplete — legacy UV mode active")
 
@@ -77,7 +100,7 @@ func _init() -> void:
 		return
 
 	print(
-		"[mapgen-smoke] ok warren=%s storehouse=%s trees=%d dressing=%d blocking=%d resources=%d raid=%d macro=%s %s"
+		"[mapgen-smoke] ok warren=%s storehouse=%s trees=%d dressing=%d blocking=%d resources=%d raid=%d grass_chunks=%d grass_inst=%d ambient=%d macro=%s %s"
 		% [
 			str(plan_a1.warren_cell),
 			str(plan_a1.storehouse_cell),
@@ -86,6 +109,9 @@ func _init() -> void:
 			int(stats.get("blocking_prop_count", 0)),
 			int(stats.get("resource_node_count", 0)),
 			plan_a1.main_raid_path_cells.size(),
+			int(foliage_a1.stats.get("chunk_count", 0)),
+			int(foliage_a1.stats.get("instance_estimate", 0)),
+			int(foliage_a1.stats.get("ambient_zones", 0)),
 			TerrainPalette.all_macro_textures_present(),
 			_MapValidator.format_report(validation),
 		]

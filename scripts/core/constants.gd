@@ -250,3 +250,17 @@ const MAPGEN_LOWLAND_HEIGHT_TOP := 0.30 ## normalized height threshold
 const TERRAIN_UV_SCALE_MACRO := 0.05 ## base at default ortho; scaled up when zoomed in
 const TERRAIN_UV_SCALE_LEGACY := 0.35 ## ~2.86m repeat; legacy close-up textures
 const TERRAIN_UV_ZOOM_BOOST_MAX := 16.0 ## cap close-up tiling vs default ortho zoom
+
+# Generated foliage (visual only — does not affect AStarGrid2D)
+const FOLIAGE_CHUNK_SIZE_M := 16.0 ## meters per MultiMesh grass chunk
+const FOLIAGE_NEAR_RANGE_M := 70.0 ## full grass detail within this camera distance
+const FOLIAGE_FADE_RANGE_M := 120.0 ## hide grass MultiMeshes beyond this
+const FOLIAGE_SHORT_MAX_PER_CHUNK := 280 ## short blade instances per active chunk
+const FOLIAGE_TALL_MAX_PER_CHUNK := 36 ## tall clump instances per active chunk
+const FOLIAGE_MIN_CHUNK_DENSITY := 0.08 ## skip chunks below this average density
+const FOLIAGE_BUILD_RADIUS_CHUNKS := 8 ## only build MultiMeshes near camp at load (rest later)
+const FOLIAGE_AMBIENT_MAX_ZONES := 48 ## hard cap on particle ambient zones
+const FOLIAGE_FIREFLY_AMOUNT := 36 ## particles per firefly emitter
+const FOLIAGE_BUTTERFLY_AMOUNT := 10 ## particles per butterfly emitter
+const FOLIAGE_GNAT_AMOUNT := 24 ## particles per gnat emitter
+const FOLIAGE_SPORE_AMOUNT := 18 ## particles per spore emitter

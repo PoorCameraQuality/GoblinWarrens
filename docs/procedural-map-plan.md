@@ -23,6 +23,7 @@
 | Composition masks | **Yes** — irregular clearing + path arms via `MapAuthoringData` |
 | `MapPlan` applied | **Yes** — `colony._setup_world()` |
 | Macro textures | **Yes** — all seven `*_macro.png` present; `macro_texture_mode=true` |
+| Chunked grass / ambient life | **Yes** — `FoliagePlanner` + MultiMesh grass + shared wind globals + particle zones |
 | `EnvironmentDresser.populate()` | **No** — dead code path, not called |
 | Hand-placed demo resources | **No** — `_spawn_demo_resources()` not called |
 | Resources | **Procgen scatter** → `_apply_prop_placements()` |

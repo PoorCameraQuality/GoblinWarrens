@@ -14,6 +14,9 @@ const _VisualScaleAudit := preload("res://scripts/dev/visual_scale_audit.gd")
 const _MapValidator := preload("res://scripts/world/mapgen/map_validator.gd")
 const _VisualAttacher := preload("res://scripts/core/visual_attacher.gd")
 const _VisualCatalog := preload("res://scripts/art/visual_catalog.gd")
+const _GrassFieldRenderer := preload("res://scripts/world/foliage/grass_field_renderer.gd")
+const _AmbientLifeSpawner := preload("res://scripts/world/foliage/ambient_life_spawner.gd")
+const _WindController := preload("res://scripts/world/foliage/wind_controller.gd")
 
 ## RTS colony loop: workers gather resources, haul to storehouse, and build structures.
 
@@ -82,6 +85,12 @@ var _beauty_mode: bool = false
 var _prop_scatter_stats: Dictionary = {}
 var _map_validation: Dictionary = {}
 var _composition_overlay_root: Node3D = null
+var _foliage_root: Node3D = null
+var _grass_renderer = null ## GrassFieldRenderer
+var _ambient_life = null ## AmbientLifeSpawner
+var _wind_controller = null ## WindController
+var _grass_visible: bool = true
+var _force_night_ambience: bool = false
 
 
 func _ready() -> void:
@@ -621,6 +630,27 @@ func dev_toggle_beauty_mode() -> String:
 	return "beauty mode ON (HUD hidden)" if _beauty_mode else "beauty mode OFF"
 
 
+func dev_toggle_grass() -> String:
+	if not OS.is_debug_build():
+		return "toggle_grass is debug-only"
+	_grass_visible = not _grass_visible
+	if _grass_renderer != null:
+		_grass_renderer.set_grass_visible(_grass_visible)
+	if _ambient_life != null:
+		_ambient_life.set_enabled(_grass_visible)
+	return "grass ON" if _grass_visible else "grass OFF"
+
+
+func dev_force_night_ambience() -> String:
+	if not OS.is_debug_build():
+		return "force_night_ambience is debug-only"
+	if _ambient_life == null:
+		return "ambient life not ready"
+	_force_night_ambience = not _force_night_ambience
+	_ambient_life.set_force_night(_force_night_ambience)
+	return "night ambience FORCED" if _force_night_ambience else "night ambience AUTO"
+
+
 func dev_print_mapgen_status() -> String:
 	if _map_plan == null:
 		return "terrain_mode=none map_plan=null"
@@ -678,8 +708,29 @@ func dev_print_mapgen_status() -> String:
 			int(scatter_stats.get("road_stamp_count", 0)),
 			str(_map_plan.authoring_data != null),
 		]
-		+ "walkable_cell_count=%d buildable_cell_count=%d warren_cell=%s"
+		+ "walkable_cell_count=%d buildable_cell_count=%d warren_cell=%s "
 		% [walkable, buildable, str(_map_plan.warren_cell)]
+		+ _foliage_status_fragment()
+	)
+
+
+func _foliage_status_fragment() -> String:
+	var foliage = null if _map_plan == null else _map_plan.foliage_plan
+	if foliage == null:
+		return "grass_chunks=0 grass_instances=0 ambient_zones={}"
+	var stats: Dictionary = foliage.stats
+	var active := 0
+	if _grass_renderer != null:
+		active = _grass_renderer.active_chunk_count()
+	return (
+		"grass_chunks=%d grass_instances=%d active_grass_chunks=%d grass_visible=%s ambient_zones=%s"
+		% [
+			int(stats.get("chunk_count", 0)),
+			int(stats.get("instance_estimate", 0)),
+			active,
+			_grass_visible,
+			str(stats.get("ambient_by_type", {})),
+		]
 	)
 
 
@@ -1000,6 +1051,7 @@ func _setup_world() -> void:
 	Services.register_storehouse(_storehouse)
 	_block_footprint(_storehouse.grid_cell, _storehouse.footprint)
 	_apply_prop_placements(_map_plan)
+	_apply_foliage(_map_plan)
 	_apply_debug_showcase()
 	_update_map_debug_hud()
 
@@ -1020,6 +1072,53 @@ func _apply_procgen_terrain(plan: MapPlan) -> void:
 	terrain.material_override = _terrain_material
 	_sync_terrain_uv_scale()
 	_ensure_world_environment()
+
+
+func _apply_foliage(plan: MapPlan) -> void:
+	if plan == null or plan.foliage_plan == null:
+		return
+	_foliage_root = get_node_or_null("FoliageRoot") as Node3D
+	if _foliage_root == null:
+		_foliage_root = Node3D.new()
+		_foliage_root.name = "FoliageRoot"
+		add_child(_foliage_root)
+	for child in _foliage_root.get_children():
+		child.queue_free()
+
+	_wind_controller = _WindController.new()
+	_wind_controller.name = "WindController"
+	_foliage_root.add_child(_wind_controller)
+	_wind_controller.setup(_day_sim)
+
+	_grass_renderer = _GrassFieldRenderer.new()
+	_grass_renderer.name = "GrassField"
+	_foliage_root.add_child(_grass_renderer)
+	_grass_renderer.build(plan, plan.foliage_plan)
+	_grass_renderer.set_grass_visible(_grass_visible)
+
+	_ambient_life = _AmbientLifeSpawner.new()
+	_ambient_life.name = "AmbientLife"
+	_foliage_root.add_child(_ambient_life)
+	_ambient_life.build(plan, plan.foliage_plan, _day_sim, _camera)
+	_ambient_life.set_enabled(_grass_visible)
+	_ambient_life.set_force_night(_force_night_ambience)
+
+	if not Bus.building_completed.is_connected(_on_building_completed_suppress_grass):
+		Bus.building_completed.connect(_on_building_completed_suppress_grass)
+	if not Bus.construction_started.is_connected(_on_construction_started_suppress_grass):
+		Bus.construction_started.connect(_on_construction_started_suppress_grass)
+
+
+func _on_building_completed_suppress_grass(_kind: int, cell: Vector2i) -> void:
+	if _grass_renderer == null:
+		return
+	_grass_renderer.suppress_footprint(cell, Vector2i(2, 2))
+
+
+func _on_construction_started_suppress_grass(_kind: int, cell: Vector2i) -> void:
+	if _grass_renderer == null:
+		return
+	_grass_renderer.suppress_footprint(cell, Vector2i(2, 2))
 
 
 func _apply_prop_placements(plan: MapPlan) -> void:

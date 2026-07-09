@@ -182,7 +182,8 @@ static func is_tree_path(path: String) -> bool:
 	return "tree" in path.to_lower() and "stump" not in path.to_lower()
 
 
-static func random_tree_path(rng: RandomNumberGenerator = null) -> String:
+static func random_tree_path(rng = null) -> String:
+	## Accepts RandomNumberGenerator or MapRng (both expose randi_range).
 	var choices: Array[String] = [
 		ENV_TREE,
 		ENV_TREE_PINE,
@@ -195,7 +196,8 @@ static func random_tree_path(rng: RandomNumberGenerator = null) -> String:
 	return choices[randi() % choices.size()]
 
 
-static func random_rock_path(rng: RandomNumberGenerator = null) -> String:
+static func random_rock_path(rng = null) -> String:
+	## Accepts RandomNumberGenerator or MapRng (both expose randi_range).
 	var choices: Array[String] = [
 		ENV_ROCK,
 		ENV_ROCK_PILE,

@@ -115,6 +115,20 @@ static func _register_with_console(colony: GoblinWarrenColony) -> int:
 		"Hide HUD/overlays for visual beauty shots",
 		_run_toggle_beauty_mode,
 	) else 0
+	count += 1 if _reg(
+		debug_console,
+		"toggle_grass",
+		colony,
+		"Show/hide generated grass MultiMesh + ambient life",
+		_run_toggle_grass,
+	) else 0
+	count += 1 if _reg(
+		debug_console,
+		"force_night_ambience",
+		colony,
+		"Force firefly night ambience for visual testing",
+		_run_force_night_ambience,
+	) else 0
 	return count
 
 
@@ -235,3 +249,11 @@ static func _run_toggle_composition_overlay(colony: GoblinWarrenColony, _args: A
 
 static func _run_toggle_beauty_mode(colony: GoblinWarrenColony, _args: Array) -> String:
 	return colony.dev_toggle_beauty_mode()
+
+
+static func _run_toggle_grass(colony: GoblinWarrenColony, _args: Array) -> String:
+	return colony.dev_toggle_grass()
+
+
+static func _run_force_night_ambience(colony: GoblinWarrenColony, _args: Array) -> String:
+	return colony.dev_force_night_ambience()

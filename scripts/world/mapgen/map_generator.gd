@@ -6,6 +6,7 @@ const _TerrainBlendMapBuilder := preload("res://scripts/world/mapgen/terrain_ble
 const _ValleyTerrain := preload("res://scripts/world/mapgen/valley_terrain.gd")
 const _CorridorPlanner := preload("res://scripts/world/mapgen/corridor_planner.gd")
 const _MapAuthoringData := preload("res://data/mapgen/map_authoring_data.gd")
+const _FoliagePlanner := preload("res://scripts/world/foliage/foliage_planner.gd")
 
 ## Orchestrator: MapConfig in, MapPlan out.
 
@@ -48,6 +49,8 @@ static func build(config: MapConfig) -> MapPlan:
 		plan.tile_classes,
 	)
 	_PropScatterer.scatter(plan, config, MapRng.new(config.seed + 99))
+	## Grass / ambient life after props so blockers and resource nodes suppress foliage.
+	plan.foliage_plan = _FoliagePlanner.plan(plan, config, MapRng.new(config.seed + 313))
 
 	if not TerrainPalette.all_macro_textures_present():
 		push_warning(

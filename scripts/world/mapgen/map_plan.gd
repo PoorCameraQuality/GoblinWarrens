@@ -23,3 +23,4 @@ var main_raid_path_cells: Dictionary = {} ## Vector2i -> true
 var approach_corridor_cells: Dictionary = {} ## Vector2i -> true (raid + footpaths)
 var resource_pocket_cells: Dictionary = {} ## Vector2i pocket centers -> true
 var authoring_data = null ## MapAuthoringData; untyped to avoid class load cycles
+var foliage_plan = null ## FoliagePlan; untyped to avoid class load cycles

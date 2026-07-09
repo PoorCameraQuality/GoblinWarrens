@@ -564,25 +564,25 @@ static func _pick_dressing_path(
 	authoring: MapAuthoringData,
 	rng: MapRng,
 ) -> String:
+	## Mesh grass tufts are mostly replaced by GrassFieldRenderer MultiMesh.
+	## Keep sparse hero clumps (bush/mushroom) only.
 	if forest_density >= 0.45:
 		return str(
 			rng.pick([
 				_VisualCatalog.ENV_BUSH,
-				_VisualCatalog.ENV_GRASS,
 				_VisualCatalog.ENV_MUSHROOM_PATCH,
 				_VisualCatalog.ENV_MUSHROOM_PATCH_ALT,
 			])
 		)
 	match terrain_class:
 		Defs.TerrainClass.MOSS:
-			return str(rng.pick([_VisualCatalog.ENV_GRASS, _VisualCatalog.ENV_BUSH]))
+			return str(rng.pick([_VisualCatalog.ENV_BUSH, _VisualCatalog.ENV_BUSH]))
 		Defs.TerrainClass.FOREST_FLOOR:
 			return str(
 				rng.pick([
 					_VisualCatalog.ENV_MUSHROOM_PATCH,
 					_VisualCatalog.ENV_MUSHROOM_PATCH_ALT,
 					_VisualCatalog.ENV_BUSH,
-					_VisualCatalog.ENV_GRASS,
 				])
 			)
 		Defs.TerrainClass.ROCKY_SLOPE:
@@ -599,7 +599,6 @@ static func _pick_dressing_path(
 				rng.pick([
 					_VisualCatalog.ENV_BUSH,
 					_VisualCatalog.ENV_MUSHROOM_PATCH,
-					_VisualCatalog.ENV_GRASS,
 				])
 			)
 		Defs.TerrainClass.WARREN_GROUND:
