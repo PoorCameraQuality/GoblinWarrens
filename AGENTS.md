@@ -124,7 +124,11 @@ preserved behavior, test steps, limitations, next step).
   live in `addons/`; runtime code lives in `scripts/`.
 - Avoid Autoload singletons for systems. Prefer constructor injection or a
   thin service locator (`scripts/core/services.gd`). The only acceptable
-  autoloads are: `Log`, `Bus` (event bus), `Defs`, `Services`.
+  **gameplay** autoloads are: `Log`, `Bus` (event bus), `Defs`, `Services`.
+  Plugin-owned **dev-tool** autoloads (e.g. Debug Console, Godot AI
+  `_mcp_game_helper`) are allowed when they live under `addons/`, are
+  registered by the plugin, and stay export-safe / non-gameplay. Do not add
+  new gameplay autoloads without an ADR.
 - No magic numbers: extract constants to `scripts/core/constants.gd`. Always
   document units in a comment (meters, seconds, tiles, degrees).
 

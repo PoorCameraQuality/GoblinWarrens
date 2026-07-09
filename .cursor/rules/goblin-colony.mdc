@@ -15,7 +15,7 @@ Read `AGENTS.md` for the engineering contract.
 ## Project
 
 - **Goblin Warrens**: 3D above-ground goblin colony survival builder with siege-defense and light RTS controls.
-- Godot 4.6, GDScript primary.
+- Godot 4.7.stable, GDScript primary.
 - Main playable scene: `scenes/colony.tscn`.
 - 2.5D grid sim under a 3D RTS camera (`AStarGrid2D` via `movement_adapter.gd`).
 
@@ -29,7 +29,9 @@ Read `AGENTS.md` for the engineering contract.
 ## Architecture
 
 - Pathfinding: `AStarGrid2D` only, via `scripts/agents/movement_adapter.gd`.
-- Autoloads: `Log`, `Bus`, `Defs`, `Services` — no others without ADR.
+- Autoloads: gameplay only `Log`, `Bus`, `Defs`, `Services`. Plugin-owned
+  dev-tool autoloads (Debug Console, Godot AI) OK under `addons/`; no new
+  gameplay autoloads without ADR.
 - Static data: Resources in `data/` or `scripts/core/defs.gd`.
 - UI must not mutate simulation directly; route through services/commands.
 - **Godot API reference**: [docs.godotengine.org](https://docs.godotengine.org/en/latest/) — verify engine APIs before use.

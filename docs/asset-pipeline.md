@@ -1,6 +1,6 @@
 # Asset pipeline
 
-Production workflow for 3D art in Goblin Colony. This document adapts the
+Production workflow for 3D art in Goblin Warrens. This document adapts the
 deep-research playbook to **this repo's 2.5D grid sim** — movement is tile-based;
 character animation is for readability, not freeform navmesh locomotion.
 

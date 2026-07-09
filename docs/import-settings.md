@@ -1,6 +1,6 @@
 # Import settings
 
-Godot import defaults for Goblin Colony assets. Deviations from defaults must
+Godot import defaults for Goblin Warrens assets. Deviations from defaults must
 be documented here in the same PR that introduces them.
 
 ## Static meshes (GLB / glTF)

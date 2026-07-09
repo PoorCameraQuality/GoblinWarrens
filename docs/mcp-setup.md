@@ -8,7 +8,8 @@ critical path for everything else.
 
 By the end of this runbook:
 
-- Godot 4.6 is installed and on `PATH`.
+- Godot **4.7.stable** is installed (see `docs/technical-reference.md` for the
+  pinned console executable path).
 - The Aesthetic Engine "Godot Runtime Bridge" (GRB) server is cloned and
   built locally.
 - `.cursor/mcp.json` in this repo points Cursor at the GRB server bound to
@@ -23,17 +24,18 @@ By the end of this runbook:
 - Node.js ≥ 18.x. Bundled with Cursor or installed at `C:\Program Files\nodejs`.
 - `winget` available (confirmed).
 
-## Step 0 — Install Godot 4.6
+## Step 0 — Install Godot 4.7
 
 ```powershell
 winget install --id GodotEngine.GodotEngine --silent
 ```
 
-Or download the 4.6 stable zip from `https://godotengine.org/download/windows/`
+Or download the **4.7** stable zip from `https://godotengine.org/download/windows/`
 and unzip somewhere stable (e.g. `C:\Tools\Godot\`).
 
 After install, capture the absolute path and fill it into
-`docs/technical-reference.md` under "Pinned values".
+`docs/technical-reference.md` under "Pinned values". This project pins
+**4.7.stable**; prefer the `_console.exe` build for headless smoke tests.
 
 Verify:
 
@@ -41,7 +43,7 @@ Verify:
 godot --version
 ```
 
-Expected: a string beginning with `4.6.`.
+Expected: a string beginning with `4.7`.
 
 ## Step 1 — Clone GRB
 

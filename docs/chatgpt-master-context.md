@@ -1,8 +1,8 @@
 # Goblin Warrens — Master Context for AI Assistants (ChatGPT / Cursor)
 
-**Last updated:** 2026-07-01  
+**Last updated:** 2026-07-09  
 **Project root:** `E:\Projects\goblin-colony`  
-**Repo name:** `goblin-colony` (working title; game name is **Goblin Warrens**)
+**Repo name:** `goblin-colony` (working folder; game / project name is **Goblin Warrens**)
 
 Use this document to onboard any AI assistant. Read it before suggesting features, writing code, or changing design.
 
@@ -69,7 +69,9 @@ Do **not** break the gather → haul → storehouse loop unless explicitly instr
 - **Engine:** Godot **4.7.stable** (project targets 4.6+)
 - **Language:** GDScript
 - **Pathfinding:** `AStarGrid2D` only, via `scripts/agents/movement_adapter.gd` — **not** NavigationAgent3D / navmesh
-- **Autoloads:** `Log`, `Bus`, `Defs`, `Services` only — no new autoloads without ADR
+- **Autoloads:** gameplay only `Log`, `Bus`, `Defs`, `Services`. Plugin-owned
+  dev-tool autoloads (Debug Console, Godot AI) are allowed under `addons/`;
+  no new gameplay autoloads without ADR
 - **Grid:** 1 tile = 1 meter (`Constants.TILE_SIZE`)
 - **Logging:** `Log.info/warn/error` only — no raw `print`
 - **UI:** must not mutate simulation directly; route through services/commands
@@ -108,7 +110,7 @@ Survive **7 in-game days** and **repel the first human raid**, while:
 
 ---
 
-## 5. Current implementation status (as of 2026-07-01)
+## 5. Current implementation status (as of 2026-07-09)
 
 ### ✅ Working (playable 7-day prototype)
 
@@ -311,7 +313,7 @@ Licenses: `docs/legal/THIRD_PARTY_LICENSES.md`
 - Implement underground mechanics
 - Switch to navmesh without user approval + ADR
 - Reference `external_raw/` from production scenes
-- Add autoloads beyond the approved four
+- Add gameplay autoloads beyond the approved four (plugin dev-tool autoloads OK)
 - Use raw `print` in committed code
 - Rewrite the whole project unless asked
 - Clone WC3 numbers exactly — use the **shape** (pop pressure, supply buildings, soft upkeep)
@@ -347,7 +349,7 @@ Note: `godot --headless --check-only` may hang when MCP/import is active — pre
 | Per-unit pop costs missing | Design gap | All units = 1 slot today |
 | Demo Day 3 briefing says foblins eat food | Copy bug | Code: foblins skip food upkeep |
 | GDScript warnings | Low | Unused Bus signals, variable shadowing |
-| `HANDOFF.md` outdated | Doc drift | Trust this file + code over HANDOFF |
+| `colony.gd` / `goblin.gd` size | Med | Prefer safe helper splits before large features |
 
 ---
 

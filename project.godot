@@ -10,8 +10,8 @@ config_version=5
 
 [application]
 
-config/name="Goblin Colony"
-config/description="2.5D grid-based goblin colony simulation, AI-authored via Cursor + Godot 4.6."
+config/name="Goblin Warrens"
+config/description="3D above-ground goblin colony survival builder (2.5D grid sim), AI-authored via Cursor + Godot 4.7."
 run/main_scene="res://scenes/colony.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
