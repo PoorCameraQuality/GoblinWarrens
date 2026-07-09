@@ -15,7 +15,7 @@ func _init() -> void:
 
 	# 1. Project name is set.
 	var name: String = ProjectSettings.get_setting("application/config/name", "")
-	if name != "Goblin Colony":
+	if name != "Goblin Warrens":
 		push_error("[smoke] unexpected project name: %s" % name)
 		ok = false
 

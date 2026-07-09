@@ -1,10 +1,11 @@
 extends SceneTree
 
-## Headless mapgen smoke test — deterministic height field + mesh build.
+## Headless mapgen smoke test — deterministic generation + authored scatter validation.
 ## godot --headless --path . --script tests/smoke/test_mapgen.gd
 
 const _MapConfig := preload("res://data/mapgen/map_config.gd")
 const _MapGenerator := preload("res://scripts/world/mapgen/map_generator.gd")
+const _MapValidator := preload("res://scripts/world/mapgen/map_validator.gd")
 const _HeightmapGenerator := preload("res://scripts/world/mapgen/heightmap.gd")
 
 
@@ -48,6 +49,18 @@ func _init() -> void:
 		quit(1)
 		return
 
+	var stats: Dictionary = plan_a1.scatter_stats
+	if not bool(stats.get("authoring_loaded", false)) and config_a.authoring_data == null:
+		push_error("[mapgen-smoke] authored map data did not load")
+		quit(1)
+		return
+
+	var validation := _MapValidator.validate(plan_a1, config_a)
+	if not bool(validation.get("pass", false)):
+		push_error("[mapgen-smoke] validation failed: %s" % _MapValidator.format_report(validation))
+		quit(1)
+		return
+
 	var warren_cell := Vector2i(9, 9)
 	var height_data := _HeightmapGenerator.generate(config_a, warren_cell)
 	if height_data.heights.is_empty():
@@ -55,9 +68,16 @@ func _init() -> void:
 		quit(1)
 		return
 
-	print("[mapgen-smoke] ok warren=%s storehouse=%s vertices=%d" % [
-		str(plan_a1.warren_cell),
-		str(plan_a1.storehouse_cell),
-		plan_a1.mesh.get_surface_count(),
-	])
+	print(
+		"[mapgen-smoke] ok warren=%s storehouse=%s trees=%d dressing=%d blocking=%d resources=%d %s"
+		% [
+			str(plan_a1.warren_cell),
+			str(plan_a1.storehouse_cell),
+			int(stats.get("tree_count", 0)),
+			int(stats.get("dressing_count", 0)),
+			int(stats.get("blocking_prop_count", 0)),
+			int(stats.get("resource_node_count", 0)),
+			_MapValidator.format_report(validation),
+		]
+	)
 	quit(0)

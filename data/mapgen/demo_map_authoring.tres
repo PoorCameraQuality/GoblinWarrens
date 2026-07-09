@@ -1,0 +1,172 @@
+[gd_resource type="Resource" script_class="MapAuthoringData" format=3]
+
+[ext_resource type="Script" path="res://data/mapgen/map_authoring_data.gd" id="1_xv0rd"]
+
+[resource]
+script = ExtResource("1_xv0rd")
+forest_stamps = Array[Dictionary]([{
+"center": Vector2i(175, 30),
+"falloff": 2.0,
+"radius": 50,
+"strength": 0.95,
+"tag": "north_band"
+}, {
+"center": Vector2i(175, 320),
+"falloff": 2.0,
+"radius": 50,
+"strength": 0.95,
+"tag": "south_band"
+}, {
+"center": Vector2i(30, 175),
+"falloff": 2.0,
+"radius": 50,
+"strength": 0.95,
+"tag": "west_band"
+}, {
+"center": Vector2i(320, 175),
+"falloff": 2.0,
+"radius": 50,
+"strength": 0.95,
+"tag": "east_band"
+}, {
+"center": Vector2i(137, 147),
+"falloff": 1.6,
+"radius": 22,
+"strength": 0.78,
+"tag": "cluster_nw_near"
+}, {
+"center": Vector2i(217, 143),
+"falloff": 1.6,
+"radius": 24,
+"strength": 0.82,
+"tag": "cluster_ne_near"
+}, {
+"center": Vector2i(139, 209),
+"falloff": 1.6,
+"radius": 22,
+"strength": 0.76,
+"tag": "cluster_sw_near"
+}, {
+"center": Vector2i(215, 205),
+"falloff": 1.6,
+"radius": 24,
+"strength": 0.8,
+"tag": "cluster_se_near"
+}, {
+"center": Vector2i(153, 183),
+"falloff": 1.4,
+"radius": 16,
+"strength": 0.42,
+"tag": "sparse_near_camp"
+}, {
+"center": Vector2i(193, 161),
+"falloff": 1.4,
+"radius": 14,
+"strength": 0.38,
+"tag": "sparse_near_camp"
+}])
+clearing_stamps = Array[Dictionary]([{
+"center": Vector2i(175, 175),
+"falloff": 2.0,
+"radius": 25,
+"strength": 1.0,
+"tag": "warren_clearing"
+}, {
+"center": Vector2i(175, 175),
+"falloff": 2.5,
+"radius": 35,
+"strength": 0.55,
+"tag": "camp_soft_edge"
+}])
+resource_stamps = Array[Dictionary]([{
+"center": Vector2i(153, 193),
+"falloff": 1.5,
+"radius": 12,
+"strength": 0.95,
+"tag": "food"
+}, {
+"center": Vector2i(201, 159),
+"falloff": 1.5,
+"radius": 11,
+"strength": 0.92,
+"tag": "food"
+}, {
+"center": Vector2i(209, 197),
+"falloff": 1.4,
+"radius": 10,
+"strength": 0.88,
+"tag": "food"
+}, {
+"center": Vector2i(145, 151),
+"falloff": 1.6,
+"radius": 12,
+"strength": 0.9,
+"tag": "stone"
+}, {
+"center": Vector2i(213, 187),
+"falloff": 1.5,
+"radius": 11,
+"strength": 0.88,
+"tag": "stone"
+}, {
+"center": Vector2i(219, 147),
+"falloff": 1.4,
+"radius": 10,
+"strength": 0.85,
+"tag": "gold"
+}])
+road_stamps = Array[Dictionary]([{
+"center": Vector2i(203, 175),
+"falloff": 1.1,
+"radius": 8,
+"strength": 1.0,
+"tag": "approach_east"
+}, {
+"center": Vector2i(147, 175),
+"falloff": 1.1,
+"radius": 8,
+"strength": 1.0,
+"tag": "approach_west"
+}, {
+"center": Vector2i(175, 203),
+"falloff": 1.1,
+"radius": 8,
+"strength": 1.0,
+"tag": "approach_south"
+}, {
+"center": Vector2i(175, 147),
+"falloff": 1.1,
+"radius": 8,
+"strength": 1.0,
+"tag": "approach_north"
+}, {
+"center": Vector2i(193, 175),
+"falloff": 1.0,
+"radius": 6,
+"strength": 0.85,
+"tag": "valley_east"
+}, {
+"center": Vector2i(157, 175),
+"falloff": 1.0,
+"radius": 6,
+"strength": 0.85,
+"tag": "valley_west"
+}, {
+"center": Vector2i(175, 193),
+"falloff": 1.0,
+"radius": 6,
+"strength": 0.85,
+"tag": "valley_south"
+}, {
+"center": Vector2i(175, 157),
+"falloff": 1.0,
+"radius": 6,
+"strength": 0.85,
+"tag": "valley_north"
+}, {
+"center": Vector2i(175, 175),
+"falloff": 2.0,
+"radius": 19,
+"strength": 0.55,
+"tag": "camp_lane"
+}])

@@ -223,17 +223,23 @@ const GOBLIN_NAMES := [
 
 # Procedural map generation — see docs/procedural-map-plan.md Phase 1
 const MAPGEN_DEMO_SEED := 424242
-const MAPGEN_HEIGHT_SCALE := 4.0 ## meters; total elevation range
-const MAPGEN_NOISE_BASE_FREQ := 0.03
-const MAPGEN_NOISE_HILL_FREQ := 0.10
+const MAPGEN_HEIGHT_SCALE := 11.0 ## meters; ridge/valley total elevation range (was 4 — subtle)
+const MAPGEN_NOISE_BASE_FREQ := 0.028
+const MAPGEN_NOISE_HILL_FREQ := 0.018 ## primary ridge axis
+const MAPGEN_NOISE_HILL_FREQ_B := 0.021 ## secondary ridge axis for basin carving
 const MAPGEN_NOISE_DETAIL_FREQ := 0.35
 const MAPGEN_NOISE_HILL_WEIGHT := 0.55
-const MAPGEN_NOISE_DETAIL_WEIGHT := 0.30
+const MAPGEN_NOISE_DETAIL_WEIGHT := 0.18
+const MAPGEN_RIDGE_SHARPNESS := 2.2 ## exponent on (1 - |noise|) — higher = sharper mountains
+const MAPGEN_EDGE_UPLIFT := 0.92 ## fraction of height_scale added at map border (enclosing hills)
+const MAPGEN_VALLEY_FLATTEN_BLEND := 0.68 ## pull basin floors toward local minimum
+const MAPGEN_VALLEY_SLOPE_MAX_DEG := 16.0 ## below this reads as valley floor for placement
+const MAPGEN_VALLEY_HEIGHT_MAX_NORM := 0.46 ## normalized height ceiling for valley floor score
 const MAPGEN_SMOOTHING_PASSES := 1
 const MAPGEN_CAMP_FLAT_RADIUS := 12 ## tiles; overridden per map size in MapConfig.default_for_demo()
 const MAPGEN_CAMP_BLEND_RADIUS := 22 ## tiles; smoothstep blend to natural height
-const MAPGEN_RESOURCE_MIN_RADIUS := 8 ## tiles from warren; keep nodes out of camp
-const MAPGEN_RESOURCE_MAX_RADIUS := 40 ## tiles from warren; foblins reach nodes within ~90s sim
+const MAPGEN_RESOURCE_MIN_RADIUS := 5 ## tiles from warren; keep nodes out of camp footprint
+const MAPGEN_RESOURCE_MAX_RADIUS := 52 ## tiles from warren; first expansion ring in valleys
 const MAPGEN_REFERENCE_AREA := 32 * 32 ## density reference for prop scatter tuning
 const MAPGEN_CLIFF_ANGLE_DEG := 40.0
 const MAPGEN_ROCKY_ANGLE_DEG := 20.0

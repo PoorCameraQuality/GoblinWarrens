@@ -93,6 +93,11 @@ static func _classify_cell(
 		return Defs.TerrainClass.CLIFF
 	if slope_deg > Constants.MAPGEN_ROCKY_ANGLE_DEG:
 		return Defs.TerrainClass.ROCKY_SLOPE
+	# Valley floors — flat walk/build corridors between ridges.
+	if slope_deg <= Constants.MAPGEN_VALLEY_SLOPE_MAX_DEG and norm_height <= Constants.MAPGEN_VALLEY_HEIGHT_MAX_NORM:
+		if norm_height <= Constants.MAPGEN_LOWLAND_HEIGHT_TOP:
+			return Defs.TerrainClass.MUD_MOSSY
+		return Defs.TerrainClass.MOSS
 	if norm_height > Constants.MAPGEN_FOREST_HEIGHT_TOP:
 		return Defs.TerrainClass.FOREST_FLOOR
 	if norm_height < Constants.MAPGEN_LOWLAND_HEIGHT_TOP:

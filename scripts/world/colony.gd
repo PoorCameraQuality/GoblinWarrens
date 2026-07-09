@@ -586,6 +586,7 @@ func dev_print_mapgen_status() -> String:
 				buildable += 1
 	var scenery_props := 0
 	var procgen_resources := 0
+	var scatter_stats: Dictionary = _map_plan.scatter_stats
 	for entry in _map_plan.prop_placements:
 		if entry == null:
 			continue
@@ -595,15 +596,28 @@ func dev_print_mapgen_status() -> String:
 			scenery_props += 1
 	var height_span := _terrain_height_span()
 	return (
-		"map_size=%dx%d map_seed=%d terrain_mode=procgen_array_mesh "
+		"map_size=%dx%d map_seed=%d terrain_mode=procgen_ridged_valleys "
 		% [_map_plan.width, _map_plan.height, config.seed]
 		+ "uv_scale=%.3f terrain_mesh_vertices=%d height_range_m=%.2f-%.2f "
 		% [TerrainPalette.preferred_uv_scale(), vertex_count, height_span.x, height_span.y]
 		+ "class_counts=%s prop_count=%d resource_node_count=%d "
 		% [str(class_counts), scenery_props, _resources_root.get_child_count()]
+		+ "trees=%d blocking_props=%d dressing=%d scatter_resources=%d "
+		% [
+			int(scatter_stats.get("tree_count", 0)),
+			int(scatter_stats.get("blocking_prop_count", 0)),
+			int(scatter_stats.get("dressing_count", 0)),
+			int(scatter_stats.get("resource_node_count", 0)),
+		]
+		+ "forest_stamps=%d clearing_stamps=%d authored=%s "
+		% [
+			int(scatter_stats.get("forest_stamp_count", 0)),
+			int(scatter_stats.get("clearing_stamp_count", 0)),
+			str(config.authoring_data != null),
+		]
 		+ "walkable_cell_count=%d buildable_cell_count=%d "
 		% [walkable, buildable]
-		+ "warren_cell=%s environment_dresser_active=false hand_placed_resources=false"
+		+ "warren_cell=%s environment_dresser_active=true hand_placed_resources=false"
 		% str(_map_plan.warren_cell)
 	)
 

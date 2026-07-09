@@ -3,6 +3,8 @@ extends Resource
 
 ## Tunable parameters for procedural map generation.
 
+const DEMO_AUTHORING_PATH := "res://data/mapgen/demo_map_authoring.tres"
+
 @export var width: int = Constants.GRID_WIDTH
 @export var height: int = Constants.GRID_HEIGHT
 @export var seed: int = Constants.MAPGEN_DEMO_SEED
@@ -10,6 +12,7 @@ extends Resource
 @export var camp_flat_radius: int = Constants.MAPGEN_CAMP_FLAT_RADIUS
 @export var camp_blend_radius: int = Constants.MAPGEN_CAMP_BLEND_RADIUS
 @export var warren_footprint: Vector2i = Vector2i(2, 2)
+@export var authoring_data: MapAuthoringData = null
 
 
 static func default_for_demo() -> MapConfig:
@@ -20,4 +23,6 @@ static func default_for_demo() -> MapConfig:
 	var min_dim: int = mini(config.width, config.height)
 	config.camp_flat_radius = maxi(Constants.MAPGEN_CAMP_FLAT_RADIUS, min_dim / 14)
 	config.camp_blend_radius = maxi(Constants.MAPGEN_CAMP_BLEND_RADIUS, min_dim / 8)
+	if ResourceLoader.exists(DEMO_AUTHORING_PATH):
+		config.authoring_data = load(DEMO_AUTHORING_PATH) as MapAuthoringData
 	return config
