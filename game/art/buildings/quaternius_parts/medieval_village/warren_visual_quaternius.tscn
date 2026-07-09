@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3 uid="uid://gwart_warren"]
+
+[ext_resource type="PackedScene" path="res://game/art/buildings/quaternius_parts/medieval_village/wall_door/wall_door_quaternius.gltf" id="1_door"]
+[ext_resource type="PackedScene" path="res://game/art/buildings/quaternius_parts/medieval_village/wall_straight/wall_straight_quaternius.gltf" id="2_wall"]
+[ext_resource type="PackedScene" path="res://game/art/buildings/quaternius_parts/medieval_village/roof_wood/roof_wood_quaternius.gltf" id="3_roof"]
+[ext_resource type="PackedScene" path="res://game/art/props/resources/quaternius_fantasy_props/barrel/barrel_quaternius.gltf" id="4_barrel"]
+
+[node name="WarrenVisualQuaternius" type="Node3D"]
+
+[node name="WallBack" parent="." instance=ExtResource("2_wall")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, -0.9)
+
+[node name="WallLeft" parent="." instance=ExtResource("2_wall")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -0.9, 0, 0)
+
+[node name="WallRight" parent="." instance=ExtResource("2_wall")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0.9, 0, 0)
+
+[node name="DoorFront" parent="." instance=ExtResource("1_door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.9)
+
+[node name="Roof" parent="." instance=ExtResource("3_roof")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+
+[node name="JunkBarrel" parent="." instance=ExtResource("4_barrel")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0.6, 0, 0.5)

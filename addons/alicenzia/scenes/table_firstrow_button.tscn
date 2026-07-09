@@ -1,0 +1,30 @@
+[gd_scene load_steps=4 format=3 uid="uid://bbvs3xb34eb8m"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e0u3b"]
+bg_color = Color(0.2091, 0.284325, 0.51, 1)
+border_width_left = 4
+border_width_right = 4
+border_color = Color(0.2091, 0.284325, 0.51, 1)
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dwy0w"]
+bg_color = Color(0.3621, 0.399075, 0.51, 1)
+border_width_left = 4
+border_width_right = 4
+border_color = Color(0.3621, 0.399075, 0.51, 1)
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a0bbo"]
+bg_color = Color(0.276332, 0.336214, 0.510804, 1)
+border_width_left = 4
+border_width_right = 4
+border_color = Color(0.276332, 0.336214, 0.510804, 1)
+corner_detail = 1
+
+[node name="TableFirstRowBtn" type="Button"]
+focus_mode = 0
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_e0u3b")
+theme_override_styles/hover = SubResource("StyleBoxFlat_dwy0w")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_e0u3b")
+theme_override_styles/normal = SubResource("StyleBoxFlat_a0bbo")
+text = "Text"

@@ -1,0 +1,84 @@
+[gd_scene load_steps=4 format=3 uid="uid://bu8xbgc380ocv"]
+
+[ext_resource type="Script" uid="uid://cm8bf7h8it6e8" path="res://addons/alicenzia/scripts/scan_result_dialog.gd" id="1_7ef83"]
+[ext_resource type="PackedScene" uid="uid://bbvs3xb34eb8m" path="res://addons/alicenzia/scenes/table_firstrow_button.tscn" id="2_4ahw3"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_o3pt7"]
+bg_color = Color(0.276332, 0.336214, 0.510804, 1)
+border_width_left = 4
+border_width_right = 4
+border_color = Color(0.276332, 0.336214, 0.510804, 1)
+corner_detail = 1
+
+[node name="ScanResultDialog" type="ConfirmationDialog"]
+auto_translate_mode = 2
+disable_3d = true
+title = "Alicenzia Scan Tool Result"
+initial_position = 2
+size = Vector2i(736, 141)
+visible = true
+auto_translate = false
+ok_button_text = "Add Files to Database"
+script = ExtResource("1_7ef83")
+
+[node name="TopVBoxContainer" type="VBoxContainer" parent="."]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 728.0
+offset_bottom = 92.0
+
+[node name="Label" type="Label" parent="TopVBoxContainer"]
+custom_minimum_size = Vector2(720, 0)
+layout_mode = 2
+text = "Toggle the selection on the checkbox at the left of each row. Only selected files will be added to the database."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="HSeparator" type="HSeparator" parent="TopVBoxContainer"]
+layout_mode = 2
+
+[node name="RowList" type="VBoxContainer" parent="TopVBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="FirstRow" type="HBoxContainer" parent="TopVBoxContainer/RowList"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="CheckEmpty" type="Label" parent="TopVBoxContainer/RowList/FirstRow"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_o3pt7")
+text = " "
+horizontal_alignment = 1
+metadata/asset_data_row_idx = 0
+
+[node name="FRowName" parent="TopVBoxContainer/RowList/FirstRow" instance=ExtResource("2_4ahw3")]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+text = "Addon Name"
+metadata/asset_data_row_idx = 1
+
+[node name="FRowLicense" parent="TopVBoxContainer/RowList/FirstRow" instance=ExtResource("2_4ahw3")]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "License"
+metadata/asset_data_row_idx = 1
+
+[node name="FRowCopyrightYear" parent="TopVBoxContainer/RowList/FirstRow" instance=ExtResource("2_4ahw3")]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+text = "Copyright Year"
+metadata/asset_data_row_idx = 1
+
+[node name="FRowCopyrightOwner" parent="TopVBoxContainer/RowList/FirstRow" instance=ExtResource("2_4ahw3")]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+text = "Owner"
+metadata/asset_data_row_idx = 1
+
+[node name="FRowFullLicense" parent="TopVBoxContainer/RowList/FirstRow" instance=ExtResource("2_4ahw3")]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+text = "Full License"
+metadata/asset_data_row_idx = 1

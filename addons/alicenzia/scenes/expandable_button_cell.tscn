@@ -1,0 +1,40 @@
+[gd_scene load_steps=5 format=3 uid="uid://bugd14d1neaxh"]
+
+[ext_resource type="Script" uid="uid://cqg6vn3hv3cbb" path="res://addons/alicenzia/scripts/expandable_button_cell.gd" id="1_yy88x"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e0u3b"]
+bg_color = Color(0.153, 0.18975, 0.3, 1)
+border_width_left = 10
+border_width_top = 4
+border_width_right = 10
+border_width_bottom = 4
+border_color = Color(0.153, 0.18975, 0.3, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tchf1"]
+bg_color = Color(0.2244, 0.2783, 0.44, 1)
+border_width_left = 10
+border_width_top = 4
+border_width_right = 10
+border_width_bottom = 4
+border_color = Color(0.2244, 0.2783, 0.44, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yy88x"]
+bg_color = Color(0.182924, 0.227703, 0.359338, 1)
+border_width_left = 10
+border_width_top = 4
+border_width_right = 10
+border_width_bottom = 4
+border_color = Color(0.182924, 0.227703, 0.359338, 1)
+
+[node name="ExpandableButtonCell" type="Button"]
+custom_minimum_size = Vector2(190, 0)
+focus_mode = 0
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_e0u3b")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tchf1")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_e0u3b")
+theme_override_styles/normal = SubResource("StyleBoxFlat_yy88x")
+text = "presstoexpand"
+text_overrun_behavior = 3
+script = ExtResource("1_yy88x")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]

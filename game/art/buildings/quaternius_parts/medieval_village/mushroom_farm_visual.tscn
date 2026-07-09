@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://gwart_mushroom_farm"]
+
+[ext_resource type="PackedScene" path="res://game/art/props/nature/quaternius/stylized_nature/mushroom/mushroom_common_quaternius.gltf" id="1_mush"]
+[ext_resource type="PackedScene" path="res://game/art/buildings/quaternius_parts/medieval_village/wall_straight/wall_straight_quaternius.gltf" id="2_wall"]
+
+[node name="MushroomFarmVisual" type="Node3D"]
+
+[node name="HutWall" parent="." instance=ExtResource("2_wall")]
+transform = Transform3D(0.9, 0, 0, 0, 0.6, 0, 0, 0, 0.9, 0, 0, 0)
+
+[node name="MushroomA" parent="." instance=ExtResource("1_mush")]
+transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, -0.5, 0, 0.4)
+
+[node name="MushroomB" parent="." instance=ExtResource("1_mush")]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, 0.55, 0, -0.35)

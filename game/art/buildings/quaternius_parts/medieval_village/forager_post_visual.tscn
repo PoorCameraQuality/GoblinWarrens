@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://gwart_forager"]
+
+[ext_resource type="PackedScene" path="res://game/art/props/resources/quaternius_fantasy_props/wood_crate/wood_crate_quaternius.gltf" id="1_crate"]
+[ext_resource type="PackedScene" path="res://game/art/props/nature/quaternius/stylized_nature/bush/bush_common_quaternius.gltf" id="2_bush"]
+
+[node name="ForagerPostVisual" type="Node3D"]
+
+[node name="SupplyCrate" parent="." instance=ExtResource("1_crate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="BushMarker" parent="." instance=ExtResource("2_bush")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0.6, 0, 0.5)

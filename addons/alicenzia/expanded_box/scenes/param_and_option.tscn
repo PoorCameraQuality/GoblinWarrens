@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://c3itrv4fmgowh"]
+
+[ext_resource type="Script" uid="uid://5u5k33s8v0en" path="res://addons/alicenzia/expanded_box/scripts/param_and_option.gd" id="1_w0u4o"]
+[ext_resource type="PackedScene" uid="uid://c5ild6dnuv2m5" path="res://addons/alicenzia/expanded_box/scenes/option_and_plus.tscn" id="1_x2dc0"]
+
+[node name="ParamAndOption" type="HBoxContainer"]
+size_flags_horizontal = 3
+script = ExtResource("1_w0u4o")
+
+[node name="Label" type="Label" parent="."]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Param Name"
+
+[node name="OptionAndPlus" parent="." instance=ExtResource("1_x2dc0")]
+layout_mode = 2
+
+[node name="VSeparator" type="VSeparator" parent="."]
+layout_mode = 2

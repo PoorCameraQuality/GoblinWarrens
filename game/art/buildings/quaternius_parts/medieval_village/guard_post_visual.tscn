@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://gwart_guard"]
+
+[ext_resource type="PackedScene" path="res://game/art/buildings/quaternius_parts/medieval_village/wall_straight/wall_straight_quaternius.gltf" id="1_wall"]
+
+[node name="GuardPostVisual" type="Node3D"]
+
+[node name="WallTower" parent="." instance=ExtResource("1_wall")]
+transform = Transform3D(1, 0, 0, 0, 1.3, 0, 0, 0, 1, 0, 0.15, 0)

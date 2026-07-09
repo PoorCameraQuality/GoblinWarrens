@@ -1,0 +1,38 @@
+[gd_scene load_steps=4 format=3 uid="uid://c1l4iekh4v87y"]
+
+[ext_resource type="PackedScene" uid="uid://c3itrv4fmgowh" path="res://addons/alicenzia/expanded_box/scenes/param_and_option.tscn" id="1_4uiib"]
+[ext_resource type="Script" uid="uid://b0njo5ptcet2y" path="res://addons/alicenzia/rightdock_inspector/scripts/project_wide_license_dialog.gd" id="1_dsp2h"]
+[ext_resource type="PackedScene" uid="uid://d06v3okq6ixlj" path="res://addons/alicenzia/expanded_box/scenes/param_and_data.tscn" id="1_qycya"]
+
+[node name="ProjectWideLicenseDialog" type="ConfirmationDialog"]
+auto_translate_mode = 2
+disable_3d = true
+title = "Initialize a Project-wide License"
+initial_position = 2
+size = Vector2i(416, 158)
+visible = true
+unresizable = true
+auto_translate = false
+script = ExtResource("1_dsp2h")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 408.0
+offset_bottom = 109.0
+
+[node name="OwnerPnD" parent="VBoxContainer" instance=ExtResource("1_qycya")]
+unique_name_in_owner = true
+layout_mode = 2
+param_name = "Owner"
+placeholder_text = "YourNameHere"
+
+[node name="LicensePnO" parent="VBoxContainer" instance=ExtResource("1_4uiib")]
+unique_name_in_owner = true
+layout_mode = 2
+param_name = "License"
+show_add_button = false
+show_separator = false
+options = Array[String](["All Rights Reserved", "Apache 2.0", "MIT", "GPLv3"])
+
+[connection signal="text_changed" from="VBoxContainer/OwnerPnD" to="." method="_on_param_and_data_text_changed"]

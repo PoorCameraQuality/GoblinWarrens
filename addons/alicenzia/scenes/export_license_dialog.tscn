@@ -1,0 +1,55 @@
+[gd_scene load_steps=3 format=3 uid="uid://c5iv2ke4mrmsv"]
+
+[ext_resource type="PackedScene" uid="uid://c3itrv4fmgowh" path="res://addons/alicenzia/expanded_box/scenes/param_and_option.tscn" id="1_hwa3w"]
+[ext_resource type="Script" uid="uid://u2hyhiyspoc0" path="res://addons/alicenzia/scripts/export_license_dialog.gd" id="1_qpsc2"]
+
+[node name="ExportLicenseDialog" type="ConfirmationDialog"]
+auto_translate_mode = 2
+disable_3d = true
+title = "Export License"
+initial_position = 2
+size = Vector2i(436, 162)
+visible = true
+unresizable = true
+auto_translate = false
+ok_button_text = "Export"
+script = ExtResource("1_qpsc2")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 428.0
+offset_bottom = 113.0
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+visible = false
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="ExportFormatPnO" parent="VBoxContainer" instance=ExtResource("1_hwa3w")]
+unique_name_in_owner = true
+layout_mode = 2
+param_name = "Export Format"
+show_add_button = false
+show_separator = false
+options = Array[String](["TXT"])
+
+[node name="ExportTemplatePnO" parent="VBoxContainer" instance=ExtResource("1_hwa3w")]
+unique_name_in_owner = true
+layout_mode = 2
+param_name = "Export Template"
+show_add_button = false
+show_separator = false
+options = Array[String](["Chrome-like", "hdoc-like"])
+
+[node name="ViewExampleBtn" type="Button" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "View Example of X"
+
+[connection signal="confirmed" from="." to="." method="_on_confirmed"]
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
+[connection signal="selected_item_changed" from="VBoxContainer/ExportTemplatePnO" to="." method="_on_export_template_pn_o_selected_item_changed"]
+[connection signal="pressed" from="VBoxContainer/ViewExampleBtn" to="." method="_on_view_example_btn_pressed"]

@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://cpyy6k4dwk3wy"]
+
+[ext_resource type="Script" uid="uid://ba0uo723l8ojp" path="res://addons/alicenzia/expanded_box/scripts/param_and_big_text.gd" id="1_rvoro"]
+
+[node name="ParamAndBigText" type="VBoxContainer"]
+size_flags_horizontal = 3
+script = ExtResource("1_rvoro")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+text = "Usage:"
+
+[node name="TextEdit" type="TextEdit" parent="."]
+layout_mode = 2
+size_flags_vertical = 3

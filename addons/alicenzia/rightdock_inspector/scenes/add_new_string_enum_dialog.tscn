@@ -1,0 +1,107 @@
+[gd_scene load_steps=5 format=3 uid="uid://chyu8jn2cxpto"]
+
+[ext_resource type="Script" uid="uid://baun4byo2hfoj" path="res://addons/alicenzia/rightdock_inspector/scripts/add_new_string_enum_dialog.gd" id="1_ttvfg"]
+[ext_resource type="PackedScene" uid="uid://d06v3okq6ixlj" path="res://addons/alicenzia/expanded_box/scenes/param_and_data.tscn" id="2_jmf4a"]
+[ext_resource type="Script" uid="uid://oj2q8wepfbwf" path="res://addons/alicenzia/components/panel_themer.gd" id="3_jmf4a"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_jmf4a"]
+font_size = 14
+font_color = Color(0.490196, 0.490196, 0.490196, 1)
+
+[node name="AddNewStringEnumDialog" type="ConfirmationDialog"]
+auto_translate_mode = 2
+disable_3d = true
+title = "Edit Property X"
+initial_position = 2
+size = Vector2i(471, 296)
+visible = true
+unresizable = true
+auto_translate = false
+script = ExtResource("1_ttvfg")
+
+[node name="MainVbox" type="VBoxContainer" parent="."]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 463.0
+offset_bottom = 247.0
+
+[node name="ListLabel" type="Label" parent="MainVbox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "List of current options of X:"
+
+[node name="EnumHintList" type="ItemList" parent="MainVbox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+allow_reselect = true
+
+[node name="RemOptPanel" type="PanelContainer" parent="MainVbox"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MainVbox/RemOptPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainVbox/RemOptPanel/MarginContainer"]
+layout_mode = 2
+
+[node name="RemoveSelectedOptBtn" type="Button" parent="MainVbox/RemOptPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+disabled = true
+text = "Remove Selected Option"
+
+[node name="RemoveConfirmVbox" type="VBoxContainer" parent="MainVbox/RemOptPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="HSeparator" type="HSeparator" parent="MainVbox/RemOptPanel/MarginContainer/VBoxContainer/RemoveConfirmVbox"]
+layout_mode = 2
+
+[node name="RemoveConfirmLabel" type="Label" parent="MainVbox/RemOptPanel/MarginContainer/VBoxContainer/RemoveConfirmVbox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(410, 0)
+layout_mode = 2
+text = "Are you sure you want to remove X from Y Option?"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MainVbox/RemOptPanel/MarginContainer/VBoxContainer/RemoveConfirmVbox"]
+layout_mode = 2
+
+[node name="RemoveOptConfirmBtn" type="Button" parent="MainVbox/RemOptPanel/MarginContainer/VBoxContainer/RemoveConfirmVbox/HBoxContainer"]
+layout_mode = 2
+text = "Confirm"
+
+[node name="RemoveOptCancelBtn" type="Button" parent="MainVbox/RemOptPanel/MarginContainer/VBoxContainer/RemoveConfirmVbox/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Cancel"
+
+[node name="HSeparator" type="HSeparator" parent="MainVbox"]
+layout_mode = 2
+
+[node name="NewItemPnD" parent="MainVbox" instance=ExtResource("2_jmf4a")]
+unique_name_in_owner = true
+layout_mode = 2
+param_name = "New Option"
+
+[node name="Label" type="Label" parent="MainVbox"]
+layout_mode = 2
+text = "*New Option should not contain a comma ( , )"
+label_settings = SubResource("LabelSettings_jmf4a")
+
+[node name="PanelThemer" type="Node" parent="." node_paths=PackedStringArray("panels_to_theme")]
+script = ExtResource("3_jmf4a")
+panels_to_theme = [NodePath("../MainVbox/RemOptPanel")]
+
+[connection signal="item_selected" from="MainVbox/EnumHintList" to="." method="_on_enum_hint_list_item_selected"]
+[connection signal="pressed" from="MainVbox/RemOptPanel/MarginContainer/VBoxContainer/RemoveSelectedOptBtn" to="." method="_on_remove_selected_custom_opt_btn_pressed"]
+[connection signal="pressed" from="MainVbox/RemOptPanel/MarginContainer/VBoxContainer/RemoveConfirmVbox/HBoxContainer/RemoveOptConfirmBtn" to="." method="_on_remove_opt_confirm_btn_pressed"]
+[connection signal="pressed" from="MainVbox/RemOptPanel/MarginContainer/VBoxContainer/RemoveConfirmVbox/HBoxContainer/RemoveOptCancelBtn" to="." method="_on_remove_opt_cancel_btn_pressed"]

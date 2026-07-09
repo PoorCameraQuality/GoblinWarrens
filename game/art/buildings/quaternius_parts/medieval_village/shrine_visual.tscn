@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://gwart_shrine"]
+
+[ext_resource type="PackedScene" path="res://game/art/buildings/quaternius_parts/medieval_village/stairs/stairs_quaternius.gltf" id="1_stairs"]
+[ext_resource type="PackedScene" path="res://game/art/props/graveyard/kaykit_halloween/lantern/lantern_kaykit.gltf" id="2_lantern"]
+
+[node name="ShrineVisual" type="Node3D"]
+
+[node name="Platform" parent="." instance=ExtResource("1_stairs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Lantern" parent="." instance=ExtResource("2_lantern")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, 0, 0.8, 0)

@@ -39,3 +39,18 @@ loop, construction, HUD, and autosave. Milestone 1 (worker loop) largely in plac
 Milestone 2 (selection and commands) is next. See `docs/goblin-warrens-design.md` §37.
 
 Godot install and GRB wiring may still be pending — see `HANDOFF.md`.
+
+## External contributors
+
+Clone this repo, open the folder in Godot 4.6+, and run `scenes/colony.tscn`.
+
+| Need | Where |
+|---|---|
+| **What art to build** | `docs/asset-list.md` |
+| **Style + specs** | `docs/goblin-warrens-design.md` §3.2, `docs/asset-pipeline.md` |
+| **Terrain textures** | `docs/terrain-texture-brief.md` |
+| **Drop finished assets** | `game/art/**/goblin_warrens/` |
+| **Runtime art index** | `scripts/art/visual_catalog.gd` |
+| **Optional raw kit packs** | Not in git — see `docs/itch-io-acquisition.md` / `docs/quaternius-acquisition.md` |
+
+Copy `.cursor/mcp.json.example` → `.cursor/mcp.json` and edit paths if using Cursor + GRB (`docs/mcp-setup.md`).

@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://bqxfood001"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_food"]
+albedo_color = Color(0.2, 0.75, 0.25, 1)
+
+[node name="Food" type="Node3D" groups=["food"]]
+
+[node name="Mesh" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
+size = Vector3(0.35, 0.3, 0.35)
+material = SubResource("StandardMaterial3D_food")

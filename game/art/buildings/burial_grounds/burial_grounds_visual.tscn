@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://gwart_burial"]
+
+[ext_resource type="PackedScene" path="res://game/art/props/graveyard/kaykit_halloween/gravestone/grave_marker_kaykit.gltf" id="1_grave"]
+[ext_resource type="PackedScene" path="res://game/art/props/graveyard/kaykit_halloween/skull/skull_kaykit.gltf" id="2_skull"]
+[ext_resource type="PackedScene" path="res://game/art/props/graveyard/kaykit_halloween/ribcage/ribcage_kaykit.gltf" id="3_rib"]
+
+[node name="BurialGroundsVisual" type="Node3D"]
+
+[node name="Gravestone" parent="." instance=ExtResource("1_grave")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0, 0)
+
+[node name="Skull" parent="." instance=ExtResource("2_skull")]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, 0.5, 0, 0.3)
+
+[node name="Ribcage" parent="." instance=ExtResource("3_rib")]
+transform = Transform3D(0.85, 0, 0, 0, 0.85, 0, 0, 0, 0.85, 0, 0, -0.5)

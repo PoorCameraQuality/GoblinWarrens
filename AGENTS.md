@@ -83,10 +83,13 @@ preserved behavior, test steps, limitations, next step).
 
 ## 3. Implementation checks (agent)
 
+- **Official Godot docs are binding**: [https://docs.godotengine.org/en/latest/](https://docs.godotengine.org/en/latest/).
+  Cross-check every class, method, signal, and property before use. See also
+  `docs/technical-reference.md` (engine table + doc index).
 - **Verify before use**: fail fast if a class, autoload, scene path, or
   resource path is not found. Never assume.
-- **Never invent API**: if a method/class isn't in Godot 4.6 docs or this repo,
-  stop and request clarification. No "looks plausible" code.
+- **Never invent API**: if a method/class isn't in the Godot docs for the pinned
+  engine version or this repo, stop and request clarification. No "looks plausible" code.
 - **Main-thread discipline**: any scene-tree mutation from a non-main thread
   must go through `call_deferred(...)`.
 - **Undo-friendly**: editor mutations performed through the bridge must use

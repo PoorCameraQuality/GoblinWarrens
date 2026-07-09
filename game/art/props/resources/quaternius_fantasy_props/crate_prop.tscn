@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://gwart_crate_prop"]
+
+[ext_resource type="PackedScene" path="res://game/art/props/resources/quaternius_fantasy_props/wood_crate/wood_crate_quaternius.gltf" id="1_mesh"]
+
+[node name="CrateProp" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_mesh")]

@@ -1,0 +1,28 @@
+﻿# Godot cache and imports
+.godot/
+.import/
+
+# Build outputs
+build/
+exports/
+dist/
+*.exe
+*.pck
+
+# Agent-local secrets and logs
+.cursor/secrets/
+.logs/
+
+# Large / generated art
+assets/generated/
+art/raw_renders/
+art/zbrush_backups/
+*.blend1
+*.blend2
+
+# Media not useful for code context
+*.mp4
+*.psd
+*.wav
+*.ogg
+*.mp3

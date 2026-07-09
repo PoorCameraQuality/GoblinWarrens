@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://gwart_grass_short"]
+
+[ext_resource type="PackedScene" path="res://game/art/props/nature/quaternius/stylized_nature/grass_short/grass_short_quaternius.gltf" id="1_mesh"]
+
+[node name="GrassShortQuaternius" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_mesh")]

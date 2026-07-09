@@ -32,6 +32,9 @@ Read `AGENTS.md` for the engineering contract.
 - Autoloads: `Log`, `Bus`, `Defs`, `Services` — no others without ADR.
 - Static data: Resources in `data/` or `scripts/core/defs.gd`.
 - UI must not mutate simulation directly; route through services/commands.
+- **Godot API reference**: [docs.godotengine.org](https://docs.godotengine.org/en/latest/) — verify engine APIs before use.
+- **AssetLib / third-party**: MIT/CC0 only — read `docs/asset-library-acquisition.md` (plugins), `docs/itch-io-acquisition.md` (itch.io art), and `docs/quaternius-acquisition.md` (Quaternius art) before importing.
+- Plugins → `addons/`; raw downloads → `external_raw/`; licenses → `docs/legal/THIRD_PARTY_LICENSES.md`.
 
 ## Before coding
 

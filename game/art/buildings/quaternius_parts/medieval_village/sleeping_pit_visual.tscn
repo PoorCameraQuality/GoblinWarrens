@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://gwart_sleeping_pit"]
+
+[ext_resource type="PackedScene" path="res://game/art/props/resources/kaykit/stone_small/stone_small_kaykit.gltf" id="1_stone"]
+[ext_resource type="PackedScene" path="res://game/art/buildings/quaternius_parts/medieval_village/wall_straight/wall_straight_quaternius.gltf" id="2_wall"]
+
+[node name="SleepingPitVisual" type="Node3D"]
+
+[node name="LowWall" parent="." instance=ExtResource("2_wall")]
+transform = Transform3D(1.1, 0, 0, 0, 0.35, 0, 0, 0, 1.1, 0, -0.2, 0)
+
+[node name="StoneRing" parent="." instance=ExtResource("1_stone")]
+transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0.5, 0, 0.4)

@@ -1,0 +1,284 @@
+[gd_scene format=3 uid="uid://bqxcolony001"]
+
+[ext_resource type="Script" uid="uid://dhcv6ijchi3i" path="res://scripts/world/colony.gd" id="1_colony"]
+[ext_resource type="Script" uid="uid://bom8p468tg6xq" path="res://scripts/ui/rts_camera.gd" id="2_camera"]
+[ext_resource type="Script" uid="uid://bcku27doaet1n" path="res://scripts/ui/end_summary_panel.gd" id="3_end"]
+
+[node name="Colony" type="Node3D" unique_id=1401309885]
+script = ExtResource("1_colony")
+
+[node name="Ground" type="CSGBox3D" parent="." unique_id=129333652]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 175, -0.05, 175)
+size = Vector3(350, 0.1, 350)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=137524661]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 20, 0)
+shadow_enabled = true
+
+[node name="RTSCameraRig" type="Node3D" parent="." unique_id=234114043]
+
+[node name="Pivot" type="Node3D" parent="RTSCameraRig" unique_id=234114042]
+
+[node name="Camera3D" type="Camera3D" parent="RTSCameraRig/Pivot" unique_id=234114044]
+current = true
+script = ExtResource("2_camera")
+
+[node name="BuildGhostRoot" type="Node3D" parent="." unique_id=1088808989]
+
+[node name="EnvironmentDressing" type="Node3D" parent="." unique_id=882901234]
+
+[node name="Resources" type="Node3D" parent="." unique_id=502589154]
+
+[node name="Buildings" type="Node3D" parent="." unique_id=1011156847]
+
+[node name="Construction" type="Node3D" parent="." unique_id=1281476539]
+
+[node name="Goblins" type="Node3D" parent="." unique_id=475490133]
+
+[node name="Enemies" type="Node3D" parent="." unique_id=1648405507]
+
+[node name="ThreatMarkers" type="Node3D" parent="." unique_id=1130202422]
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=1730364252]
+
+[node name="ThreatFlash" type="ColorRect" parent="UI" unique_id=1561447653]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.85, 0.08, 0.05, 0.45)
+
+[node name="DayBanner" type="Label" parent="UI" unique_id=1911780283]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -40.0
+offset_right = 280.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0.92, 0.55, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.05, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 32
+text = "Day 1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SelectionBox" type="ColorRect" parent="UI" unique_id=1267513835]
+visible = false
+offset_right = 1.0
+offset_bottom = 1.0
+mouse_filter = 2
+color = Color(0.2, 0.85, 0.35, 0.15)
+
+[node name="HUD" type="VBoxContainer" parent="UI" unique_id=492261775]
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 520.0
+offset_bottom = 420.0
+
+[node name="DayLabel" type="Label" parent="UI/HUD" unique_id=443020894]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Day: 1 / 7"
+
+[node name="TickLabel" type="Label" parent="UI/HUD" unique_id=113821258]
+visible = false
+layout_mode = 2
+text = "Tick: 0"
+
+[node name="GoblinLabel" type="Label" parent="UI/HUD" unique_id=184336376]
+layout_mode = 2
+text = "Goblins: 0"
+
+[node name="SelectedLabel" type="Label" parent="UI/HUD" unique_id=1318002558]
+layout_mode = 2
+text = "Selected: 0 — click a goblin"
+
+[node name="ThreatLabel" type="Label" parent="UI/HUD" unique_id=351698254]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.75, 0.35, 1)
+text = "Survive 7 days. Build food, faith, and defenses."
+
+[node name="BriefingLabel" type="Label" parent="UI/HUD" unique_id=943678723]
+layout_mode = 2
+text = "Briefing..."
+autowrap_mode = 3
+
+[node name="BuildHintLabel" type="Label" parent="UI/HUD" unique_id=198219867]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.95, 0.55, 1)
+text = "Build hint..."
+
+[node name="ObjectivesLabel" type="Label" parent="UI/HUD" unique_id=1971087631]
+layout_mode = 2
+text = "Objectives..."
+
+[node name="BuildStatusLabel" type="Label" parent="UI/HUD" unique_id=1310741103]
+layout_mode = 2
+text = "Build: press 1-9 or use buttons below"
+
+[node name="GoldLabel" type="Label" parent="UI/HUD" unique_id=536694659]
+layout_mode = 2
+text = "Gold: 0"
+
+[node name="WoodLabel" type="Label" parent="UI/HUD" unique_id=1564965538]
+layout_mode = 2
+text = "Wood: 0"
+
+[node name="StoneLabel" type="Label" parent="UI/HUD" unique_id=1001802879]
+layout_mode = 2
+text = "Stone: 0"
+
+[node name="FoodLabel" type="Label" parent="UI/HUD" unique_id=1705410205]
+layout_mode = 2
+text = "Food: 0"
+
+[node name="MagicLabel" type="Label" parent="UI/HUD" unique_id=286548371]
+layout_mode = 2
+text = "Magic: 0"
+
+[node name="JobsLabel" type="Label" parent="UI/HUD" unique_id=1512672923]
+layout_mode = 2
+text = "Warren HP: 200"
+
+[node name="BuildPanel" type="HBoxContainer" parent="UI" unique_id=416115992]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -420.0
+offset_top = -88.0
+offset_right = 420.0
+offset_bottom = -48.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="Build1" type="Button" parent="UI/BuildPanel" unique_id=1739438000]
+layout_mode = 2
+text = "1"
+
+[node name="Build2" type="Button" parent="UI/BuildPanel" unique_id=960485254]
+layout_mode = 2
+text = "2"
+
+[node name="Build3" type="Button" parent="UI/BuildPanel" unique_id=275614084]
+layout_mode = 2
+text = "3"
+
+[node name="Build4" type="Button" parent="UI/BuildPanel" unique_id=1872398546]
+layout_mode = 2
+text = "4"
+
+[node name="Build5" type="Button" parent="UI/BuildPanel" unique_id=1863228294]
+layout_mode = 2
+text = "5"
+
+[node name="BuildPanel2" type="HBoxContainer" parent="UI" unique_id=68445531]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -420.0
+offset_top = -44.0
+offset_right = 420.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="Build6" type="Button" parent="UI/BuildPanel2" unique_id=830353249]
+layout_mode = 2
+text = "6"
+
+[node name="Build7" type="Button" parent="UI/BuildPanel2" unique_id=175408989]
+layout_mode = 2
+text = "7"
+
+[node name="Build8" type="Button" parent="UI/BuildPanel2" unique_id=1044130347]
+layout_mode = 2
+text = "8"
+
+[node name="Build9" type="Button" parent="UI/BuildPanel2" unique_id=1410096738]
+layout_mode = 2
+text = "9"
+
+[node name="RitualPanel" type="HBoxContainer" parent="UI" unique_id=1039516953]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -320.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = 52.0
+grow_horizontal = 0
+theme_override_constants/separation = 8
+
+[node name="BlessButton" type="Button" parent="UI/RitualPanel" unique_id=1305787582]
+layout_mode = 2
+text = "Bless Defenders"
+
+[node name="ReviveButton" type="Button" parent="UI/RitualPanel" unique_id=860864793]
+layout_mode = 2
+text = "Revive Goblin"
+
+[node name="EndSummary" type="Control" parent="UI" unique_id=1029079637]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_end")
+
+[node name="Panel" type="PanelContainer" parent="UI/EndSummary" unique_id=746800542]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -160.0
+offset_right = 220.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="UI/EndSummary/Panel" unique_id=1356900760]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="UI/EndSummary/Panel/Margin" unique_id=780621765]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="UI/EndSummary/Panel/Margin/VBox" unique_id=1434719449]
+layout_mode = 2
+text = "End Summary"
+horizontal_alignment = 1
+
+[node name="BodyLabel" type="Label" parent="UI/EndSummary/Panel/Margin/VBox" unique_id=668287262]
+layout_mode = 2
+text = "..."
+
+[node name="RestartButton" type="Button" parent="UI/EndSummary/Panel/Margin/VBox" unique_id=1505588376]
+layout_mode = 2
+text = "Restart"

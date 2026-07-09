@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://gwart_goblin_worker"]
+
+[ext_resource type="PackedScene" path="res://game/art/units/goblins/standout7_lowpo/basic_goblin_lowpo.glb" id="1_mesh"]
+
+[node name="GoblinWorkerLowpo" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_mesh")]

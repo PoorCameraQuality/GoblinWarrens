@@ -1,0 +1,315 @@
+[gd_scene load_steps=13 format=3 uid="uid://cdgcops15lly0"]
+
+[ext_resource type="Script" uid="uid://cqgx4b6criqnj" path="res://addons/alicenzia/rightdock_inspector/anz_right_dock_scene.gd" id="1_gmbqi"]
+[ext_resource type="PackedScene" uid="uid://c1l4iekh4v87y" path="res://addons/alicenzia/rightdock_inspector/scenes/project_wide_license_dialog.tscn" id="2_1ly1l"]
+[ext_resource type="PackedScene" uid="uid://bms5q447dngpi" path="res://addons/alicenzia/rightdock_inspector/scenes/exist_in_lic_db_info.tscn" id="2_40gp4"]
+[ext_resource type="PackedScene" uid="uid://lk8mtb18ib5h" path="res://addons/alicenzia/rightdock_inspector/scenes/current_path_textedit_readonly.tscn" id="2_j83lm"]
+[ext_resource type="PackedScene" uid="uid://bm1y5fmy46rbf" path="res://addons/alicenzia/rightdock_inspector/scenes/lic_inherit_info.tscn" id="2_s5q64"]
+[ext_resource type="Texture2D" uid="uid://c6wnns317b2am" path="res://addons/alicenzia/assets/godot_mini_icons/help.png" id="2_vjfx6"]
+[ext_resource type="Script" uid="uid://oj2q8wepfbwf" path="res://addons/alicenzia/components/panel_themer.gd" id="4_syktp"]
+[ext_resource type="PackedScene" uid="uid://chyu8jn2cxpto" path="res://addons/alicenzia/rightdock_inspector/scenes/add_new_string_enum_dialog.tscn" id="5_s5q64"]
+[ext_resource type="PackedScene" uid="uid://dwdf70chwedd0" path="res://addons/alicenzia/rightdock_inspector/scenes/confirm_remove_path_lic_dialog.tscn" id="8_j83lm"]
+[ext_resource type="PackedScene" uid="uid://c5iv2ke4mrmsv" path="res://addons/alicenzia/scenes/export_license_dialog.tscn" id="9_ltaot"]
+[ext_resource type="Script" uid="uid://o3rhhv4vskiv" path="res://addons/alicenzia/rightdock_inspector/scripts/autofill_license_from_template_dialog.gd" id="13_umofs"]
+[ext_resource type="PackedScene" uid="uid://d06v3okq6ixlj" path="res://addons/alicenzia/expanded_box/scenes/param_and_data.tscn" id="14_d4mp3"]
+
+[node name="License" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+script = ExtResource("1_gmbqi")
+
+[node name="HSeparator3" type="HSeparator" parent="."]
+visible = false
+layout_mode = 2
+
+[node name="NoProjectLicenseWarn" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="NoProjectLicenseWarn"]
+layout_mode = 2
+
+[node name="NoPWLWarnIcon" type="TextureRect" parent="NoProjectLicenseWarn/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="NoProjectLicenseWarn/HBoxContainer"]
+custom_minimum_size = Vector2(170, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "This project does not have a project-wide license yet."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="InitPWLBtn" type="Button" parent="NoProjectLicenseWarn"]
+layout_mode = 2
+text = "Initialize a Project-wide License"
+
+[node name="HSeparator" type="HSeparator" parent="NoProjectLicenseWarn"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+text = "License data on this path:"
+horizontal_alignment = 1
+
+[node name="CurrentPathOld" type="LineEdit" parent="."]
+visible = false
+layout_mode = 2
+editable = false
+expand_to_text_length = true
+
+[node name="CurrentPath" parent="." instance=ExtResource("2_j83lm")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HSeparator" type="HSeparator" parent="."]
+layout_mode = 2
+
+[node name="LicInheritInfo" parent="." instance=ExtResource("2_s5q64")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ExistInLicDBInfo" parent="." instance=ExtResource("2_40gp4")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="UnsavedChangesHbox" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="IconPanel" type="PanelContainer" parent="UnsavedChangesHbox"]
+custom_minimum_size = Vector2(26, 0)
+layout_mode = 2
+
+[node name="UnsavedChangesWarningIcon" type="TextureRect" parent="UnsavedChangesHbox/IconPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+stretch_mode = 5
+
+[node name="PanelContainer" type="PanelContainer" parent="UnsavedChangesHbox"]
+custom_minimum_size = Vector2(26, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="UnsavedChangesHbox/PanelContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(170, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "You have unsaved license changes. Save or discard the changes before navigating into other paths."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="SaveDiscardLicHbox" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="SavePathLicenseBtn" type="Button" parent="SaveDiscardLicHbox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+disabled = true
+text = "Save"
+
+[node name="RemovePathLicenseBtn" type="Button" parent="SaveDiscardLicHbox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "Remove Path License"
+
+[node name="DiscardChangesBtn" type="Button" parent="SaveDiscardLicHbox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "Discard Changes"
+
+[node name="HSeparator2" type="HSeparator" parent="."]
+layout_mode = 2
+
+[node name="PanelThemer" type="Node" parent="." node_paths=PackedStringArray("panels_to_theme")]
+script = ExtResource("4_syktp")
+panels_to_theme = [NodePath("../UnsavedChangesHbox/IconPanel"), NodePath("../UnsavedChangesHbox/PanelContainer")]
+
+[node name="ProjectWideLicenseDialog" parent="." instance=ExtResource("2_1ly1l")]
+unique_name_in_owner = true
+visible = false
+
+[node name="AddNewStringEnumDialog" parent="." instance=ExtResource("5_s5q64")]
+unique_name_in_owner = true
+visible = false
+
+[node name="ConfirmRemovePathLicDialog" parent="." instance=ExtResource("8_j83lm")]
+unique_name_in_owner = true
+visible = false
+
+[node name="InspectorBelowHere" type="Node" parent="."]
+unique_name_in_owner = true
+
+[node name="BottomTool" type="HFlowContainer" parent="."]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="BottomTool"]
+layout_mode = 2
+text = "Tools"
+
+[node name="VSeparator" type="VSeparator" parent="BottomTool"]
+layout_mode = 2
+
+[node name="ViewGuideBtn" type="Button" parent="BottomTool"]
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "View the quickstart guide on how to use the Alicenzia addon"
+text = "View Guide"
+icon = ExtResource("2_vjfx6")
+
+[node name="AutofillFromTemplateBtn" type="Button" parent="BottomTool"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "View the quickstart guide on how to use the Alicenzia addon"
+text = "Autofill License Text from Template"
+
+[node name="CopyFromLicensePathBtn" type="Button" parent="BottomTool"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "View the quickstart guide on how to use the Alicenzia addon"
+text = "Copy License Text from License Path"
+
+[node name="Spacer" type="Control" parent="BottomTool"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ScrollContainerUnused" type="ScrollContainer" parent="."]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RightDockVbox" type="VBoxContainer" parent="ScrollContainerUnused"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ExportLicenseDialog" parent="." instance=ExtResource("9_ltaot")]
+unique_name_in_owner = true
+visible = false
+dialog_hide_on_ok = false
+
+[node name="ExampleTemplateDialog" type="AcceptDialog" parent="ExportLicenseDialog"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+disable_3d = true
+title = "Attribution text with x template"
+initial_position = 2
+size = Vector2i(816, 600)
+auto_translate = false
+
+[node name="TemplateTextArea" type="TextEdit" parent="ExportLicenseDialog/ExampleTemplateDialog"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(800, 300)
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 808.0
+offset_bottom = 551.0
+editable = false
+emoji_menu_enabled = false
+virtual_keyboard_enabled = false
+middle_mouse_paste_enabled = false
+
+[node name="SaveTemplateDialog" type="FileDialog" parent="ExportLicenseDialog"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+disable_3d = true
+initial_position = 2
+auto_translate = false
+filters = PackedStringArray("*.txt")
+
+[node name="AutofillLicenseFromTemplateDialog" type="ConfirmationDialog" parent="."]
+unique_name_in_owner = true
+auto_translate_mode = 2
+disable_3d = true
+title = "Autofill License from Template"
+initial_position = 2
+size = Vector2i(436, 220)
+unresizable = true
+auto_translate = false
+ok_button_text = "Fill License Text"
+dialog_hide_on_ok = false
+script = ExtResource("13_umofs")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="AutofillLicenseFromTemplateDialog"]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 428.0
+offset_bottom = 171.0
+
+[node name="LicenseTypeLabel" type="Label" parent="AutofillLicenseFromTemplateDialog/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+text = "Chosen License : x"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="OwnerPnD" parent="AutofillLicenseFromTemplateDialog/VBoxContainer" instance=ExtResource("14_d4mp3")]
+unique_name_in_owner = true
+layout_mode = 2
+param_name = "Owner"
+
+[node name="CopyrightYearPnD" parent="AutofillLicenseFromTemplateDialog/VBoxContainer" instance=ExtResource("14_d4mp3")]
+unique_name_in_owner = true
+layout_mode = 2
+param_name = "Copyright Year"
+
+[node name="PreviewLicenseBtn" type="Button" parent="AutofillLicenseFromTemplateDialog/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Preview the Resulting License Text"
+
+[node name="FullLicensePreviewDialog" type="AcceptDialog" parent="AutofillLicenseFromTemplateDialog"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+disable_3d = true
+title = "MIT Full License Text of x"
+initial_position = 2
+size = Vector2i(816, 600)
+auto_translate = false
+
+[node name="FullLicensePreviewTextArea" type="TextEdit" parent="AutofillLicenseFromTemplateDialog/FullLicensePreviewDialog"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(800, 300)
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 808.0
+offset_bottom = 551.0
+editable = false
+emoji_menu_enabled = false
+virtual_keyboard_enabled = false
+middle_mouse_paste_enabled = false
+wrap_mode = 1
+
+[connection signal="pressed" from="NoProjectLicenseWarn/InitPWLBtn" to="." method="_on_init_pwl_btn_pressed"]
+[connection signal="check_parent_folder_license" from="LicInheritInfo" to="." method="_on_check_parent_folder_license"]
+[connection signal="pressed" from="SaveDiscardLicHbox/SavePathLicenseBtn" to="." method="_on_save_path_license_btn_pressed"]
+[connection signal="pressed" from="SaveDiscardLicHbox/RemovePathLicenseBtn" to="." method="_on_remove_path_license_btn_pressed"]
+[connection signal="pressed" from="SaveDiscardLicHbox/DiscardChangesBtn" to="." method="_on_discard_changes_btn_pressed"]
+[connection signal="confirmed" from="ProjectWideLicenseDialog" to="." method="_on_project_wide_license_dialog_confirmed"]
+[connection signal="attempt_remove_hint_from_param" from="AddNewStringEnumDialog" to="." method="_on_attempt_remove_hint_from_param"]
+[connection signal="confirmed" from="AddNewStringEnumDialog" to="." method="_on_add_new_string_enum_dialog_confirmed"]
+[connection signal="confirmed" from="ConfirmRemovePathLicDialog" to="." method="_on_confirm_remove_path_lic_dialog_confirmed"]
+[connection signal="pressed" from="BottomTool/ViewGuideBtn" to="." method="_on_view_guide_btn_pressed"]
+[connection signal="pressed" from="BottomTool/AutofillFromTemplateBtn" to="." method="_on_autofill_from_template_btn_pressed"]
+[connection signal="export_license" from="ExportLicenseDialog" to="." method="_on_export_license_dialog_export_license"]
+[connection signal="make_example_template" from="ExportLicenseDialog" to="." method="_on_export_license_dialog_make_example_template"]
+[connection signal="file_selected" from="ExportLicenseDialog/SaveTemplateDialog" to="." method="_on_save_template_dialog_file_selected"]
+[connection signal="confirmed" from="AutofillLicenseFromTemplateDialog" to="." method="_on_autofill_license_from_template_dialog_confirmed"]
+[connection signal="visibility_changed" from="AutofillLicenseFromTemplateDialog" to="AutofillLicenseFromTemplateDialog" method="_on_visibility_changed"]
+[connection signal="pressed" from="AutofillLicenseFromTemplateDialog/VBoxContainer/PreviewLicenseBtn" to="." method="_on_autofill_license_preview_btn_pressed"]

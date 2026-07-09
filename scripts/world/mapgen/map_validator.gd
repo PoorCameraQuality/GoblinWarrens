@@ -1,0 +1,171 @@
+class_name MapValidator
+extends RefCounted
+
+## Debug validation for generated MapPlan — gameplay reachability and camp sanity.
+
+const _TerrainClassifier := preload("res://scripts/world/mapgen/terrain_classifier.gd")
+
+const MIN_BUILDABLE_NEAR_WARREN := 120
+const MIN_TREE_REQUESTED := 50
+const MIN_ROCK_REQUESTED := 20
+const MIN_FOOD_RESOURCES := 1
+const MIN_WOOD_RESOURCES := 20
+const MIN_STONE_RESOURCES := 2
+const CAMP_BUILDABLE_RADIUS := 12
+
+
+static func validate(plan: MapPlan, config: MapConfig) -> Dictionary:
+	var failures: PackedStringArray = PackedStringArray()
+	if plan == null:
+		return {"pass": false, "failures": ["map_plan is null"]}
+
+	if plan.warren_cell.x < 0 or plan.warren_cell.y < 0:
+		failures.append("warren cell missing")
+
+	var buildable_near := _count_buildable_in_radius(plan, plan.warren_cell, CAMP_BUILDABLE_RADIUS)
+	if buildable_near < MIN_BUILDABLE_NEAR_WARREN:
+		failures.append(
+			"buildable near warren=%d (need >= %d)" % [buildable_near, MIN_BUILDABLE_NEAR_WARREN]
+		)
+
+	var walkable_camp := _count_walkable_in_radius(plan, plan.warren_cell, CAMP_BUILDABLE_RADIUS)
+	var camp_cells := maxi(1, (CAMP_BUILDABLE_RADIUS * 2 + 1) * (CAMP_BUILDABLE_RADIUS * 2 + 1))
+	var walkable_pct := float(walkable_camp) / float(camp_cells)
+	if walkable_pct < 0.8:
+		failures.append("camp walkable %.0f%% (need >= 80%%)" % [walkable_pct * 100.0])
+
+	var blockers := _blockers_from_placements(plan)
+	var reachable := _flood_reachable(plan, plan.warren_cell, blockers)
+	var resource_counts := _count_resources(plan, reachable)
+
+	if resource_counts.wood < MIN_WOOD_RESOURCES:
+		failures.append("reachable wood=%d (need >= %d)" % [resource_counts.wood, MIN_WOOD_RESOURCES])
+	if resource_counts.stone < MIN_STONE_RESOURCES:
+		failures.append("reachable stone=%d (need >= %d)" % [resource_counts.stone, MIN_STONE_RESOURCES])
+	if resource_counts.food < MIN_FOOD_RESOURCES:
+		failures.append("reachable food=%d (need >= %d)" % [resource_counts.food, MIN_FOOD_RESOURCES])
+
+	var stats: Dictionary = plan.scatter_stats
+	var trees := int(stats.get("tree_requested", 0))
+	if trees < MIN_TREE_REQUESTED:
+		failures.append("tree placements=%d (need >= %d)" % [trees, MIN_TREE_REQUESTED])
+
+	var rocks := _count_path_keyword(plan, "rock")
+	if rocks < MIN_ROCK_REQUESTED:
+		failures.append("rock placements=%d (need >= %d)" % [rocks, MIN_ROCK_REQUESTED])
+
+	return {
+		"pass": failures.is_empty(),
+		"failures": failures,
+		"buildable_near_warren": buildable_near,
+		"walkable_camp_pct": walkable_pct,
+		"resource_counts": resource_counts,
+		"tree_requested": trees,
+		"rock_requested": rocks,
+		"seed": config.seed,
+		"map_size": "%dx%d" % [plan.width, plan.height],
+	}
+
+
+static func format_report(result: Dictionary) -> String:
+	var failures: Array = result.get("failures", [])
+	var resource_counts: Dictionary = result.get("resource_counts", {})
+	var failure_lines: PackedStringArray = PackedStringArray()
+	for failure in failures:
+		failure_lines.append(str(failure))
+	var walkable_pct_display := (
+		str(int(round(float(result.get("walkable_camp_pct", 0.0)) * 100.0))) + "%"
+	)
+	return (
+		"map_validation pass=%s seed=%s size=%s buildable_near_warren=%d walkable_camp=%s "
+		+ "resources=%s trees=%d rocks=%d failures=[%s]"
+		% [
+			str(result.get("pass", false)),
+			str(result.get("seed", "?")),
+			str(result.get("map_size", "?")),
+			int(result.get("buildable_near_warren", 0)),
+			walkable_pct_display,
+			str(resource_counts),
+			int(result.get("tree_requested", 0)),
+			int(result.get("rock_requested", 0)),
+			", ".join(failure_lines),
+		]
+	)
+
+
+static func _count_buildable_in_radius(plan: MapPlan, center: Vector2i, radius: int) -> int:
+	var count := 0
+	for y in range(maxi(0, center.y - radius), mini(plan.height, center.y + radius + 1)):
+		for x in range(maxi(0, center.x - radius), mini(plan.width, center.x + radius + 1)):
+			if _TerrainClassifier.is_buildable(plan.tile_classes[y][x]):
+				count += 1
+	return count
+
+
+static func _count_walkable_in_radius(plan: MapPlan, center: Vector2i, radius: int) -> int:
+	var count := 0
+	for y in range(maxi(0, center.y - radius), mini(plan.height, center.y + radius + 1)):
+		for x in range(maxi(0, center.x - radius), mini(plan.width, center.x + radius + 1)):
+			if _TerrainClassifier.is_walkable(plan.tile_classes[y][x]):
+				count += 1
+	return count
+
+
+static func _blockers_from_placements(plan: MapPlan) -> Dictionary:
+	var blockers: Dictionary = {}
+	for entry in plan.prop_placements:
+		if entry == null or not entry.blocks_movement:
+			continue
+		blockers[entry.grid_cell] = true
+	return blockers
+
+
+static func _flood_reachable(plan: MapPlan, from_cell: Vector2i, blockers: Dictionary) -> Dictionary:
+	var seen: Dictionary = {}
+	var queue: Array[Vector2i] = [from_cell]
+	var head := 0
+	seen[from_cell] = true
+	var dirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+	while head < queue.size():
+		var cell: Vector2i = queue[head]
+		head += 1
+		for dir in dirs:
+			var next := cell + dir
+			if next.x < 0 or next.y < 0 or next.x >= plan.width or next.y >= plan.height:
+				continue
+			if seen.has(next) or blockers.has(next):
+				continue
+			if not _TerrainClassifier.is_walkable(plan.tile_classes[next.y][next.x]):
+				continue
+			seen[next] = true
+			queue.append(next)
+	return seen
+
+
+static func _count_resources(plan: MapPlan, reachable: Dictionary) -> Dictionary:
+	var counts := {"wood": 0, "stone": 0, "food": 0, "gold": 0}
+	for entry in plan.prop_placements:
+		if entry == null or entry.resource_kind < 0:
+			continue
+		if not reachable.has(entry.grid_cell):
+			continue
+		match entry.resource_kind as Defs.ResourceKind:
+			Defs.ResourceKind.WOOD:
+				counts["wood"] = int(counts["wood"]) + 1
+			Defs.ResourceKind.STONE:
+				counts["stone"] = int(counts["stone"]) + 1
+			Defs.ResourceKind.FOOD:
+				counts["food"] = int(counts["food"]) + 1
+			Defs.ResourceKind.GOLD:
+				counts["gold"] = int(counts["gold"]) + 1
+	return counts
+
+
+static func _count_path_keyword(plan: MapPlan, keyword: String) -> int:
+	var count := 0
+	for entry in plan.prop_placements:
+		if entry == null or entry.resource_kind >= 0:
+			continue
+		if keyword in entry.scene_path.to_lower():
+			count += 1
+	return count

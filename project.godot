@@ -1,0 +1,37 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Goblin Colony"
+config/description="2.5D grid-based goblin colony simulation, AI-authored via Cursor + Godot 4.6."
+run/main_scene="res://scenes/colony.tscn"
+config/features=PackedStringArray("4.7", "Forward Plus")
+config/icon="res://icon.svg"
+
+[autoload]
+
+Bus="*res://scripts/core/bus.gd"
+Defs="*res://scripts/core/defs.gd"
+Log="*res://scripts/core/log.gd"
+Services="*res://scripts/core/services.gd"
+DebugCore="*uid://ctmkncwpk2qma"
+CommandRegistry="*uid://ce5ap1y1kwavq"
+DebugConsole="*uid://d010a0e3yyovw"
+GameConsoleManager="*uid://dsr8e7vkd3scc"
+_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
+
+[debug]
+
+gdscript/warnings/treat_warnings_as_errors=true
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/alicenzia/plugin.cfg", "res://addons/debug_console/plugin.cfg", "res://addons/godot_ai/plugin.cfg")

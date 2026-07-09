@@ -1,0 +1,17 @@
+.godot/
+.import/
+build/
+exports/
+assets/meshy/
+assets/generated/
+art/
+*.glb
+*.gltf
+*.fbx
+*.blend
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.mp4
+*.psd

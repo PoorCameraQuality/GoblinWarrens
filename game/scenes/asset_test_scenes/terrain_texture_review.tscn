@@ -1,0 +1,26 @@
+[gd_scene load_steps=2 format=3 uid="uid://terrain_tex_review"]
+
+[ext_resource type="Script" path="res://scripts/dev/terrain_texture_review.gd" id="1_script"]
+
+[node name="TerrainTextureReview" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 12, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.573576, 0.819152, 0, -0.819152, 0.573576, 7, 90, 7)
+current = true
+fov = 60.0
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="InfoLabel" type="Label" parent="UI"]
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 900.0
+offset_bottom = 80.0
+theme_override_colors/font_color = Color(0.92, 0.94, 0.88, 1)
+theme_override_font_sizes/font_size = 16
+text = "Terrain texture review"

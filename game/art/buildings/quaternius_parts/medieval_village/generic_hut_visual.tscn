@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://gwart_generic_hut"]
+
+[ext_resource type="PackedScene" path="res://game/art/buildings/quaternius_parts/medieval_village/wall_door/wall_door_quaternius.gltf" id="1_door"]
+
+[node name="GenericHutVisual" type="Node3D"]
+
+[node name="Door" parent="." instance=ExtResource("1_door")]

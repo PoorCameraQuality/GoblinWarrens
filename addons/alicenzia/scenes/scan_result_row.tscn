@@ -1,0 +1,35 @@
+[gd_scene load_steps=4 format=3 uid="uid://dxwjqe8r7q713"]
+
+[ext_resource type="PackedScene" uid="uid://b64comlxjc7tp" path="res://addons/alicenzia/scenes/row_check_box.tscn" id="1_3qhnb"]
+[ext_resource type="Script" uid="uid://d5x84tflri6w" path="res://addons/alicenzia/scripts/scan_result_row.gd" id="1_ld8sl"]
+[ext_resource type="PackedScene" uid="uid://bugd14d1neaxh" path="res://addons/alicenzia/scenes/expandable_button_cell.tscn" id="2_ld8sl"]
+
+[node name="ScanResultRow" type="HBoxContainer"]
+script = ExtResource("1_ld8sl")
+
+[node name="RowCheckBox" parent="." instance=ExtResource("1_3qhnb")]
+layout_mode = 2
+
+[node name="AddonName" parent="." instance=ExtResource("2_ld8sl")]
+layout_mode = 2
+text = ""
+
+[node name="LicenseName" parent="." instance=ExtResource("2_ld8sl")]
+layout_mode = 2
+text = ""
+
+[node name="LicenseYear" parent="." instance=ExtResource("2_ld8sl")]
+layout_mode = 2
+text = ""
+
+[node name="LicenseOwner" parent="." instance=ExtResource("2_ld8sl")]
+layout_mode = 2
+text = ""
+
+[node name="FullLicense" parent="." instance=ExtResource("2_ld8sl")]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+text = "View"
+
+[connection signal="toggled" from="RowCheckBox" to="." method="_on_row_check_box_toggled"]
+[connection signal="pressed" from="FullLicense" to="." method="_on_full_license_pressed"]

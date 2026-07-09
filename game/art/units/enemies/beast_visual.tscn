@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://gwart_beast"]
+
+[ext_resource type="PackedScene" path="res://game/art/props/nature/quaternius/stylized_nature/rock_large/rock_large_quaternius.gltf" id="1_rock"]
+
+[node name="BeastVisual" type="Node3D"]
+transform = Transform3D(1.6, 0, 0, 0, 1.2, 0, 0, 0, 1.8, 0, 0, 0)
+
+[node name="Model" parent="." instance=ExtResource("1_rock")]

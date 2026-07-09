@@ -1,0 +1,117 @@
+[gd_scene load_steps=3 format=3 uid="uid://brtile5n8srkf"]
+
+[ext_resource type="Script" uid="uid://ce32ppj7pro5i" path="res://addons/alicenzia/scripts/scan_license_dialog.gd" id="1_eq3nj"]
+[ext_resource type="PackedScene" uid="uid://c3itrv4fmgowh" path="res://addons/alicenzia/expanded_box/scenes/param_and_option.tscn" id="1_ni5a8"]
+
+[node name="ScanLicenseDialog" type="ConfirmationDialog"]
+auto_translate_mode = 2
+disable_3d = true
+title = "Alicenzia Scan Tool"
+initial_position = 2
+size = Vector2i(436, 345)
+visible = true
+unresizable = true
+auto_translate = false
+ok_button_text = "Scan Now"
+dialog_hide_on_ok = false
+script = ExtResource("1_eq3nj")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 428.0
+offset_bottom = 296.0
+
+[node name="NonWindowsNotice" type="VBoxContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/NonWindowsNotice"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+text = "Currently the scan feature aren't available on Mac and Linux"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer/NonWindowsNotice"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+text = "This tool will scan for licenses in this project and helps adding it to the database"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="ScanAreaPnO" parent="VBoxContainer" instance=ExtResource("1_ni5a8")]
+layout_mode = 2
+param_name = "Scan Area"
+show_add_button = false
+show_separator = false
+options = Array[String](["Entire addons folder"])
+
+[node name="ScanToolPnO" parent="VBoxContainer" instance=ExtResource("1_ni5a8")]
+unique_name_in_owner = true
+layout_mode = 2
+param_name = "Scan Tool"
+show_add_button = false
+show_separator = false
+options = Array[String](["askalono", "go-license-detector"])
+
+[node name="ToolInfoPanel" type="PanelContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/ToolInfoPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ToolInfoPanel/MarginContainer"]
+layout_mode = 2
+
+[node name="ToolInfo" type="Label" parent="VBoxContainer/ToolInfoPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+text = "x tool haven't been installed on this system yet. Click the button below to install it."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="DownloadToolBtn" type="Button" parent="VBoxContainer/ToolInfoPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Download x tool (xMB)"
+
+[node name="ScanProgressPanel" type="PanelContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/ScanProgressPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ScanProgressPanel/MarginContainer"]
+layout_mode = 2
+
+[node name="ProgressInfo" type="Label" parent="VBoxContainer/ScanProgressPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+text = "Scanning for Licenses... Please wait"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="ProgressBar" type="ProgressBar" parent="VBoxContainer/ScanProgressPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+indeterminate = true
+editor_preview_indeterminate = false
+
+[connection signal="selected_item_changed" from="VBoxContainer/ScanToolPnO" to="." method="_on_scan_tool_pn_o_selected_item_changed"]
+[connection signal="pressed" from="VBoxContainer/ToolInfoPanel/MarginContainer/VBoxContainer/DownloadToolBtn" to="." method="_on_download_tool_btn_pressed"]

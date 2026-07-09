@@ -1,0 +1,51 @@
+[gd_scene load_steps=3 format=3 uid="uid://b80d0xl2mjcex"]
+
+[ext_resource type="PackedScene" uid="uid://d06v3okq6ixlj" path="res://addons/alicenzia/expanded_box/scenes/param_and_data.tscn" id="1_guwl4"]
+[ext_resource type="Script" uid="uid://o3rhhv4vskiv" path="res://addons/alicenzia/rightdock_inspector/scripts/autofill_license_from_template_dialog.gd" id="1_kgnvo"]
+
+[node name="AutofillLicenseFromTemplateDialog" type="ConfirmationDialog"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+disable_3d = true
+title = "Autofill License from Template"
+initial_position = 2
+size = Vector2i(436, 220)
+visible = true
+unresizable = true
+auto_translate = false
+ok_button_text = "Fill License Text"
+dialog_hide_on_ok = false
+script = ExtResource("1_kgnvo")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 428.0
+offset_bottom = 171.0
+
+[node name="LicenseTypeLabel" type="Label" parent="VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+text = "Chosen License : x"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="OwnerPnD" parent="VBoxContainer" instance=ExtResource("1_guwl4")]
+unique_name_in_owner = true
+layout_mode = 2
+param_name = "Owner"
+
+[node name="CopyrightYearPnD" parent="VBoxContainer" instance=ExtResource("1_guwl4")]
+unique_name_in_owner = true
+layout_mode = 2
+param_name = "Copyright Year"
+
+[node name="PreviewLicenseBtn" type="Button" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Preview the Resulting License Text"
+
+[connection signal="confirmed" from="." to="." method="_on_confirmed"]
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
+[connection signal="pressed" from="VBoxContainer/PreviewLicenseBtn" to="." method="_on_preview_license_btn_pressed"]

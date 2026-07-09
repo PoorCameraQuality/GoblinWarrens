@@ -1,0 +1,238 @@
+[gd_scene load_steps=9 format=3 uid="uid://ch5mnmkieer5x"]
+
+[ext_resource type="Script" uid="uid://453yywbf1r1i" path="res://addons/alicenzia/scripts/anz_main_scene.gd" id="1_vbuva"]
+[ext_resource type="Script" uid="uid://b24bu7ntyeqfn" path="res://addons/alicenzia/scripts/recursive_file_digger.gd" id="2_dn6rg"]
+[ext_resource type="Script" uid="uid://shtut6x5kdvu" path="res://addons/alicenzia/scripts/expanded_box.gd" id="3_0bqo7"]
+[ext_resource type="Texture2D" uid="uid://c6wnns317b2am" path="res://addons/alicenzia/assets/godot_mini_icons/help.png" id="3_jpl17"]
+[ext_resource type="PackedScene" uid="uid://c3itrv4fmgowh" path="res://addons/alicenzia/expanded_box/scenes/param_and_option.tscn" id="4_mubm6"]
+[ext_resource type="PackedScene" uid="uid://cpyy6k4dwk3wy" path="res://addons/alicenzia/expanded_box/scenes/param_and_big_text.tscn" id="5_28ipe"]
+[ext_resource type="PackedScene" uid="uid://brtile5n8srkf" path="res://addons/alicenzia/scenes/scan_license_dialog.tscn" id="10_fw2m3"]
+[ext_resource type="PackedScene" uid="uid://bu8xbgc380ocv" path="res://addons/alicenzia/scenes/scan_result_dialog.tscn" id="11_j35sf"]
+
+[node name="ANZMainSceneN" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_vbuva")
+prepare_data_rows_on_start = false
+
+[node name="RecursiveFileDigger" type="Node" parent="."]
+script = ExtResource("2_dn6rg")
+
+[node name="Spacer" type="Control" parent="."]
+custom_minimum_size = Vector2(0, 5)
+layout_mode = 2
+
+[node name="UILayoutHbox" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+metadata/_edit_lock_ = true
+
+[node name="Spacer" type="Control" parent="UILayoutHbox"]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="MainAddonVbox" type="VBoxContainer" parent="UILayoutHbox"]
+layout_mode = 2
+size_flags_horizontal = 3
+metadata/_edit_lock_ = true
+
+[node name="ToolbarHbox" type="HBoxContainer" parent="UILayoutHbox/MainAddonVbox"]
+layout_mode = 2
+
+[node name="ViewGuideBtn" type="Button" parent="UILayoutHbox/MainAddonVbox/ToolbarHbox"]
+layout_mode = 2
+tooltip_text = "View the quickstart guide on how to use the Alicenzia addon"
+text = "View Guide"
+icon = ExtResource("3_jpl17")
+
+[node name="ScanLicenseBtn" type="Button" parent="UILayoutHbox/MainAddonVbox/ToolbarHbox"]
+layout_mode = 2
+tooltip_text = "Scan for addons with or without licenses and add it to the database"
+text = "Scan Licenses"
+
+[node name="ExportLicense" type="Button" parent="UILayoutHbox/MainAddonVbox/ToolbarHbox"]
+layout_mode = 2
+tooltip_text = "Export license database as a text file"
+text = "Export Licenses"
+
+[node name="VSeparator" type="VSeparator" parent="UILayoutHbox/MainAddonVbox/ToolbarHbox"]
+layout_mode = 2
+
+[node name="WIPLabel" type="Label" parent="UILayoutHbox/MainAddonVbox/ToolbarHbox"]
+layout_mode = 2
+text = "⚠️Debug buttons: "
+
+[node name="RefreshAddonBtn" type="Button" parent="UILayoutHbox/MainAddonVbox/ToolbarHbox"]
+layout_mode = 2
+text = "Refresh Addon"
+
+[node name="RefreshTableBtn" type="Button" parent="UILayoutHbox/MainAddonVbox/ToolbarHbox"]
+visible = false
+layout_mode = 2
+tooltip_text = "Save the currently opened AlbumCollection and refresh this addon"
+text = "Refresh Table"
+
+[node name="HSeparator" type="HSeparator" parent="UILayoutHbox/MainAddonVbox"]
+layout_mode = 2
+
+[node name="MainUIScroll" type="Node" parent="UILayoutHbox/MainAddonVbox"]
+
+[node name="ExpandedBox" type="VBoxContainer" parent="UILayoutHbox/MainAddonVbox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+script = ExtResource("3_0bqo7")
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="UILayoutHbox/MainAddonVbox/ExpandedBox"]
+layout_mode = 2
+
+[node name="ParamAndData" type="HBoxContainer" parent="UILayoutHbox/MainAddonVbox/ExpandedBox/HBoxContainer2"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UILayoutHbox/MainAddonVbox/ExpandedBox/HBoxContainer2/ParamAndData"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Asset Name"
+
+[node name="LineEdit_name" type="LineEdit" parent="UILayoutHbox/MainAddonVbox/ExpandedBox/HBoxContainer2/ParamAndData"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ParamAndOption" parent="UILayoutHbox/MainAddonVbox/ExpandedBox/HBoxContainer2" instance=ExtResource("4_mubm6")]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_horizontal = 1
+param_name = "Asset Type"
+show_separator = false
+
+[node name="ParamAndDataMax2" type="HBoxContainer" parent="UILayoutHbox/MainAddonVbox/ExpandedBox"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UILayoutHbox/MainAddonVbox/ExpandedBox/ParamAndDataMax2"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Resource Path"
+
+[node name="LineEdit_path" type="LineEdit" parent="UILayoutHbox/MainAddonVbox/ExpandedBox/ParamAndDataMax2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="OptionsRow" type="HBoxContainer" parent="UILayoutHbox/MainAddonVbox/ExpandedBox"]
+layout_mode = 2
+
+[node name="ParamAndOption" parent="UILayoutHbox/MainAddonVbox/ExpandedBox/OptionsRow" instance=ExtResource("4_mubm6")]
+layout_mode = 2
+param_name = "Ownership Type"
+
+[node name="ParamAndOption2" parent="UILayoutHbox/MainAddonVbox/ExpandedBox/OptionsRow" instance=ExtResource("4_mubm6")]
+layout_mode = 2
+param_name = "Creator"
+
+[node name="ParamAndOption3" parent="UILayoutHbox/MainAddonVbox/ExpandedBox/OptionsRow" instance=ExtResource("4_mubm6")]
+layout_mode = 2
+param_name = "License"
+
+[node name="ParamAndDataMax" type="HBoxContainer" parent="UILayoutHbox/MainAddonVbox/ExpandedBox"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UILayoutHbox/MainAddonVbox/ExpandedBox/ParamAndDataMax"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Link"
+
+[node name="LineEdit" type="LineEdit" parent="UILayoutHbox/MainAddonVbox/ExpandedBox/ParamAndDataMax"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BigTextAreas" type="HBoxContainer" parent="UILayoutHbox/MainAddonVbox/ExpandedBox"]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ParamAndBigText" parent="UILayoutHbox/MainAddonVbox/ExpandedBox/BigTextAreas" instance=ExtResource("5_28ipe")]
+layout_mode = 2
+param_name = "Usage:"
+
+[node name="VSeparator" type="VSeparator" parent="UILayoutHbox/MainAddonVbox/ExpandedBox/BigTextAreas"]
+layout_mode = 2
+
+[node name="ParamAndBigText2" parent="UILayoutHbox/MainAddonVbox/ExpandedBox/BigTextAreas" instance=ExtResource("5_28ipe")]
+layout_mode = 2
+param_name = "Modifications:"
+
+[node name="Spacer" type="Control" parent="UILayoutHbox/MainAddonVbox/ExpandedBox"]
+custom_minimum_size = Vector2(0, 5)
+layout_mode = 2
+
+[node name="SaveCloseBtn" type="Button" parent="UILayoutHbox/MainAddonVbox/ExpandedBox"]
+layout_mode = 2
+text = "Save & Close Asset Details"
+
+[node name="HSeparator" type="HSeparator" parent="UILayoutHbox/MainAddonVbox/ExpandedBox"]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UILayoutHbox/MainAddonVbox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+vertical_scroll_mode = 4
+metadata/_edit_lock_ = true
+
+[node name="AssetsTable" type="VBoxContainer" parent="UILayoutHbox/MainAddonVbox/ScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="UILayoutHbox/MainAddonVbox"]
+custom_minimum_size = Vector2(0, 5)
+layout_mode = 2
+
+[node name="Spacer2" type="Control" parent="UILayoutHbox"]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="ScanLicenseDialog" parent="." instance=ExtResource("10_fw2m3")]
+unique_name_in_owner = true
+size = Vector2i(436, 284)
+visible = false
+
+[node name="ScanResultDialog" parent="." instance=ExtResource("11_j35sf")]
+unique_name_in_owner = true
+visible = false
+
+[node name="FullLicenseDialog" type="AcceptDialog" parent="ScanResultDialog"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+disable_3d = true
+title = "Full License of"
+initial_position = 2
+size = Vector2i(716, 357)
+auto_translate = false
+
+[node name="FullLicenseTextArea" type="TextEdit" parent="ScanResultDialog/FullLicenseDialog"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(800, 300)
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 708.0
+offset_bottom = 308.0
+editable = false
+emoji_menu_enabled = false
+virtual_keyboard_enabled = false
+middle_mouse_paste_enabled = false
+
+[connection signal="pressed" from="UILayoutHbox/MainAddonVbox/ToolbarHbox/ViewGuideBtn" to="." method="_on_view_guide_btn_pressed"]
+[connection signal="pressed" from="UILayoutHbox/MainAddonVbox/ToolbarHbox/ScanLicenseBtn" to="." method="_on_scan_license_btn_pressed"]
+[connection signal="pressed" from="UILayoutHbox/MainAddonVbox/ToolbarHbox/ExportLicense" to="." method="_on_export_license_pressed"]
+[connection signal="pressed" from="UILayoutHbox/MainAddonVbox/ToolbarHbox/RefreshAddonBtn" to="." method="_on_refresh_addon_btn_pressed"]
+[connection signal="pressed" from="UILayoutHbox/MainAddonVbox/ToolbarHbox/RefreshTableBtn" to="." method="_on_refresh_table_btn_pressed"]
+[connection signal="pressed" from="UILayoutHbox/MainAddonVbox/ExpandedBox/SaveCloseBtn" to="UILayoutHbox/MainAddonVbox/ExpandedBox" method="_on_save_close_btn_pressed"]
+[connection signal="confirmed" from="ScanLicenseDialog" to="." method="_on_scan_license_dialog_confirmed"]
+[connection signal="confirmed" from="ScanResultDialog" to="." method="_on_scan_result_dialog_confirmed"]

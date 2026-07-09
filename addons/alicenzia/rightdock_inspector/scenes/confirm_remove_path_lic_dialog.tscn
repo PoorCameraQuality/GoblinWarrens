@@ -1,0 +1,35 @@
+[gd_scene load_steps=3 format=3 uid="uid://dwdf70chwedd0"]
+
+[ext_resource type="Script" uid="uid://dwth0buufloic" path="res://addons/alicenzia/rightdock_inspector/scripts/confirm_remove_path_lic_dialog.gd" id="1_nmqdx"]
+[ext_resource type="PackedScene" uid="uid://lk8mtb18ib5h" path="res://addons/alicenzia/rightdock_inspector/scenes/current_path_textedit_readonly.tscn" id="2_eeltx"]
+
+[node name="ConfirmRemovePathLicDialog" type="ConfirmationDialog"]
+auto_translate_mode = 2
+disable_3d = true
+initial_position = 2
+size = Vector2i(426, 133)
+visible = true
+unresizable = true
+auto_translate = false
+script = ExtResource("1_nmqdx")
+
+[node name="MainVbox" type="VBoxContainer" parent="."]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 418.0
+offset_bottom = 84.0
+
+[node name="Label" type="Label" parent="MainVbox"]
+custom_minimum_size = Vector2(410, 0)
+layout_mode = 2
+text = "Are you sure you want to remove the path license at:"
+autowrap_mode = 2
+
+[node name="PathInfo" parent="MainVbox" instance=ExtResource("2_eeltx")]
+unique_name_in_owner = true
+layout_mode = 2
+script = null
+
+[node name="Spacer" type="Control" parent="MainVbox"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2

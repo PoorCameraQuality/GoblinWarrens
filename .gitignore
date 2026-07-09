@@ -1,0 +1,37 @@
+# Godot 4+ specific ignores
+.godot/
+.import/
+export.cfg
+export_presets.cfg
+
+# Imported translations (auto-generated from CSV)
+*.translation
+
+# Mono / C# (in case we add it later)
+.mono/
+data_*/
+mono_crash.*.json
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.tmp
+
+# Cursor / agent-local state — ship rules and mcp.json.example; not machine paths.
+.cursor/secrets/
+.cursor/mcp.json
+.cursor/*.log
+.logs/
+
+# Raw third-party downloads (~1.5 GB). Production art is in game/art/.
+# Re-acquire packs via docs/itch-io-acquisition.md and docs/quaternius-acquisition.md.
+external_raw/
+
+# Build outputs
+build/
+exports/
+*.exe
+*.pck
+*.zip

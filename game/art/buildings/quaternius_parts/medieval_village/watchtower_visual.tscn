@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://gwart_watchtower"]
+
+[ext_resource type="PackedScene" path="res://game/art/buildings/quaternius_parts/medieval_village/roof_tower/roof_tower_quaternius.gltf" id="1_tower"]
+
+[node name="WatchtowerVisual" type="Node3D"]
+
+[node name="Tower" parent="." instance=ExtResource("1_tower")]
+transform = Transform3D(1.1, 0, 0, 0, 1.4, 0, 0, 0, 1.1, 0, 0, 0)

@@ -1,0 +1,92 @@
+[gd_scene load_steps=4 format=3 uid="uid://bm1y5fmy46rbf"]
+
+[ext_resource type="Script" uid="uid://blymchx1lt6x3" path="res://addons/alicenzia/rightdock_inspector/scripts/lic_inherit_info.gd" id="1_pkc1y"]
+[ext_resource type="Script" uid="uid://oj2q8wepfbwf" path="res://addons/alicenzia/components/panel_themer.gd" id="2_ydw86"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ydw86"]
+
+[node name="LicInheritInfo" type="VBoxContainer"]
+offset_right = 104.0
+offset_bottom = 265.0
+size_flags_horizontal = 3
+script = ExtResource("1_pkc1y")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="HBoxContainer"]
+custom_minimum_size = Vector2(26, 0)
+layout_mode = 2
+
+[node name="InfoIcon" type="TextureRect" parent="HBoxContainer/PanelContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+stretch_mode = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="PanelContainer2" type="PanelContainer" parent="HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(26, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="InheritInfo" type="RichTextLabel" parent="HBoxContainer/VBoxContainer/PanelContainer2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(170, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ydw86")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_ydw86")
+bbcode_enabled = true
+text = "Without a path-specific license, this file inherits the project-wide MIT License"
+fit_content = true
+scroll_active = false
+shortcut_keys_enabled = false
+horizontal_alignment = 1
+
+[node name="FolderInfoPanel" type="PanelContainer" parent="HBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(26, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/FolderInfoPanel"]
+layout_mode = 2
+
+[node name="FolderInfo" type="RichTextLabel" parent="HBoxContainer/VBoxContainer/FolderInfoPanel/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(170, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ydw86")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_ydw86")
+bbcode_enabled = true
+text = "License inherited from the X folder"
+fit_content = true
+scroll_active = false
+shortcut_keys_enabled = false
+horizontal_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/VBoxContainer/FolderInfoPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="CheckLicenseBtn" type="Button" parent="HBoxContainer/VBoxContainer/FolderInfoPanel/VBoxContainer/MarginContainer"]
+layout_mode = 2
+text = "Check License"
+
+[node name="HSeparator" type="HSeparator" parent="."]
+layout_mode = 2
+
+[node name="PanelThemer" type="Node" parent="." node_paths=PackedStringArray("panels_to_theme")]
+script = ExtResource("2_ydw86")
+panels_to_theme = [NodePath("../HBoxContainer/PanelContainer"), NodePath("../HBoxContainer/VBoxContainer/PanelContainer2"), NodePath("../HBoxContainer/VBoxContainer/FolderInfoPanel")]
+
+[connection signal="pressed" from="HBoxContainer/VBoxContainer/FolderInfoPanel/VBoxContainer/MarginContainer/CheckLicenseBtn" to="." method="_on_check_license_btn_pressed"]
