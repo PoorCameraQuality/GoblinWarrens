@@ -61,15 +61,23 @@ func _init() -> void:
 		quit(1)
 		return
 
+	if plan_a1.main_raid_path_cells.size() < 20:
+		push_error("[mapgen-smoke] main raid path too short: %d" % plan_a1.main_raid_path_cells.size())
+		quit(1)
+		return
+
+	if not TerrainPalette.all_macro_textures_present():
+		push_warning("[mapgen-smoke] macro textures incomplete — legacy UV mode active")
+
 	var warren_cell := Vector2i(9, 9)
-	var height_data := _HeightmapGenerator.generate(config_a, warren_cell)
+	var height_data := _HeightmapGenerator.generate(config_a, warren_cell, plan_a1.authoring_data)
 	if height_data.heights.is_empty():
 		push_error("[mapgen-smoke] heightmap generator returned empty buffer")
 		quit(1)
 		return
 
 	print(
-		"[mapgen-smoke] ok warren=%s storehouse=%s trees=%d dressing=%d blocking=%d resources=%d %s"
+		"[mapgen-smoke] ok warren=%s storehouse=%s trees=%d dressing=%d blocking=%d resources=%d raid=%d macro=%s %s"
 		% [
 			str(plan_a1.warren_cell),
 			str(plan_a1.storehouse_cell),
@@ -77,6 +85,8 @@ func _init() -> void:
 			int(stats.get("dressing_count", 0)),
 			int(stats.get("blocking_prop_count", 0)),
 			int(stats.get("resource_node_count", 0)),
+			plan_a1.main_raid_path_cells.size(),
+			TerrainPalette.all_macro_textures_present(),
 			_MapValidator.format_report(validation),
 		]
 	)

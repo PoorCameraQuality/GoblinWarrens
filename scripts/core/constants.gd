@@ -182,7 +182,7 @@ const CAMERA_EDGE_SCROLL_MARGIN := 18 ## pixels from viewport edge
 const CAMERA_PAN_SMOOTHING := 10.0 ## focus lerp rate (higher = snappier)
 const CAMERA_ZOOM_SMOOTHING := 12.0 ## orthographic size lerp rate
 const CAMERA_ZOOM_WHEEL_FACTOR := 1.08 ## multiplicative wheel step
-const CAMERA_MARGIN_M := 20.0 ## meters beyond map edge the focus may travel
+const CAMERA_MARGIN_M := 8.0 ## meters beyond map edge; keep focus inside dressed border
 const CAMERA_YAW_DEG := 45.0 ## default map rotation in degrees
 const CAMERA_USER_PITCH_DEFAULT := -55.0 ## user-facing pitch; negative = look down
 const CAMERA_USER_PITCH_MIN := -75.0 ## most overhead (overview)

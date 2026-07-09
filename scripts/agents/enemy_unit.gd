@@ -193,8 +193,6 @@ func _ensure_mesh() -> void:
 	var visual_scale := _VisualCatalog.enemy_visual_scale(enemy_kind)
 	var art := _VisualAttacher.try_attach(self, path, ["Mesh"], visual_scale)
 	if art != null:
-		if enemy_kind == Defs.EnemyKind.MILITIA:
-			_VisualAttacher.tint_meshes(art, Color(0.55, 0.58, 0.72))
 		_add_threat_ring()
 		return
 	if get_node_or_null("Mesh") != null:

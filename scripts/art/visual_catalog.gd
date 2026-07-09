@@ -17,8 +17,9 @@ const GOBLIN_HOBGOBLIN_WARRIOR := "res://game/art/units/goblins/hobgoblin_warrio
 const GOBLIN_HOBGOBLIN_MAGE := "res://game/art/units/goblins/hobgoblin_mage.glb"
 
 # --- Resource nodes ---
-const RESOURCE_WOOD := "res://game/art/props/resources/kaykit/wood_stack_kaykit.tscn"  # placeholder
-const RESOURCE_STONE := "res://game/art/props/resources/kaykit/stone_large_kaykit.tscn"  # placeholder
+const RESOURCE_WOOD := "res://game/art/props/resources/goblin_warrens/wood_stack.glb"
+const RESOURCE_STONE := "res://game/art/props/nature/goblin_warrens/rock_boulder_mossy.glb"
+const RESOURCE_STONE_ALT := "res://game/art/props/nature/goblin_warrens/rock_pile.glb"
 const RESOURCE_GOLD := "res://game/art/props/resources/goblin_warrens/gold_vein_a.glb"
 const RESOURCE_GOLD_ALT := "res://game/art/props/resources/goblin_warrens/gold_vein_b.glb"
 const RESOURCE_FOOD := "res://game/art/props/nature/goblin_warrens/mushroom_patch_a.glb"
@@ -26,27 +27,30 @@ const RESOURCE_FOOD_ALT := "res://game/art/props/nature/goblin_warrens/mushroom_
 
 # --- Buildings (canonical Meshy where available; Quaternius wrappers otherwise) ---
 const BUILDING_WARREN := "res://game/art/buildings/goblin_warrens/warren.glb"
+const BUILDING_STOREHOUSE := "res://game/art/buildings/goblin_warrens/storehouse.glb"
 const BUILDING_SLEEPING_PIT := "res://game/art/buildings/goblin_warrens/sleep_hut.glb"
 const BUILDING_BREEDER_HUT := "res://game/art/buildings/goblin_warrens/breeder_hut.glb"
 const BUILDING_SHRINE := "res://game/art/buildings/goblin_warrens/shrine.glb"
 const BUILDING_WATCHTOWER := "res://game/art/buildings/goblin_warrens/watchtower.glb"
+const BUILDING_MUSHROOM_FARM := "res://game/art/buildings/goblin_warrens/mushroom_farm.glb"
+const BUILDING_FORAGER_POST := "res://game/art/buildings/goblin_warrens/forager_post.glb"
 # Meshy buildings without a matching Defs.BuildingKind yet — visible but not gameplay-wired:
 const BUILDING_BARRACKS := "res://game/art/buildings/goblin_warrens/barracks.glb"
 const BUILDING_BLACKSMITH := "res://game/art/buildings/goblin_warrens/blacksmith.glb"
 const BUILDING_COOK_HUT := "res://game/art/buildings/goblin_warrens/cook_hut.glb"
 const BUILDING_SHAMAN_HUT := "res://game/art/buildings/goblin_warrens/shaman_hut.glb"
 # Still-placeholder buildings:
-const BUILDING_STOREHOUSE := "res://game/art/buildings/quaternius_parts/medieval_village/storehouse_visual_quaternius.tscn"
-const BUILDING_MUSHROOM_FARM := "res://game/art/buildings/quaternius_parts/medieval_village/mushroom_farm_visual.tscn"
-const BUILDING_FORAGER_POST := "res://game/art/buildings/quaternius_parts/medieval_village/forager_post_visual.tscn"
 const BUILDING_BURIAL_GROUNDS := "res://game/art/buildings/burial_grounds/burial_grounds_visual.tscn"
 const BUILDING_GUARD_POST := "res://game/art/buildings/quaternius_parts/medieval_village/guard_post_visual.tscn"
 const BUILDING_GENERIC := "res://game/art/buildings/quaternius_parts/medieval_village/generic_hut_visual.tscn"
+# Alternate Meshy watchtower (root Desktop dump) — not wired; keep for A/B scale review:
+const BUILDING_WATCHTOWER_ALT := "res://game/art/buildings/goblin_warrens/watchtower_alt.glb"
 
-# --- Enemies (still placeholder) ---
+# --- Enemies (Meshy humans; beast still placeholder) ---
+# Scale still needs wrapper tuning (Meshy raw → ENEMY_HUMAN_VISUAL_SCALE).
 const ENEMY_BEAST := "res://game/art/units/enemies/beast_visual.tscn"
-const ENEMY_SCOUT := "res://game/art/units/enemies/kaykit_adventurers/scout_visual.tscn"
-const ENEMY_MILITIA := "res://game/art/units/enemies/kaykit_adventurers/militia_visual.tscn"
+const ENEMY_SCOUT := "res://game/art/units/enemies/goblin_warrens/hooded_vanguard.glb"
+const ENEMY_MILITIA := "res://game/art/units/enemies/goblin_warrens/iron_knight.glb"
 
 # --- Environment / nature (canonical Meshy for trees + stumps; placeholder for rest) ---
 const ENV_TREE := "res://game/art/props/nature/goblin_warrens/tree_birch.glb"
@@ -61,7 +65,12 @@ const ENV_STUMP_TWIN := "res://game/art/props/nature/goblin_warrens/stump_twin.g
 const ENV_STUMP_DECORATION := "res://game/art/props/nature/goblin_warrens/stump_decoration.glb"
 const ENV_MUSHROOM_PATCH := "res://game/art/props/nature/goblin_warrens/mushroom_patch_a.glb"
 const ENV_MUSHROOM_PATCH_ALT := "res://game/art/props/nature/goblin_warrens/mushroom_patch_b.glb"
-const ENV_ROCK := "res://game/art/props/nature/quaternius/stylized_nature/rock_large_quaternius.tscn"
+const ENV_ROCK := "res://game/art/props/nature/goblin_warrens/rock_boulder_mossy.glb"
+const ENV_ROCK_PILE := "res://game/art/props/nature/goblin_warrens/rock_pile.glb"
+const ENV_ROCK_SPIRE := "res://game/art/props/nature/goblin_warrens/rock_spire_cluster.glb"
+const ENV_ROCK_CRAGS := "res://game/art/props/nature/goblin_warrens/rock_triple_crags.glb"
+const ENV_RUINS_TERRACE := "res://game/art/props/nature/goblin_warrens/ruins_terraced_stone.glb"
+const ENV_RUINS_BONE_FORTRESS := "res://game/art/props/nature/goblin_warrens/ruins_bone_fortress.glb"
 const ENV_BUSH := "res://game/art/props/nature/quaternius/stylized_nature/bush_common_quaternius.tscn"
 const ENV_GRASS := "res://game/art/props/nature/quaternius/stylized_nature/grass_short_quaternius.tscn"
 const ENV_BARREL := "res://game/art/props/resources/quaternius_fantasy_props/barrel_prop.tscn"
@@ -157,6 +166,8 @@ static func building_wrapper(kind: Defs.BuildingKind) -> String:
 
 static func resource_wrapper(kind: Defs.ResourceKind) -> String:
 	match kind:
+		Defs.ResourceKind.WOOD:
+			return RESOURCE_WOOD
 		Defs.ResourceKind.STONE:
 			return RESOURCE_STONE
 		Defs.ResourceKind.GOLD:
@@ -178,6 +189,18 @@ static func random_tree_path(rng: RandomNumberGenerator = null) -> String:
 		ENV_TREE_PINE_ALT,
 		ENV_TREE_WILLOW,
 		ENV_TREE_TALL,
+	]
+	if rng != null:
+		return choices[rng.randi_range(0, choices.size() - 1)]
+	return choices[randi() % choices.size()]
+
+
+static func random_rock_path(rng: RandomNumberGenerator = null) -> String:
+	var choices: Array[String] = [
+		ENV_ROCK,
+		ENV_ROCK_PILE,
+		ENV_ROCK_SPIRE,
+		ENV_ROCK_CRAGS,
 	]
 	if rng != null:
 		return choices[rng.randi_range(0, choices.size() - 1)]

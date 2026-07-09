@@ -6,7 +6,7 @@ func _init() -> void:
 	plan.width = config.width
 	plan.height = config.height
 	plan.warren_cell = Vector2i(config.width / 2, config.height / 2)
-	var hd := HeightmapGenerator.generate(config, plan.warren_cell)
+	var hd := HeightmapGenerator.generate(config, plan.warren_cell, null)
 	plan.heights = hd.heights
 	plan.height_point_width = hd.point_width
 	plan.height_point_height = hd.point_height
@@ -16,6 +16,7 @@ func _init() -> void:
 		plan.height_point_height,
 		config,
 		plan.warren_cell,
+		null,
 	)
 	var rng := MapRng.new(99)
 	PropScatterer.scatter(plan, config, rng)

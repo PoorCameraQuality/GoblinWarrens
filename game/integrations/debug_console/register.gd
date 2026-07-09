@@ -101,6 +101,20 @@ static func _register_with_console(colony: GoblinWarrenColony) -> int:
 		"Print procedural map gameplay validation report",
 		_run_print_map_validation,
 	) else 0
+	count += 1 if _reg(
+		debug_console,
+		"toggle_composition_overlay",
+		colony,
+		"Toggle raid-lane / approach / resource-pocket debug quads",
+		_run_toggle_composition_overlay,
+	) else 0
+	count += 1 if _reg(
+		debug_console,
+		"toggle_beauty_mode",
+		colony,
+		"Hide HUD/overlays for visual beauty shots",
+		_run_toggle_beauty_mode,
+	) else 0
 	return count
 
 
@@ -213,3 +227,11 @@ static func _run_show_terrain_transition_overlay(colony: GoblinWarrenColony, _ar
 
 static func _run_print_map_validation(colony: GoblinWarrenColony, _args: Array) -> String:
 	return colony.dev_print_map_validation()
+
+
+static func _run_toggle_composition_overlay(colony: GoblinWarrenColony, _args: Array) -> String:
+	return colony.dev_toggle_composition_overlay()
+
+
+static func _run_toggle_beauty_mode(colony: GoblinWarrenColony, _args: Array) -> String:
+	return colony.dev_toggle_beauty_mode()

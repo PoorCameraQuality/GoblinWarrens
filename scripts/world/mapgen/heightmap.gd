@@ -1,17 +1,21 @@
 class_name HeightmapGenerator
 extends RefCounted
 
-## Layered ridged fBm with valley basins, edge mountains, and camp flattening.
+## Layered ridged fBm with valley basins, edge mountains, and irregular camp flattening.
 
 
-static func generate(config: MapConfig, warren_cell: Vector2i) -> Dictionary:
+static func generate(
+	config: MapConfig,
+	warren_cell: Vector2i,
+	authoring: MapAuthoringData = null,
+) -> Dictionary:
 	var point_w: int = config.width + 1
 	var point_h: int = config.height + 1
 	var raw := _sample_noise_grid(config, point_w, point_h)
 	_flatten_valley_floors(raw, point_w, point_h)
 	var camp_center := Vector2(warren_cell) + Vector2(config.warren_footprint) * 0.5
 	var camp_height := _mean_height_in_radius(raw, point_w, point_h, camp_center, float(config.camp_blend_radius))
-	_flatten_camp(raw, point_w, point_h, camp_center, camp_height, config)
+	_flatten_camp(raw, point_w, point_h, camp_center, camp_height, config, authoring)
 	for _pass in range(Constants.MAPGEN_SMOOTHING_PASSES):
 		raw = _smooth_grid(raw, point_w, point_h)
 	return {
@@ -116,7 +120,12 @@ static func _flatten_camp(
 	center: Vector2,
 	camp_height: float,
 	config: MapConfig,
+	authoring: MapAuthoringData,
 ) -> void:
+	## Prefer authored irregular clearing mask; fall back to circular blend.
+	if authoring != null and not authoring.clearing_stamps.is_empty():
+		_flatten_camp_authored(heights, point_w, point_h, camp_height, authoring)
+		return
 	for z in range(point_h):
 		for x in range(point_w):
 			var dist := Vector2(x, z).distance_to(center)
@@ -128,6 +137,29 @@ static func _flatten_camp(
 				t = t * t * (3.0 - 2.0 * t)
 				var natural := heights[z * point_w + x]
 				heights[z * point_w + x] = lerpf(camp_height, natural, t)
+
+
+static func _flatten_camp_authored(
+	heights: PackedFloat32Array,
+	point_w: int,
+	point_h: int,
+	camp_height: float,
+	authoring: MapAuthoringData,
+) -> void:
+	for z in range(point_h):
+		for x in range(point_w):
+			## Sample at cell under this height point (clamp to map tiles).
+			var cell := Vector2i(clampi(x, 0, point_w - 2), clampi(z, 0, point_h - 2))
+			var clearing := authoring.sample_clearing_for_terrain(cell)
+			var road := authoring.sample_road_strength(cell)
+			var strength := maxf(clearing, road * 0.85)
+			if strength < 0.12:
+				continue
+			var natural := heights[z * point_w + x]
+			## Full flatten in strong clearing; soft blend on soft edge / path arms.
+			var blend := clampf((strength - 0.12) / 0.7, 0.0, 1.0)
+			blend = blend * blend * (3.0 - 2.0 * blend)
+			heights[z * point_w + x] = lerpf(natural, camp_height, blend)
 
 
 static func _smooth_grid(heights: PackedFloat32Array, point_w: int, point_h: int) -> PackedFloat32Array:

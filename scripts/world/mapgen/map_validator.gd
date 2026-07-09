@@ -65,6 +65,11 @@ static func validate(plan: MapPlan, config: MapConfig) -> Dictionary:
 	if rocks < MIN_ROCK_REQUESTED:
 		failures.append("rock placements=%d (need >= %d)" % [rocks, MIN_ROCK_REQUESTED])
 
+	if plan.main_raid_path_cells.size() < 20:
+		failures.append(
+			"main raid path cells=%d (need >= 20)" % plan.main_raid_path_cells.size()
+		)
+
 	return {
 		"pass": failures.is_empty(),
 		"failures": failures,
@@ -78,6 +83,9 @@ static func validate(plan: MapPlan, config: MapConfig) -> Dictionary:
 		"resource_node_count": int(stats.get("resource_node_count", 0)),
 		"forest_stamp_count": int(stats.get("forest_stamp_count", 0)),
 		"clearing_stamp_count": int(stats.get("clearing_stamp_count", 0)),
+		"main_raid_path_cells": plan.main_raid_path_cells.size(),
+		"approach_corridor_cells": plan.approach_corridor_cells.size(),
+		"macro_texture_mode": _macro_textures_present(),
 		"rock_requested": rocks,
 		"seed": config.seed,
 		"map_size": "%dx%d" % [plan.width, plan.height],
@@ -95,14 +103,15 @@ static func format_report(result: Dictionary) -> String:
 	)
 	return (
 		(
-			"map_validation pass=%s seed=%s size=%s buildable_near_warren=%d walkable_camp=%s "
+			"map_validation pass=%s seed=%s size=%s macro=%s buildable_near_warren=%d walkable_camp=%s "
 			+ "resources=%s trees=%d dressing=%d blocking=%d resource_nodes=%d "
-			+ "forest_stamps=%d clearing_stamps=%d rocks=%d failures=[%s]"
+			+ "raid_lane=%d approach=%d forest_stamps=%d clearing_stamps=%d rocks=%d failures=[%s]"
 		)
 		% [
 			str(result.get("pass", false)),
 			str(result.get("seed", "?")),
 			str(result.get("map_size", "?")),
+			str(result.get("macro_texture_mode", false)),
 			int(result.get("buildable_near_warren", 0)),
 			walkable_pct_display,
 			str(resource_counts),
@@ -110,6 +119,8 @@ static func format_report(result: Dictionary) -> String:
 			int(result.get("dressing_count", 0)),
 			int(result.get("blocking_prop_count", 0)),
 			int(result.get("resource_node_count", 0)),
+			int(result.get("main_raid_path_cells", 0)),
+			int(result.get("approach_corridor_cells", 0)),
 			int(result.get("forest_stamp_count", 0)),
 			int(result.get("clearing_stamp_count", 0)),
 			int(result.get("rock_requested", 0)),
@@ -206,6 +217,10 @@ static func _is_resource_reachable(entry, reachable: Dictionary) -> bool:
 		if reachable.has(entry.grid_cell + dir):
 			return true
 	return false
+
+
+static func _macro_textures_present() -> bool:
+	return TerrainPalette.all_macro_textures_present()
 
 
 static func _count_path_keyword(plan: MapPlan, keyword: String) -> int:

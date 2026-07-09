@@ -9,6 +9,7 @@ const _TerrainClassifier := preload("res://scripts/world/mapgen/terrain_classifi
 const _TerrainMaterialBuilder := preload("res://scripts/world/mapgen/terrain_material.gd")
 const _TerrainClassOverlayBuilder := preload("res://scripts/world/mapgen/terrain_class_overlay.gd")
 const _TerrainTransitionOverlayBuilder := preload("res://scripts/world/mapgen/terrain_transition_overlay.gd")
+const _CompositionOverlayBuilder := preload("res://scripts/world/mapgen/composition_overlay.gd")
 const _VisualScaleAudit := preload("res://scripts/dev/visual_scale_audit.gd")
 const _MapValidator := preload("res://scripts/world/mapgen/map_validator.gd")
 const _VisualAttacher := preload("res://scripts/core/visual_attacher.gd")
@@ -76,8 +77,11 @@ var _map_plan: MapPlan = null
 var _terrain_material: ShaderMaterial = null
 var _class_overlay_active: bool = false
 var _transition_overlay_active: bool = false
+var _composition_overlay_active: bool = false
+var _beauty_mode: bool = false
 var _prop_scatter_stats: Dictionary = {}
 var _map_validation: Dictionary = {}
+var _composition_overlay_root: Node3D = null
 
 
 func _ready() -> void:
@@ -569,6 +573,54 @@ func dev_toggle_class_overlay() -> String:
 	return "terrain class overlay ON" if _class_overlay_active else "terrain class overlay OFF"
 
 
+func dev_toggle_composition_overlay() -> String:
+	if not OS.is_debug_build():
+		return "composition overlay is debug-only"
+	if _map_plan == null:
+		return "map plan not ready"
+	_composition_overlay_active = not _composition_overlay_active
+	if _composition_overlay_root != null:
+		_composition_overlay_root.queue_free()
+		_composition_overlay_root = null
+	if _composition_overlay_active:
+		_composition_overlay_root = _CompositionOverlayBuilder.build_node(_map_plan)
+		add_child(_composition_overlay_root)
+	_update_map_debug_hud()
+	return (
+		"composition overlay ON (raid=%d approach=%d pockets=%d)"
+		% [
+			_map_plan.main_raid_path_cells.size(),
+			_map_plan.approach_corridor_cells.size(),
+			_map_plan.resource_pocket_cells.size(),
+		]
+		if _composition_overlay_active
+		else "composition overlay OFF"
+	)
+
+
+func dev_toggle_beauty_mode() -> String:
+	if not OS.is_debug_build():
+		return "beauty mode is debug-only"
+	_beauty_mode = not _beauty_mode
+	var ui := get_node_or_null("UI") as CanvasItem
+	if ui != null:
+		ui.visible = not _beauty_mode
+	if _tick_label != null:
+		_tick_label.visible = (not _beauty_mode) and OS.is_debug_build()
+	if _beauty_mode:
+		_class_overlay_active = false
+		_transition_overlay_active = false
+		_composition_overlay_active = false
+		var terrain := get_node_or_null("TerrainMesh") as MeshInstance3D
+		if terrain != null:
+			terrain.material_override = _terrain_material
+		if _composition_overlay_root != null:
+			_composition_overlay_root.queue_free()
+			_composition_overlay_root = null
+	_update_map_debug_hud()
+	return "beauty mode ON (HUD hidden)" if _beauty_mode else "beauty mode OFF"
+
+
 func dev_print_mapgen_status() -> String:
 	if _map_plan == null:
 		return "terrain_mode=none map_plan=null"
@@ -585,40 +637,49 @@ func dev_print_mapgen_status() -> String:
 			if _TerrainClassifier.is_buildable(terrain_class):
 				buildable += 1
 	var scenery_props := 0
-	var procgen_resources := 0
 	var scatter_stats: Dictionary = _map_plan.scatter_stats
 	for entry in _map_plan.prop_placements:
 		if entry == null:
 			continue
-		if entry.resource_kind >= 0:
-			procgen_resources += 1
-		else:
+		if entry.resource_kind < 0:
 			scenery_props += 1
 	var height_span := _terrain_height_span()
+	var macro_mode := TerrainPalette.all_macro_textures_present()
+	var resource_by_kind: Dictionary = scatter_stats.get("resource_by_kind", {})
+	var reachable_ok := true
+	if not _map_validation.is_empty():
+		reachable_ok = bool(_map_validation.get("pass", false))
 	return (
-		"map_size=%dx%d map_seed=%d terrain_mode=procgen_ridged_valleys "
+		"map_size=%dx%d map_seed=%d terrain_mode=procgen_composition "
 		% [_map_plan.width, _map_plan.height, config.seed]
-		+ "uv_scale=%.3f terrain_mesh_vertices=%d height_range_m=%.2f-%.2f "
-		% [TerrainPalette.preferred_uv_scale(), vertex_count, height_span.x, height_span.y]
-		+ "class_counts=%s prop_count=%d resource_node_count=%d "
-		% [str(class_counts), scenery_props, _resources_root.get_child_count()]
-		+ "trees=%d blocking_props=%d dressing=%d scatter_resources=%d "
+		+ "macro_texture_mode=%s uv_scale=%.3f terrain_mesh_vertices=%d height_range_m=%.2f-%.2f "
+		% [macro_mode, TerrainPalette.preferred_uv_scale(), vertex_count, height_span.x, height_span.y]
+		+ "class_counts=%s prop_count=%d "
+		% [str(class_counts), scenery_props]
+		+ "trees=%d blocking_props=%d dressing=%d "
 		% [
 			int(scatter_stats.get("tree_count", 0)),
 			int(scatter_stats.get("blocking_prop_count", 0)),
 			int(scatter_stats.get("dressing_count", 0)),
-			int(scatter_stats.get("resource_node_count", 0)),
 		]
-		+ "forest_stamps=%d clearing_stamps=%d authored=%s "
+		+ "resource_nodes=%s raid_lane_cells=%d approach_cells=%d pockets=%d "
+		% [
+			str(resource_by_kind),
+			int(scatter_stats.get("main_raid_path_cells", _map_plan.main_raid_path_cells.size())),
+			int(scatter_stats.get("approach_corridor_cells", _map_plan.approach_corridor_cells.size())),
+			int(scatter_stats.get("resource_pocket_count", _map_plan.resource_pocket_cells.size())),
+		]
+		+ "reachable_required_resources=%s border_props=%d "
+		% [reachable_ok, int(scatter_stats.get("border_prop_count", 0))]
+		+ "forest_stamps=%d clearing_stamps=%d road_stamps=%d authored=%s "
 		% [
 			int(scatter_stats.get("forest_stamp_count", 0)),
 			int(scatter_stats.get("clearing_stamp_count", 0)),
-			str(config.authoring_data != null),
+			int(scatter_stats.get("road_stamp_count", 0)),
+			str(_map_plan.authoring_data != null),
 		]
-		+ "walkable_cell_count=%d buildable_cell_count=%d "
-		% [walkable, buildable]
-		+ "warren_cell=%s environment_dresser_active=true hand_placed_resources=false"
-		% str(_map_plan.warren_cell)
+		+ "walkable_cell_count=%d buildable_cell_count=%d warren_cell=%s"
+		% [walkable, buildable, str(_map_plan.warren_cell)]
 	)
 
 
@@ -1351,17 +1412,44 @@ func _setup_environment_dressing() -> void:
 
 
 func _ensure_world_environment() -> void:
-	if get_node_or_null("WorldEnvironment") != null:
-		return
-	var world_env := WorldEnvironment.new()
-	world_env.name = "WorldEnvironment"
-	var sky := Environment.new()
+	var world_env := get_node_or_null("WorldEnvironment") as WorldEnvironment
+	if world_env == null:
+		world_env = WorldEnvironment.new()
+		world_env.name = "WorldEnvironment"
+		add_child(world_env)
+	var sky := world_env.environment
+	if sky == null:
+		sky = Environment.new()
+		world_env.environment = sky
+	## Darker horizon so map edge reads as forest valley, not bright blue void.
 	sky.background_mode = Environment.BG_COLOR
-	sky.background_color = Color(0.42, 0.58, 0.78)
+	sky.background_color = Color(0.22, 0.28, 0.32)
 	sky.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	sky.ambient_light_color = Color(0.52, 0.55, 0.58)
-	world_env.environment = sky
-	add_child(world_env)
+	sky.ambient_light_color = Color(0.48, 0.5, 0.52)
+	sky.fog_enabled = true
+	sky.fog_light_color = Color(0.28, 0.32, 0.34)
+	sky.fog_density = 0.0018
+	sky.fog_aerial_perspective = 0.35
+	sky.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+	_ensure_horizon_skirt()
+
+
+func _ensure_horizon_skirt() -> void:
+	## Dark ground plane under/around the map to hide sky-colored void at edges.
+	if get_node_or_null("HorizonSkirt") != null:
+		return
+	var skirt := MeshInstance3D.new()
+	skirt.name = "HorizonSkirt"
+	var plane := PlaneMesh.new()
+	var map_m := float(maxi(Constants.GRID_WIDTH, Constants.GRID_HEIGHT)) * Constants.TILE_SIZE
+	plane.size = Vector2(map_m * 2.4, map_m * 2.4)
+	skirt.mesh = plane
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = Color(0.08, 0.1, 0.09)
+	skirt.material_override = mat
+	skirt.position = Vector3(map_m * 0.5, -0.4, map_m * 0.5)
+	add_child(skirt)
 
 
 func _apply_ground_visual() -> void:

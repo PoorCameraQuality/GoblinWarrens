@@ -15,10 +15,9 @@ static func resolve_primary_texture(class_id: Defs.TerrainClass) -> String:
 	var legacy_path := legacy_texture(class_id)
 	if not _warned_missing_macro.has(class_id):
 		_warned_missing_macro[class_id] = true
-		Log.warn(
+		push_warning(
 			"Macro terrain texture missing for class %d (%s); using legacy %s"
-			% [int(class_id), macro_path, legacy_path],
-			"terrain",
+			% [int(class_id), macro_path, legacy_path]
 		)
 	return legacy_path
 

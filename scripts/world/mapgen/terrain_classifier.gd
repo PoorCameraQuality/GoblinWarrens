@@ -1,7 +1,7 @@
 class_name TerrainClassifier
 extends RefCounted
 
-## Per-tile terrain class from height + slope + camp/warren zones.
+## Per-tile terrain class from height + slope + authored clearing/road masks.
 
 
 static func classify_grid(
@@ -10,6 +10,7 @@ static func classify_grid(
 	point_h: int,
 	config: MapConfig,
 	warren_cell: Vector2i,
+	authoring: MapAuthoringData = null,
 ) -> Array:
 	var tile_w: int = config.width
 	var tile_h: int = config.height
@@ -34,6 +35,7 @@ static func classify_grid(
 				height_span,
 				config,
 				warren_cell,
+				authoring,
 			)
 		rows.append(row)
 	return rows
@@ -80,11 +82,24 @@ static func _classify_cell(
 	height_span: float,
 	config: MapConfig,
 	warren_cell: Vector2i,
+	authoring: MapAuthoringData,
 ) -> Defs.TerrainClass:
-	if _inside_camp_radius(cell, warren_cell, config):
+	## Guaranteed buildable core around Warren/Storehouse footprint.
+	if _inside_build_core(cell, warren_cell, config):
 		return Defs.TerrainClass.MUD_CLEARING
 	if _inside_warren_ring(cell, warren_cell, config.warren_footprint):
 		return Defs.TerrainClass.WARREN_GROUND
+
+	## Irregular authored clearing (lumpy) — replaces perfect circular disk.
+	if authoring != null:
+		var clearing := authoring.sample_clearing_for_terrain(cell)
+		if clearing >= 0.52:
+			return Defs.TerrainClass.MUD_CLEARING
+		## Authored muddy path arms read as clearing before slope rules.
+		if authoring.sample_road_strength(cell) >= 0.4:
+			return Defs.TerrainClass.MUD_CLEARING
+	elif _inside_camp_radius(cell, warren_cell, config):
+		return Defs.TerrainClass.MUD_CLEARING
 
 	var slope_deg := _cell_slope_degrees(cell, heights, point_w, point_h)
 	var norm_height := _cell_norm_height(cell, heights, point_w, point_h, min_h, height_span)
@@ -103,6 +118,18 @@ static func _classify_cell(
 	if norm_height < Constants.MAPGEN_LOWLAND_HEIGHT_TOP:
 		return Defs.TerrainClass.MUD_MOSSY
 	return Defs.TerrainClass.MOSS
+
+
+static func _inside_build_core(cell: Vector2i, warren_cell: Vector2i, config: MapConfig) -> bool:
+	## Keep Warren + Storehouse + a few tiles of buildable mud guaranteed.
+	var core_min := warren_cell - Vector2i(2, 2)
+	var core_max := warren_cell + config.warren_footprint + Vector2i(3, 2)
+	return (
+		cell.x >= core_min.x
+		and cell.y >= core_min.y
+		and cell.x <= core_max.x
+		and cell.y <= core_max.y
+	)
 
 
 static func _inside_camp_radius(cell: Vector2i, warren_cell: Vector2i, config: MapConfig) -> bool:

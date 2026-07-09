@@ -1,8 +1,8 @@
 # Procedural Map Generation — Plan
 
-**Status:** Phases **1–3 shipped** in `scenes/colony.tscn`; Phases **4–5 pending**  
+**Status:** Phases **1–3 shipped**; Phase **4 corridor metadata shipped** (enemy AI hookup pending); Phase **5 partial**  
 **Owner:** Cursor + project owner  
-**Last updated:** 2026-07-08  
+**Last updated:** 2026-07-09  
 **Runtime authority:** `colony.gd` `_setup_world()` + debug command `print_mapgen_status`
 
 ## Runtime status (verified 2026-07-08)
@@ -18,13 +18,16 @@
 | `HeightmapGenerator` | **Yes** — called from `MapGenerator.build()` |
 | `TerrainClassifier` | **Yes** |
 | `TerrainMeshBuilder` | **Yes** |
-| Prop scatter | **Yes** — inlined in `map_generator.gd` as `_scatter_props()` (no separate `prop_scatterer.gd`) |
+| Prop scatter | **Yes** — `prop_scatterer.gd` (cluster + border + pocket budgets) |
+| Corridor planner | **Yes** — `corridor_planner.gd` writes `main_raid_path_cells` / approach lanes |
+| Composition masks | **Yes** — irregular clearing + path arms via `MapAuthoringData` |
 | `MapPlan` applied | **Yes** — `colony._setup_world()` |
+| Macro textures | **Yes** — all seven `*_macro.png` present; `macro_texture_mode=true` |
 | `EnvironmentDresser.populate()` | **No** — dead code path, not called |
 | Hand-placed demo resources | **No** — `_spawn_demo_resources()` not called |
 | Resources | **Procgen scatter** → `_apply_prop_placements()` |
 
-**Why screenshots may still look like a flat prototype:** elevation range is only ~4m across 350m; legacy green moss textures repeat every ~3m; props are sparse (stride-4 scatter); visible sky-colored map edge; building/unit scale not yet normalized. Procgen is code-active but not yet visually undeniable. See `docs/terrain-texture-brief.md` §1.1.
+**Composition pass (2026-07-09):** irregular clearing, raid lane + footpaths, resource pockets, dense border trees, darker fog/horizon skirt, `toggle_composition_overlay` / `toggle_beauty_mode`. Enemy spawn-from-corridor still pending.
 
 **Separate scenes:**
 
@@ -290,8 +293,8 @@ Hotkey: `F6` bound to `dev_regen_map()`.
 | **1** | Heightmap + terrain mesh + classifier | **Shipped** |
 | **2** | Texture palette + splat shader (7 albedo, per-triangle class) | **Shipped** (macro texture pass pending art) |
 | **3** | Class-aware prop scatter, replace hand-placed resources | **Shipped** |
-| **4** | Corridor planner, enemy spawn from corridor endpoints | **Pending** |
-| **5** | Debug tools (regen, overlays, stats), F6 hotkey | **Partial** — `print_mapgen_status`, `toggle_class_overlay` shipped; regen/overlays pending |
+| **4** | Corridor planner, enemy spawn from corridor endpoints | **Partial** — lane metadata + mud paint shipped; enemy spawn hookup pending |
+| **5** | Debug tools (regen, overlays, stats), F6 hotkey | **Partial** — `print_mapgen_status`, class/composition overlays, beauty mode shipped; F6 regen pending |
 
 **Total:** 2–2.5 focused days, each phase committable and reversible.
 

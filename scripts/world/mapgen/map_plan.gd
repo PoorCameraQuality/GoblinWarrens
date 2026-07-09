@@ -18,3 +18,8 @@ var blend_control: Texture2D = null
 var blend_stats: Dictionary = {}
 var height_min: float = 0.0
 var height_max: float = 0.0
+## Composition metadata (CorridorPlanner + authoring masks).
+var main_raid_path_cells: Dictionary = {} ## Vector2i -> true
+var approach_corridor_cells: Dictionary = {} ## Vector2i -> true (raid + footpaths)
+var resource_pocket_cells: Dictionary = {} ## Vector2i pocket centers -> true
+var authoring_data = null ## MapAuthoringData; untyped to avoid class load cycles

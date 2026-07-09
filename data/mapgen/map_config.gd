@@ -23,6 +23,7 @@ static func default_for_demo() -> MapConfig:
 	var min_dim: int = mini(config.width, config.height)
 	config.camp_flat_radius = maxi(Constants.MAPGEN_CAMP_FLAT_RADIUS, min_dim / 14)
 	config.camp_blend_radius = maxi(Constants.MAPGEN_CAMP_BLEND_RADIUS, min_dim / 8)
-	if ResourceLoader.exists(DEMO_AUTHORING_PATH):
-		config.authoring_data = load(DEMO_AUTHORING_PATH) as MapAuthoringData
+	## Authoring is rebuilt in MapGenerator from warren_cell so clearing/roads
+	## stay centered; optional DEMO_AUTHORING_PATH override remains available.
+	config.authoring_data = null
 	return config
