@@ -147,8 +147,14 @@ preserved behavior, test steps, limitations, next step).
   least one PlayMode-style integration test.
 - The MCP bridge has its own smoke tests under `tests/smoke/` that run headless:
   `godot --headless --script tests/smoke/test_smoke.gd` must exit 0.
-- Every PR must satisfy: `godot --headless --check-only` is clean, GUT tests
-  green, smoke test green, and a bridge dry-run log attached.
+- **Headless pipeline tooling:** read [`docs/technical/GODOT_HEADLESS_PITFALLS.md`](docs/technical/GODOT_HEADLESS_PITFALLS.md)
+  before writing or refactoring `tools/*.gd` or large `tests/smoke/*` entry
+  scripts. Do not split `baked_grid_compile.gd` or the Phase 2 regression
+  without re-running `tools/run_phase2_regression.ps1`.
+- Every PR must satisfy: GUT tests green, smoke tests green, and a bridge
+  dry-run log attached. Prefer targeted smoke scripts over
+  `godot --headless --check-only` when MCP/Terrain3D plugins are enabled
+  (see headless pitfalls doc).
 
 ## 8. Performance & profiling
 

@@ -1,0 +1,102 @@
+[gd_scene format=3 uid="uid://dkbiuw6gc2gkm"]
+
+[ext_resource type="Script" uid="uid://dikjdlvcd6g8g" path="res://scripts/dev/terrain3d_compat_spike.gd" id="1_spike"]
+
+[sub_resource type="Gradient" id="Gradient_dl470"]
+offsets = PackedFloat32Array(0.2, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_iwyba"]
+noise_type = 2
+frequency = 0.03
+cellular_jitter = 3.0
+cellular_return_type = 0
+domain_warp_enabled = true
+domain_warp_type = 1
+domain_warp_amplitude = 50.0
+domain_warp_fractal_type = 2
+domain_warp_fractal_lacunarity = 1.5
+domain_warp_fractal_gain = 1.0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_ubmsc"]
+noise = SubResource("FastNoiseLite_iwyba")
+color_ramp = SubResource("Gradient_dl470")
+seamless = true
+
+[sub_resource type="Terrain3DMaterial" id="Terrain3DMaterial_d2hb3"]
+_shader_parameters = {
+&"bias_distance": null,
+&"blend_sharpness": null,
+&"depth_blur": null,
+&"enable_macro_variation": null,
+&"enable_projection": null,
+&"flat_terrain_normals": null,
+&"macro_variation1": null,
+&"macro_variation2": null,
+&"macro_variation_slope": null,
+&"mipmap_bias": null,
+&"noise1_angle": null,
+&"noise1_offset": null,
+&"noise1_scale": null,
+&"noise2_scale": null,
+&"noise_texture": SubResource("NoiseTexture2D_ubmsc"),
+&"projection_threshold": null
+}
+show_checkered = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6nidf"]
+transparency = 4
+cull_mode = 2
+vertex_color_use_as_albedo = true
+backlight_enabled = true
+backlight = Color(0.5, 0.5, 0.5, 1)
+distance_fade_mode = 1
+distance_fade_min_distance = 128.0
+distance_fade_max_distance = 96.0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_wff8j"]
+generated_type = 1
+height_offset = 0.5
+material_override = SubResource("StandardMaterial3D_6nidf")
+last_lod = 0
+last_shadow_lod = 0
+lod0_range = 128.0
+
+[sub_resource type="Terrain3DAssets" id="Terrain3DAssets_p7a1e"]
+mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_wff8j")])
+
+[node name="Terrain3DCompatSpike" type="Node3D" unique_id=1554921255]
+script = ExtResource("1_spike")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=39808243]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 20, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1624333496]
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 128, 48, 160)
+current = true
+fov = 60.0
+
+[node name="Terrain3D" type="Terrain3D" parent="." unique_id=1360879179]
+data_directory = "res://data/dev/terrain3d_spike/terrain_data"
+material = SubResource("Terrain3DMaterial_d2hb3")
+assets = SubResource("Terrain3DAssets_p7a1e")
+mesh_lods = 4
+show_checkered = true
+top_level = true
+metadata/_edit_lock_ = true
+
+[node name="CollisionProbe" type="StaticBody3D" parent="." unique_id=1820237981]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 128, 20, 128)
+
+[node name="ProbeShape" type="CollisionShape3D" parent="CollisionProbe" unique_id=438275265]
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=262739409]
+
+[node name="ResultsLabel" type="Label" parent="UI" unique_id=1627373518]
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 900.0
+offset_bottom = 260.0
+theme_override_colors/font_color = Color(0.9, 0.95, 0.85, 1)
+text = "Terrain3D spike loading..."

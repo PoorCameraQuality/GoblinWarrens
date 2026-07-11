@@ -68,7 +68,7 @@ Reference by `uid://` from `.tres` — never raw paths in gameplay code.
 | **Maaack's Menus Template** | MIT | Main menu + pause + credits | Before public demo build |
 | **Maaack's Options Menus** | MIT | With menus template | Audio, graphics toggles |
 | **Maaack's Input Remapping** | MIT | When rebinding matters | RTS hotkeys 1–9, camera |
-| **Terrain3D** | MIT | Only if flat plane feels too limiting | Heavy; our sim is grid-first — defer |
+| **Terrain3D** | MIT | **Spike in progress (2026-07-10)** — authored terrain for hybrid map workflow | Grid sim stays `AStarGrid2D`; Terrain3D owns physical land only. See [`docs/technical/TERRAIN3D_HYBRID_MAP_PLAN.md`](technical/TERRAIN3D_HYBRID_MAP_PLAN.md). Not production map authority until spike passes on Godot 4.7. |
 
 ---
 
@@ -112,7 +112,10 @@ LATER (shipping UI)
   Maaack Menus + Options + Input Remapping   MIT
 
 SKIP FOR NOW
-  Terrain3D, Beehave, LimboAI, Save Made Easy, NavigationAgent3D
+  Beehave, LimboAI, Save Made Easy, NavigationAgent3D
+
+TERRAIN3D (spike)
+  v1.0.2-stable — compatibility spike only; not yet production map authority
 ```
 
 ---
@@ -133,3 +136,4 @@ SKIP FOR NOW
 | Date | Decision |
 |------|----------|
 | 2026-06-30 | MIT/CC0 only for shipped content. GRB stays primary MCP bridge. Grid pathfinding stays built-in. |
+| 2026-07-10 | Terrain3D pivot approved. Phase 1 compatibility spike on Godot 4.7; procgen remains production until migration phases complete. |

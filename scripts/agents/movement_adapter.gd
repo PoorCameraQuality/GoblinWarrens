@@ -4,12 +4,16 @@ extends RefCounted
 ## Wraps AStarGrid2D for tile pathfinding. All goblin movement requests go here.
 
 var _grid: AStarGrid2D
+var _grid_width: int = 0
+var _grid_height: int = 0
 var _heights: PackedFloat32Array = PackedFloat32Array()
 var _height_point_width: int = 0
 var _height_point_height: int = 0
 
 
 func _init(width: int, height: int) -> void:
+	_grid_width = width
+	_grid_height = height
 	_grid = AStarGrid2D.new()
 	_grid.region = Rect2i(0, 0, width, height)
 	_grid.cell_size = Vector2(Constants.TILE_SIZE, Constants.TILE_SIZE)
@@ -70,12 +74,20 @@ func world_to_grid(world: Vector3) -> Vector2i:
 	)
 
 
+func grid_width() -> int:
+	return _grid_width
+
+
+func grid_height() -> int:
+	return _grid_height
+
+
 func is_in_bounds(cell: Vector2i) -> bool:
 	return (
 		cell.x >= 0
 		and cell.y >= 0
-		and cell.x < Constants.GRID_WIDTH
-		and cell.y < Constants.GRID_HEIGHT
+		and cell.x < _grid_width
+		and cell.y < _grid_height
 	)
 
 
@@ -93,6 +105,12 @@ func set_solid(cell: Vector2i, solid: bool) -> void:
 	if not is_in_bounds(cell):
 		return
 	_grid.set_point_solid(cell, solid)
+
+
+func set_point_weight_scale(cell: Vector2i, weight_scale: float) -> void:
+	if not is_in_bounds(cell):
+		return
+	_grid.set_point_weight_scale(cell, weight_scale)
 
 
 func find_path(from_cell: Vector2i, to_cell: Vector2i) -> Array[Vector2i]:
@@ -113,7 +131,7 @@ func nearest_reachable(from_cell: Vector2i, target: Vector2i) -> Vector2i:
 	if not _grid.is_point_solid(target):
 		return target
 	# Spiral search for nearest walkable tile.
-	for radius in range(1, max(Constants.GRID_WIDTH, Constants.GRID_HEIGHT)):
+	for radius in range(1, max(_grid_width, _grid_height)):
 		for dx in range(-radius, radius + 1):
 			for dy in range(-radius, radius + 1):
 				if absi(dx) != radius and absi(dy) != radius:

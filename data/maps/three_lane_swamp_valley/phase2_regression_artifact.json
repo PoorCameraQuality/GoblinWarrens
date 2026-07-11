@@ -1,0 +1,25 @@
+{
+	"blocked_cells": 25655,
+	"buildable_cells": 41647,
+	"cell_count": 122500,
+	"compile_fingerprint_sha256": "bf732dd6a09f93ab46b93254464dc41d7ae6e58fafeacab03b1e785e2f20941b",
+	"compiled_grid_px": [
+		350,
+		350
+	],
+	"elapsed_ms": 1353,
+	"godot_version": "4.7-stable (official)",
+	"north_south_path_length": 251,
+	"palette_validation": {
+		"pass": true,
+		"source": "import_validation"
+	},
+	"road_pixels_not_full_speed": 0,
+	"road_pixels_not_no_scatter": 0,
+	"source_native_px": [
+		1254,
+		1254
+	],
+	"swamp_road_overlap": 0,
+	"walkable_cells": 96845
+}

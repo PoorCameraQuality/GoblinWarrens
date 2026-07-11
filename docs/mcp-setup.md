@@ -92,6 +92,11 @@ godot --headless --script tests\smoke\test_smoke.gd
 
 Expected: exit 0 and a single line of output `[smoke] ok`.
 
+**Headless pitfalls:** If smoke or pipeline scripts hang, exit `4294967295`, or fail
+with no output, read [`docs/technical/GODOT_HEADLESS_PITFALLS.md`](technical/GODOT_HEADLESS_PITFALLS.md)
+before debugging. Prefer targeted smoke scripts over `godot --check-only` when
+MCP/Terrain3D plugins are enabled.
+
 ## Step 5 — Smoke test (Cursor + GRB)
 
 In a Cursor chat in this workspace, ask:

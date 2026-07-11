@@ -1,0 +1,51 @@
+{
+  "resolution": [
+    1254,
+    1254
+  ],
+  "all_import_layers_aligned": true,
+  "swamp_overlaps_road_pixels": 0,
+  "road_pixels_not_full_speed": 0,
+  "road_pixels_not_road_biome": 0,
+  "road_pixels_not_no_scatter": 0,
+  "road_component_count_over_500px": 6,
+  "road_large_components": [
+    {
+      "label": 1,
+      "area": 84008,
+      "top": 257,
+      "bottom": 833
+    },
+    {
+      "label": 2,
+      "area": 4701,
+      "top": 312,
+      "bottom": 593
+    },
+    {
+      "label": 3,
+      "area": 3425,
+      "top": 495,
+      "bottom": 606
+    },
+    {
+      "label": 4,
+      "area": 3643,
+      "top": 554,
+      "bottom": 713
+    },
+    {
+      "label": 5,
+      "area": 3840,
+      "top": 589,
+      "bottom": 781
+    },
+    {
+      "label": 16,
+      "area": 3253,
+      "top": 882,
+      "bottom": 1002
+    }
+  ],
+  "fix_status": "PASS"
+}

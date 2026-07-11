@@ -95,6 +95,23 @@ Modified? no
 Notes: Adds runtime autoload _mcp_game_helper for in-game screenshots/debugger bridge. Requires uv for Python MCP server. Coexists with GRB — use one primary MCP in Cursor (.cursor/mcp.json currently points at GRB). Do not enable both MCP servers in Cursor unless you know the port split.
 ```
 
+### Terrain3D
+
+```text
+Name: Terrain3D
+Installed location: res://addons/terrain_3d/
+Source: https://github.com/TokisanGames/Terrain3D/releases/tag/v1.0.2-stable
+Author: Cory Petkovsek (Tokisan Games) & Roope Palmroos (Outobugi Games)
+License: MIT (see addons/terrain_3d/LICENSE.txt)
+Godot Asset Library ID or source page: https://godotengine.org/asset-library/asset/3892
+Imported date: 2026-07-10
+Used for: Phase 1 compatibility spike — authored terrain evaluation for hybrid map workflow (isolated dev scene only)
+Production dependency? no (pending Godot 4.7 spike pass and migration phases)
+Can be removed later? yes (disable plugin; colony procgen remains fallback)
+Modified? no
+Notes: GDExtension plugin. Grid gameplay remains AStarGrid2D authoritative. See docs/technical/TERRAIN3D_HYBRID_MAP_PLAN.md. Official support claims Godot 4.4–4.6+; 4.7 verified via spike.
+```
+
 ---
 
 ## Art packs

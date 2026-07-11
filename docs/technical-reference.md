@@ -24,6 +24,7 @@ constants. Any change here must be paired with the change it documents.
 | Input, `_unhandled_input`, mouse events | [Input documentation](https://docs.godotengine.org/en/latest/tutorials/inputs/index.html) |
 | Custom Resources (`.tres`) for data | [Resources](https://docs.godotengine.org/en/latest/tutorials/scripting/resources.html) |
 | Project layout, autoloads | [Project organization](https://docs.godotengine.org/en/latest/tutorials/best_practices/project_organization.html) |
+| Headless smoke / `--script` tooling | [`docs/technical/GODOT_HEADLESS_PITFALLS.md`](technical/GODOT_HEADLESS_PITFALLS.md) — **read before pipeline or smoke refactors** |
 
 Agents must **not invent Godot APIs**. If a method or property is not in the
 official docs for the pinned engine version, stop and ask.
@@ -94,6 +95,31 @@ Project folders: `docs/technical/PROJECT_STRUCTURE.md`.
 | Node.js | ≥ 18.x | Cursor bundled or system |
 | GUT | latest 4.x | Asset library → `addons/gut/` |
 | Meshy Godot plugin | latest | Asset library → `addons/meshy/` |
+| **Terrain3D** | **v1.0.2-stable** (spike) | GitHub release → `addons/terrain_3d/` — see [`docs/technical/TERRAIN3D_HYBRID_MAP_PLAN.md`](technical/TERRAIN3D_HYBRID_MAP_PLAN.md) |
+
+### Headless testing
+
+| Item | Value |
+|---|---|
+| Reference doc | [`docs/technical/GODOT_HEADLESS_PITFALLS.md`](technical/GODOT_HEADLESS_PITFALLS.md) |
+| Console binary | `Godot_v4.7-stable_win64_**console**.exe` for CI/smoke |
+| Phase 2 gate | `tools/run_phase2_regression.ps1` |
+| Phase 3 gate | `tests/smoke/test_terrain3d_movement_spike.gd` |
+| Prefer | Targeted `tests/smoke/*.gd` scripts |
+| Avoid | Loading full dev `.tscn` files headless (Terrain3D + camera scenes may hang); use thin smoke + programmatic nodes |
+| Avoid | Relying on `--check-only` when plugins/MCP active (may hang) |
+
+### Terrain3D (compatibility spike)
+
+| Item | Value |
+|---|---|
+| Plugin | Terrain3D v1.0.2-stable |
+| Source | https://github.com/TokisanGames/Terrain3D/releases/tag/v1.0.2-stable |
+| License | MIT |
+| Official Godot support | 4.4–4.6+ (4.7 must be proven by spike) |
+| Install location | `res://addons/terrain_3d/` |
+| Production dependency | **No** — spike/isolated dev scene only until migration |
+| Gameplay authority | **No** — `AStarGrid2D` + `movement_adapter.gd` remain authoritative |
 | Blender | 4.x LTS recommended | Manual — cleanup pass |
 | AccuRIG | latest free | Manual — production rigs |
 | Cascadeur | free tier+ | Manual — animation polish |

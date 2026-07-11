@@ -1,0 +1,56 @@
+{
+	"baked_dir": "res://data/maps/three_lane_swamp_valley/baked/350",
+	"baked_files": {
+		"biome_id": "res://data/maps/three_lane_swamp_valley/baked/350/02_biome_id.png",
+		"buildability": "res://data/maps/three_lane_swamp_valley/baked/350/03_buildability.png",
+		"enemy_camp_zone": "res://data/maps/three_lane_swamp_valley/baked/350/12_enemy_camp_zone.png",
+		"foliage_density": "res://data/maps/three_lane_swamp_valley/baked/350/09_foliage_density.png",
+		"heightmap": "res://data/maps/three_lane_swamp_valley/baked/350/01_heightmap.png",
+		"layout_reference": "res://data/maps/three_lane_swamp_valley/baked/350/00_layout_reference.png",
+		"movement_blocker": "res://data/maps/three_lane_swamp_valley/baked/350/07_movement_blocker.png",
+		"movement_cost": "res://data/maps/three_lane_swamp_valley/baked/350/06_movement_cost.png",
+		"no_scatter": "res://data/maps/three_lane_swamp_valley/baked/350/10_no_scatter.png",
+		"project_terrain_classes": "res://data/maps/three_lane_swamp_valley/baked/350/02b_project_terrain_classes.png",
+		"raid_entry": "res://data/maps/three_lane_swamp_valley/baked/350/11_raid_entry.png",
+		"resource_affinity": "res://data/maps/three_lane_swamp_valley/baked/350/08_resource_affinity.png",
+		"road_clearance": "res://data/maps/three_lane_swamp_valley/baked/350/05_road_clearance.png",
+		"start_zone": "res://data/maps/three_lane_swamp_valley/baked/350/04_start_zone.png"
+	},
+	"display_name": "Three-Lane Swamp Valley",
+	"layer_sizes_native": {
+		"biome_id": "(1254, 1254)",
+		"buildability": "(1254, 1254)",
+		"enemy_camp_zone": "(1254, 1254)",
+		"foliage_density": "(1254, 1254)",
+		"heightmap": "(1254, 1254)",
+		"layout_reference": "(1254, 1254)",
+		"movement_blocker": "(1254, 1254)",
+		"movement_cost": "(1254, 1254)",
+		"no_scatter": "(1254, 1254)",
+		"project_terrain_classes": "(1254, 1254)",
+		"raid_entry": "(1254, 1254)",
+		"resource_affinity": "(1254, 1254)",
+		"road_clearance": "(1254, 1254)",
+		"start_zone": "(1254, 1254)"
+	},
+	"map_id": "three_lane_swamp_valley_reference",
+	"ok": true,
+	"source_dir": "res://data/maps/three_lane_swamp_valley/source",
+	"target_size": "(350, 350)",
+	"validation": {
+		"all_layers_aligned": true,
+		"errors": [],
+		"gameplay_rules": {
+			"lane_count": 3.0,
+			"mountains_impassable": true,
+			"north_human_buildable": true,
+			"south_warren_buildable": true,
+			"swamp_speed_multiplier": 0.1
+		},
+		"pass": true,
+		"road_pixels_not_full_speed": 0,
+		"road_pixels_not_no_scatter": 0,
+		"road_pixels_not_road_biome": 0,
+		"swamp_overlaps_road_pixels": 0
+	}
+}

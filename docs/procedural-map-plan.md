@@ -5,6 +5,8 @@
 **Last updated:** 2026-07-09  
 **Runtime authority:** `colony.gd` `_setup_world()` + debug command `print_mapgen_status`
 
+> **Direction pivot (2026-07-10):** Future map development moves to a **Terrain3D hybrid** workflow (authored terrain + semantic paint + baked grid + player Warren placement). This document remains the authority for the **currently shipped** runtime procgen pipeline until migration phases complete. See [`docs/technical/TERRAIN3D_HYBRID_MAP_PLAN.md`](technical/TERRAIN3D_HYBRID_MAP_PLAN.md).
+
 ## Runtime status (verified 2026-07-08)
 
 `project.godot` main scene is `res://scenes/colony.tscn`. At runtime:

@@ -304,6 +304,7 @@ Licenses: `docs/legal/THIRD_PARTY_LICENSES.md`
 - Use `AStarGrid2D` via movement adapter for all goblin movement
 - Route visuals through `visual_catalog.gd` + `visual_attacher.gd`
 - Use `preload()` for cross-script refs if global `class_name` fails headless
+- Read [`docs/technical/GODOT_HEADLESS_PITFALLS.md`](technical/GODOT_HEADLESS_PITFALLS.md) before pipeline / large `--script` refactors
 - Run smoke tests after substantive changes
 - Ask before changing design rules or pathfinding approach
 - Keep diffs minimal and focused
@@ -328,7 +329,7 @@ cd E:\Projects\goblin-colony
 & $G --headless --path . --script tests/smoke/test_colony.gd
 ```
 
-Note: `godot --headless --check-only` may hang when MCP/import is active — prefer smoke scripts.
+Note: `godot --headless --check-only` may hang when MCP/import is active — prefer smoke scripts. See [`docs/technical/GODOT_HEADLESS_PITFALLS.md`](technical/GODOT_HEADLESS_PITFALLS.md).
 
 ### MCP (Godot AI plugin)
 

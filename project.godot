@@ -34,4 +34,4 @@ gdscript/warnings/treat_warnings_as_errors=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/alicenzia/plugin.cfg", "res://addons/debug_console/plugin.cfg", "res://addons/godot_ai/plugin.cfg")
+enabled=PackedStringArray("res://addons/alicenzia/plugin.cfg", "res://addons/debug_console/plugin.cfg", "res://addons/godot_ai/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")

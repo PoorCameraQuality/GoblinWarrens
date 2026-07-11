@@ -55,6 +55,17 @@ impact exists.
 | Meshy MCP for asset batching | Complements GRB; document API keys in `.cursor/secrets/` when wired |
 | `.cursorignore` patterns | Extended for Godot + Meshy paths (see repo root) |
 
+## Map and terrain (2026-07-10)
+
+| Topic | Decision |
+|---|---|
+| Production map path | **Unchanged** — runtime procgen via `MapGenerator.build()` in `colony.gd` |
+| Terrain3D | **Spike approved** — v1.0.2-stable on Godot 4.7; isolated dev scene only until migration phases |
+| Pathfinding authority | **`AStarGrid2D` + `movement_adapter.gd`** — Terrain3D must not replace grid sim |
+| Plan | [`docs/technical/TERRAIN3D_HYBRID_MAP_PLAN.md`](technical/TERRAIN3D_HYBRID_MAP_PLAN.md) |
+| Headless pitfalls | [`docs/technical/GODOT_HEADLESS_PITFALLS.md`](technical/GODOT_HEADLESS_PITFALLS.md) — `--script` tooling, analyzer stalls |
+| Phase 3 movement | [`docs/technical/PHASE3_TERRAIN3D_MOVEMENT_REPORT.md`](technical/PHASE3_TERRAIN3D_MOVEMENT_REPORT.md) — Terrain3D + grid spike (complete) |
+
 ## When to revisit
 
 Re-open these overrides only if the user explicitly requests:

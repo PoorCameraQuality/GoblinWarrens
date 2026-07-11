@@ -1,0 +1,77 @@
+{
+  "map_id": "three_lane_swamp_valley_reference",
+  "display_name": "Three-Lane Swamp Valley",
+  "version": 2,
+  "width_px": 1254,
+  "height_px": 1254,
+  "recommended_width_m": 350,
+  "recommended_height_m": 350,
+  "meters_per_pixel_at_native_resolution": 0.27910685805422647,
+  "orientation": "north_top_south_bottom",
+  "source_images": {
+    "layout_reference": "ChatGPT Image Jul 10, 2026, 08_49_44 PM (1).png",
+    "height_concept": "ChatGPT Image Jul 10, 2026, 08_49_44 PM (2).png",
+    "buildability_concept": "ChatGPT Image Jul 10, 2026, 08_49_44 PM (3).png",
+    "resource_overlay": "Your paragraph text.png"
+  },
+  "files": {
+    "layout_reference": "00_layout_reference.png",
+    "heightmap": "01_heightmap.png",
+    "biome_id": "02_biome_id.png",
+    "project_terrain_classes": "02b_project_terrain_classes.png",
+    "buildability": "03_buildability.png",
+    "start_zone": "04_start_zone.png",
+    "road_clearance": "05_road_clearance.png",
+    "movement_cost": "06_movement_cost.png",
+    "movement_blocker": "07_movement_blocker.png",
+    "resource_affinity": "08_resource_affinity.png",
+    "foliage_density": "09_foliage_density.png",
+    "no_scatter": "10_no_scatter.png",
+    "raid_entry": "11_raid_entry.png",
+    "enemy_camp_zone": "12_enemy_camp_zone.png"
+  },
+  "biome_palette": {
+    "#1B4332": 1,
+    "#40916C": 2,
+    "#52B788": 3,
+    "#DDA15E": 4,
+    "#BC6C25": 5,
+    "#8B6914": 6,
+    "#404040": 7,
+    "#000000": 0
+  },
+  "project_terrain_class_palette": {
+    "#FFD400": "MUD_CLEARING",
+    "#72FF00": "MOSS",
+    "#006B22": "FOREST_FLOOR",
+    "#FF4A00": "ROCKY_SLOPE",
+    "#00D8D8": "MUD_MOSSY",
+    "#8A2BE2": "CLIFF",
+    "#FF00A8": "WARREN_GROUND"
+  },
+  "resource_palette": {
+    "#FF8C42": "gold",
+    "#808080": "stone",
+    "#90EE90": "food",
+    "#000000": "none"
+  },
+  "gameplay_rules": {
+    "swamp_speed_multiplier": 0.1,
+    "mountains_impassable": true,
+    "south_warren_buildable": true,
+    "north_human_buildable": true,
+    "lane_count": 3
+  },
+  "terrain3d_direct_import": "01_heightmap.png",
+  "semantic_import_note": "All other ID/control maps are Goblin Warrens semantic inputs, not Terrain3D height imports.",
+  "target_width_m": 350,
+  "target_height_m": 350,
+  "target_grid_width": 350,
+  "target_grid_height": 350,
+  "import_resample": {
+    "heightmap": "bilinear_or_bicubic",
+    "id_maps": "nearest_neighbor",
+    "grayscale_control_maps": "nearest_neighbor"
+  },
+  "road_precedence_rule": "Where road_clearance is nonzero, road/path overrides wetland in biome_id, movement_cost is 255, and no_scatter is 255."
+}

@@ -1,0 +1,62 @@
+[gd_scene load_steps=7 format=3 uid="uid://bterrain3dmovespike"]
+
+[ext_resource type="Script" path="res://scripts/dev/terrain3d_movement_spike.gd" id="1_spike"]
+[ext_resource type="Script" path="res://scripts/world/map/debug/compiled_grid_overlay.gd" id="2_overlay"]
+
+[sub_resource type="Terrain3DMaterial" id="Terrain3DMaterial_spike"]
+show_checkered = true
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_spike"]
+generated_type = 1
+density = 2.0
+
+[sub_resource type="Terrain3DAssets" id="Terrain3DAssets_spike"]
+mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_spike")])
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_agent"]
+radius = 0.35
+height = 1.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_agent"]
+albedo_color = Color(0.95, 0.25, 0.15, 1)
+
+[node name="Terrain3DMovementSpike" type="Node3D"]
+script = ExtResource("1_spike")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 175, 40, 175)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 175, 90, 280)
+current = true
+fov = 60.0
+
+[node name="Terrain3D" type="Terrain3D" parent="."]
+data_directory = "res://data/maps/three_lane_swamp_valley/terrain3d_data"
+material = SubResource("Terrain3DMaterial_spike")
+assets = SubResource("Terrain3DAssets_spike")
+vertex_spacing = 1.0
+mesh_lods = 4
+show_checkered = true
+top_level = true
+
+[node name="CompiledGridOverlay" type="MeshInstance3D" parent="."]
+script = ExtResource("2_overlay")
+
+[node name="TestAgent" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 175.5, 6, 300.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="TestAgent"]
+mesh = SubResource("CapsuleMesh_agent")
+surface_material_override/0 = SubResource("StandardMaterial3D_agent")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="ResultsLabel" type="Label" parent="UI"]
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 920.0
+offset_bottom = 260.0
+theme_override_colors/font_color = Color(0.9, 0.95, 0.85, 1)
+text = "Terrain3D movement spike loading..."
