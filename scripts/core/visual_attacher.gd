@@ -30,7 +30,7 @@ static func try_attach(
 	instance.scale = scale
 	instance.position = position
 	parent.add_child(instance)
-	_normalize_ground_contact(instance)
+	reseat_on_ground(instance)
 	for path in hide_node_paths:
 		var node := parent.get_node_or_null(path)
 		if node == null and parent.get_parent() != null:
@@ -57,9 +57,10 @@ static func spawn_scenery(
 	if instance == null:
 		return null
 	instance.scale = scale
-	instance.position = world_pos
+	var WorldSurface = load("res://scripts/world/world_surface.gd")
+	instance.position = WorldSurface.snap_world_position(world_pos)
 	parent.add_child(instance)
-	_normalize_ground_contact(instance)
+	reseat_on_ground(instance)
 	return instance
 
 
@@ -87,18 +88,19 @@ static func tint_meshes(root: Node, albedo: Color) -> void:
 		tint_meshes(child, albedo)
 
 
-## Lift model up so its AABB base sits at parent.y (base at ground contact).
-## Meshy exports center models at origin (AABB.position.y ~= -half_height);
-## Kaykit/Quaternius wrappers already have their base at y=0 so this becomes a no-op.
-static func _normalize_ground_contact(instance: Node3D) -> void:
-	var aabb := _compute_visual_aabb(instance)
-	if aabb.size == Vector3.ZERO:
+## Lift model so its scaled mesh base sits on parent.y=0 (ground contact).
+static func reseat_on_ground(instance: Node3D) -> void:
+	if instance == null or not instance.is_inside_tree():
 		return
-	if aabb.position.y < -0.01:
-		instance.position.y += -aabb.position.y
+	var bounds := _compute_bounds_in_root_space(instance)
+	if bounds.size == Vector3.ZERO:
+		return
+	var base_y := bounds.position.y
+	if base_y < -0.005:
+		instance.position.y -= base_y
 
 
-static func _compute_visual_aabb(root: Node) -> AABB:
+static func _compute_bounds_in_root_space(root: Node3D) -> AABB:
 	var out := AABB()
 	var first := true
 	var stack: Array = [root]
@@ -106,7 +108,8 @@ static func _compute_visual_aabb(root: Node) -> AABB:
 		var n = stack.pop_back()
 		if n is MeshInstance3D:
 			var mi: MeshInstance3D = n
-			var mesh_aabb: AABB = mi.get_aabb()
+			var rel := root.global_transform.affine_inverse() * mi.global_transform
+			var mesh_aabb: AABB = rel * mi.get_aabb()
 			if first:
 				out = mesh_aabb
 				first = false

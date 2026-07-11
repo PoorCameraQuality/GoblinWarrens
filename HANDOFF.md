@@ -2,7 +2,7 @@
 
 > **Start here when resuming this project.**
 
-- **Last updated**: 2026-07-09
+- **Last updated**: 2026-07-11
 - **Project root**: `E:\Projects\goblin-colony`
 - **Master design**: **`docs/goblin-warrens-design.md`** (highest design authority)
 - **AI onboarding summary**: `docs/chatgpt-master-context.md`
@@ -17,10 +17,10 @@ Goblin Warrens is a 3D **above-ground** goblin colony survival builder with
 siege-defense combat and light RTS controls. Colony survival first; RTS second.
 No underground mechanics. Preserve the gather-return-store worker loop.
 
-**Current status:** playable rough **7-day MVP prototype** (design milestones
-1–10 largely done). Next focus is **stabilization + post-MVP economy** (Warren
-upgrades, unit training, gold spend), not re-doing early milestones. See design
-doc §37 and `docs/chatgpt-master-context.md` §9.
+**Current status:** playable **7-day MVP prototype** on procgen terrain, plus a
+complete **authored-map pipeline** (Phases 0–10) integrated into production
+colony via opt-in `map_mode`. Next focus: stabilization commits, manual authored
+7-day playtest, then post-MVP economy (Warren upgrades, unit training, gold spend).
 
 ---
 
@@ -40,79 +40,89 @@ polish, plus kitbash packs (Quaternius, KayKit, etc.).
 | Engine | Godot **4.7.stable** (see `docs/technical-reference.md`) |
 | Language | GDScript |
 | Pathfinding | `AStarGrid2D` via `movement_adapter.gd` — **not navmesh** |
+| Terrain (authored) | Terrain3D v1.0.2 + compiled semantic grid (opt-in) |
 | Art pipeline | Meshy → Blender → GLB/FBX → Godot (`docs/asset-pipeline.md`) |
 | MCP bridge | Aesthetic Engine GRB + Godot AI plugin (see `docs/mcp-setup.md`) |
 | Deep-research report | Ingested; overrides documented in `docs/architecture-reconciliation.md` |
 
 ---
 
-## 3. What has been done
+## 3. Map modes (colony)
 
-### Bootstrap
-- Repo scaffold, `AGENTS.md`, ADR 0001, MCP runbook, smoke tests
-- Cursor rules, architecture/docs, asset pipeline notes
+| Mode | Setting | Scene | Notes |
+|---|---|---|---|
+| **Procgen** (default) | `game/map_mode=procgen` | `scenes/colony.tscn` | Original 7-day demo |
+| **Authored** | `game/map_mode=authored` | `scenes/colony.tscn` | Warren pick → baked map |
+| **Dev shortcut** | (unchanged procgen setting) | `scenes/dev/authored_demo.tscn` | Colony + `defer_world_setup` |
 
-### Playable 7-day prototype (`scenes/colony.tscn`)
-- Grid movement (`movement_adapter.gd`), goblin workers, gather → haul → store
-- RTS selection + right-click commands
-- Building placement + construction (MVP buildings)
-- Food upkeep, housing cap, population crowding brackets
-- Breeder Hut → Foblins (zero food upkeep)
-- Day simulation + demo briefings, threats, combat
-- Shrine rituals, burial/revival, win/loss (`mvp_evaluator.gd`)
-- Basic save/load, minimal art pass via `visual_catalog.gd`
-- Smoke tests under `tests/smoke/`; unit scripts under `tests/unit/` (need GUT)
+Authored map pack: `data/maps/three_lane_swamp_valley/`  
+Integration guide: `docs/technical/COLONY_AUTHORED_MAP_INTEGRATION.md`  
+Roadmap: `docs/technical/PHASE10_INTEGRATION_ROADMAP.md`
+
+---
+
+## 4. What has been done
+
+### Bootstrap + MVP (`scenes/colony.tscn`)
+- Grid movement, gather → haul → store, RTS selection/commands
+- Building placement, food/population, Foblins, 7-day threats/combat
+- Shrine, burial/revival, win/loss, basic save/load
+- Phase reports: `docs/technical/PHASE4_*` through `PHASE10_*`
+
+### Authored map pipeline (Phases 0–10)
+- Semantic map import, grid compiler, map editor plugin
+- Foliage/resource/strategic scatter compilers
+- Warren placement validation, colony observability (Phase 9)
+- Production colony integration + save schema v2 (Workstream 2)
 
 ### Gameplay autoloads
-`Log`, `Bus`, `Defs`, `Services` — plus **plugin-owned** Debug Console / Godot AI
-autoloads (dev tools only; see `AGENTS.md`).
+`Log`, `Bus`, `Defs`, `Services` — plus plugin-owned dev autoloads only.
 
 ---
 
-## 4. What is NOT done yet / known gaps
+## 5. What is NOT done yet / known gaps
 
-- GUT addon not installed — `tests/unit/*` extends `GutTest` but won't run in editor
-- Warren upgrade economy, unit training, gold-as-spend (stubs / missing)
-- Shaman hero, champions, walk/combat animation polish
-- `colony.gd` / `goblin.gd` growing large — prefer safe modular splits before big features
-- Demo Day 3 briefing copy still says foblins eat food (code: they do not)
-- Art remains prototype kitbash quality
+- GUT addon not installed — `tests/unit/*` won't run in editor
+- Warren upgrade economy, unit training, gold-as-spend
+- Shaman hero, champions, animation polish
+- Manual **7-day playtest on authored colony** not yet signed off
+- Landmark layer / enemy camp spawn logic deferred
+- Git commit for Phases 4–10 + integration work (pending user request)
+- `colony.gd` still large — split helpers before big features
 
 ---
 
-## 5. How to resume
+## 6. How to resume
 
-1. Read **`docs/goblin-warrens-design.md`** (relevant section) and
-   **`docs/chatgpt-master-context.md`** for current status.
+1. Read **`docs/goblin-warrens-design.md`** and **`docs/chatgpt-master-context.md`**.
 2. Read `AGENTS.md` and `docs/architecture-reconciliation.md`.
-3. Prefer **Godot 4.7.stable** (path in `docs/technical-reference.md`).
-4. Run smoke tests:
+3. Run full smoke battery (~3–6 min):
    ```powershell
-   $G = "$env:LOCALAPPDATA\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7-stable_win64_console.exe"
    cd E:\Projects\goblin-colony
-   & $G --headless --path . --script tests\smoke\test_smoke.gd
-   & $G --headless --path . --script tests\smoke\test_colony.gd
+   .\tools\run_all_smokes.ps1
    ```
-5. Open `scenes/colony.tscn` in the editor and play the 7-day loop.
-6. Next sensible work (pick one track):
-   - Doc/config already reconciled — prefer **architecture stabilization**
-     (split `colony.gd` helpers without gameplay changes), or
-   - **Warren upgrade economy** → unit training → gold spend → Shaman → champions
+4. **Procgen:** Play `scenes/colony.tscn` (default).
+5. **Authored:** Project Settings → `game/map_mode` = `authored` → Play `colony.tscn`,
+   or play `scenes/dev/authored_demo.tscn` without changing settings.
+6. Next sensible work (pick one):
+   - **Commit + tag** stabilization (Workstream 3)
+   - Manual authored 7-day playtest sign-off
+   - Post-MVP economy (Warren upgrades → training → gold spend)
 
 ---
 
-## 6. Acceptance reminders
+## 7. Acceptance reminders
 
 - Design doc §38: files changed, preserved behavior, test steps, limitations, next step
 - Do not break gather-return-store; no underground mechanics
+- Do not flip default `map_mode` to authored without explicit approval
 - No new **gameplay** autoloads without ADR
 
-## 7. Remember
+## 8. Remember
 
 - **`docs/goblin-warrens-design.md` overrides** older RTS-first or underground direction.
 - Do **not** switch to `NavigationAgent3D` without user approval and new ADR.
 - Do **not** commit `.cursor/secrets/`.
-- `AGENTS.md` overrides the deep-research report where they conflict.
-- Prefer this file + `docs/chatgpt-master-context.md` + code over stale chat summaries.
+- Prefer this file + design doc + code over stale chat summaries.
 
 — end of handoff —

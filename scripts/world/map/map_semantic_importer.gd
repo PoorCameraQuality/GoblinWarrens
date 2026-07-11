@@ -52,6 +52,15 @@ static func import_map(
 			return _fail("failed to save baked layer %s err=%s" % [baked_abs, error_string(err)])
 		baked_files[layer_key] = baked_path
 
+	var edge_report: Dictionary = {}
+	var EdgeProcessor = load("res://scripts/world/map/authored_edge_processor.gd")
+	if EdgeProcessor != null:
+		edge_report = EdgeProcessor.apply(baked_dir, target_size, manifest)
+		if not bool(edge_report.get("ok", false)):
+			return _fail(
+				"edge processing failed: %s" % str(edge_report.get("errors", []))
+			)
+
 	var validation := validate_baked_layers(baked_dir, files, manifest, target_size)
 	var report := {
 		"ok": bool(validation.get("pass", false)),
@@ -62,6 +71,7 @@ static func import_map(
 		"target_size": target_size,
 		"layer_sizes_native": layer_sizes,
 		"baked_files": baked_files,
+		"edge_processing": edge_report,
 		"validation": validation,
 	}
 	_save_json(map_root.path_join("import_report.json"), report)

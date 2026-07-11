@@ -1,0 +1,66 @@
+[gd_scene load_steps=2 format=3 uid="uid://bwarrenpickpanel01"]
+
+[ext_resource type="Script" path="res://scripts/ui/warren_pick_panel.gd" id="1_panel"]
+
+[node name="WarrenPickPanel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+script = ExtResource("1_panel")
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -150.0
+offset_right = 260.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Choose your Warren"
+horizontal_alignment = 1
+
+[node name="DetailLabel" type="Label" parent="Panel/Margin/VBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = "Loading candidates..."
+
+[node name="Buttons" type="HBoxContainer" parent="Panel/Margin/VBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="PrevButton" type="Button" parent="Panel/Margin/VBox/Buttons"]
+layout_mode = 2
+text = "Previous"
+
+[node name="ConfirmButton" type="Button" parent="Panel/Margin/VBox/Buttons"]
+layout_mode = 2
+text = "Start Here"
+
+[node name="NextButton" type="Button" parent="Panel/Margin/VBox/Buttons"]
+layout_mode = 2
+text = "Next"

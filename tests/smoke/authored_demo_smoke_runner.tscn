@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://cauthoreddemosmoke"]
+
+[ext_resource type="PackedScene" uid="uid://cauthoreddemo001" path="res://scenes/dev/authored_demo.tscn" id="1_demo"]
+
+[node name="AuthoredDemoSmokeRunner" type="Node"]
+
+[node name="AuthoredDemo" parent="." instance=ExtResource("1_demo")]

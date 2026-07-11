@@ -25,6 +25,7 @@ var _current_perspective_distance: float = Constants.CAMERA_PERSPECTIVE_DISTANCE
 var _yaw: float = deg_to_rad(Constants.CAMERA_YAW_DEG)
 var _user_pitch_deg: float = Constants.CAMERA_USER_PITCH_DEFAULT
 var _orbiting: bool = false
+var _strategic_overview: bool = false
 
 
 func _ready() -> void:
@@ -82,7 +83,7 @@ func handle_input_event(event: InputEvent) -> void:
 				set_zoom_preset("far")
 				get_viewport().set_input_as_handled()
 			KEY_F5:
-				set_zoom_preset("overview")
+				toggle_strategic_overview()
 				get_viewport().set_input_as_handled()
 			KEY_Q:
 				_yaw = wrapf(_yaw - deg_to_rad(Constants.CAMERA_YAW_STEP_DEG), -PI, PI)
@@ -95,7 +96,7 @@ func handle_input_event(event: InputEvent) -> void:
 				_apply_transform()
 				get_viewport().set_input_as_handled()
 			KEY_R:
-				reset_to_tactical()
+				focus_colony_view(_focus.x, _focus.z)
 				get_viewport().set_input_as_handled()
 			KEY_C:
 				if OS.is_debug_build():
@@ -125,28 +126,20 @@ func terrain_uv_scale() -> float:
 
 
 func _process(delta: float) -> void:
-	var pan := Vector2.ZERO
+	var move := Vector3.ZERO
 	if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
-		pan.y += 1.0
+		move += Constants.WORLD_NORTH
 	if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
-		pan.y -= 1.0
+		move += Constants.WORLD_SOUTH
 	if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
-		pan.x -= 1.0
+		move += Constants.WORLD_WEST
 	if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
-		pan.x += 1.0
-	pan += _edge_scroll_vector()
-	if pan != Vector2.ZERO:
-		pan = pan.normalized()
-		_apply_transform()
-		var forward := -global_transform.basis.z
-		forward.y = 0.0
-		if forward.length_squared() > 0.0001:
-			forward = forward.normalized()
-		var right := global_transform.basis.x
-		right.y = 0.0
-		if right.length_squared() > 0.0001:
-			right = right.normalized()
-		_target_focus += (right * pan.x + forward * pan.y) * Constants.CAMERA_PAN_SPEED * delta
+		move += Constants.WORLD_EAST
+	move += _edge_scroll_cardinal()
+	if move != Vector3.ZERO:
+		move.y = 0.0
+		move = move.normalized()
+		_target_focus += move * Constants.CAMERA_PAN_SPEED * delta
 		_clamp_focus(_target_focus)
 
 	var pan_t := 1.0 - exp(-Constants.CAMERA_PAN_SMOOTHING * delta)
@@ -165,13 +158,45 @@ func _process(delta: float) -> void:
 	_apply_transform()
 
 
-func reset_to_tactical() -> void:
+func focus_on_world_xz(world_x: float, world_z: float) -> void:
+	focus_colony_view(world_x, world_z)
+
+
+func focus_colony_view(world_x: float, world_z: float) -> void:
+	_strategic_overview = false
 	_mode = CameraMode.TACTICAL_ORTHO
 	_yaw = deg_to_rad(Constants.CAMERA_YAW_DEG)
 	_user_pitch_deg = Constants.CAMERA_PRESET_DEFAULT_PITCH
 	_target_ortho_size = Constants.CAMERA_ORTHO_DEFAULT
+	_current_ortho_size = Constants.CAMERA_ORTHO_DEFAULT
+	_focus = Vector3(world_x, 0.0, world_z)
+	_target_focus = _focus
+	_clamp_focus(_focus)
+	_clamp_focus(_target_focus)
 	_apply_mode_projection()
 	_apply_transform()
+
+
+func enter_strategic_overview() -> void:
+	_strategic_overview = true
+	_yaw = deg_to_rad(Constants.CAMERA_YAW_DEG)
+	if _mode == CameraMode.INSPECT_PERSPECTIVE:
+		_mode = CameraMode.ORBIT_ORTHO
+	_target_ortho_size = Constants.CAMERA_ORTHO_STRATEGIC
+	_user_pitch_deg = Constants.CAMERA_PRESET_OVERVIEW_PITCH
+	_apply_mode_projection()
+	_apply_transform()
+
+
+func toggle_strategic_overview() -> void:
+	if _strategic_overview:
+		focus_colony_view(_focus.x, _focus.z)
+	else:
+		enter_strategic_overview()
+
+
+func reset_to_tactical() -> void:
+	focus_colony_view(_focus.x, _focus.z)
 
 
 func toggle_inspect_mode() -> void:
@@ -196,10 +221,9 @@ func set_zoom_preset(preset: String) -> void:
 			_target_ortho_size = Constants.CAMERA_ORTHO_FAR
 			_user_pitch_deg = Constants.CAMERA_PRESET_FAR_PITCH
 		"overview":
-			_target_ortho_size = Constants.CAMERA_ORTHO_OVERVIEW
-			_user_pitch_deg = Constants.CAMERA_PRESET_OVERVIEW_PITCH
-		_:
+			enter_strategic_overview()
 			return
+	_strategic_overview = false
 	if _mode == CameraMode.INSPECT_PERSPECTIVE:
 		_mode = CameraMode.ORBIT_ORTHO
 	_apply_mode_projection()
@@ -273,11 +297,11 @@ func debug_hud_line() -> String:
 			_user_pitch_deg,
 			_display_yaw_deg(),
 		]
-	return "Cam: ortho %.0f | pitch %.0f | yaw %.0f | mode %s" % [
+	return "Cam: ortho %.0f | pitch %.0f | yaw %.0f | north up | mode %s" % [
 		_current_ortho_size,
 		_user_pitch_deg,
 		_display_yaw_deg(),
-		_mode_name(),
+		"strategic" if _strategic_overview else _mode_name(),
 	]
 
 
@@ -310,30 +334,36 @@ func _apply_wheel_zoom(wheel_delta: float) -> void:
 			Constants.CAMERA_PERSPECTIVE_DISTANCE_MAX,
 		)
 	else:
-		_target_ortho_size = clampf(
-			_target_ortho_size * factor,
-			Constants.CAMERA_ORTHO_MIN,
-			Constants.CAMERA_ORTHO_MAX,
+		var min_size := (
+			Constants.CAMERA_ORTHO_STRATEGIC_MIN
+			if _strategic_overview
+			else Constants.CAMERA_ORTHO_MIN
 		)
+		var max_size := (
+			Constants.CAMERA_ORTHO_STRATEGIC_MAX
+			if _strategic_overview
+			else Constants.CAMERA_ORTHO_PLAY_MAX
+		)
+		_target_ortho_size = clampf(_target_ortho_size * factor, min_size, max_size)
 
 
-func _edge_scroll_vector() -> Vector2:
+func _edge_scroll_cardinal() -> Vector3:
 	var viewport := get_viewport()
 	if viewport == null:
-		return Vector2.ZERO
+		return Vector3.ZERO
 	var margin: float = Constants.CAMERA_EDGE_SCROLL_MARGIN
 	var size_px: Vector2 = viewport.get_visible_rect().size
 	var mouse: Vector2 = viewport.get_mouse_position()
-	var pan := Vector2.ZERO
+	var move := Vector3.ZERO
 	if mouse.x <= margin:
-		pan.x -= 1.0
+		move += Constants.WORLD_WEST
 	elif mouse.x >= size_px.x - margin:
-		pan.x += 1.0
+		move += Constants.WORLD_EAST
 	if mouse.y <= margin:
-		pan.y -= 1.0
+		move += Constants.WORLD_NORTH
 	elif mouse.y >= size_px.y - margin:
-		pan.y += 1.0
-	return pan
+		move += Constants.WORLD_SOUTH
+	return move
 
 
 func _clamp_focus(point: Vector3) -> void:

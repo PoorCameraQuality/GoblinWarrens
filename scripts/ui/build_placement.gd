@@ -20,6 +20,9 @@ var _placement_options: Array[BuildingDef] = []
 var _placement_yaw: float = 0.0
 
 
+const _WorldSurface := preload("res://scripts/world/world_surface.gd")
+
+
 func setup(
 	camera: RtsCamera,
 	movement: MovementAdapter,
@@ -151,12 +154,9 @@ func _update_ghost(origin: Vector2i) -> void:
 	_ghost.material = _valid_mat if valid else _invalid_mat
 	var size: Vector2i = _active_def.footprint
 	var center := Vector2(origin) + Vector2(size) * 0.5
-	_ghost.position = Vector3(
-		center.x * Constants.TILE_SIZE,
-		0.35,
-		center.y * Constants.TILE_SIZE,
-	)
-	_ghost.size = Vector3(size.x * 0.92, 0.7, size.y * 0.92)
+	var surface := _WorldSurface.footprint_center_on_surface(origin, size)
+	_ghost.position = surface + Vector3(0.0, 0.45, 0.0)
+	_ghost.size = Vector3(size.x * 0.92, 1.2, size.y * 0.92)
 	_ghost.rotation.y = _placement_yaw
 	_update_status(origin)
 
@@ -171,10 +171,16 @@ func _create_ghost() -> void:
 	_ghost.visible = false
 	_valid_mat = StandardMaterial3D.new()
 	_valid_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	_valid_mat.albedo_color = Color(0.2, 0.9, 0.35, 0.45)
+	_valid_mat.albedo_color = Color(0.2, 0.9, 0.35, 0.55)
+	_valid_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_valid_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	_valid_mat.render_priority = 5
 	_invalid_mat = StandardMaterial3D.new()
 	_invalid_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	_invalid_mat.albedo_color = Color(0.9, 0.2, 0.15, 0.45)
+	_invalid_mat.albedo_color = Color(0.9, 0.2, 0.15, 0.55)
+	_invalid_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_invalid_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	_invalid_mat.render_priority = 5
 	_ghost.material = _invalid_mat
 	if _ghost_root != null:
 		_ghost_root.add_child(_ghost)

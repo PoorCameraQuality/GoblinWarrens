@@ -114,7 +114,8 @@ func _sync_build_art() -> void:
 	var base_scale := _VisualCatalog.building_visual_scale(definition.kind, path)
 	var y_scale: float = 0.25 + progress * 0.75
 	art.scale = Vector3(base_scale.x, base_scale.y * y_scale, base_scale.z)
-	art.position = Vector3(0.0, y_scale * 0.4 * base_scale.y, 0.0)
+	art.position = Vector3.ZERO
+	_VisualAttacher.reseat_on_ground(art)
 	var mesh: CSGBox3D = get_node_or_null("Mesh") as CSGBox3D
 	if mesh != null:
 		mesh.visible = false

@@ -1,8 +1,9 @@
-[gd_scene format=3 uid="uid://bqxcolony001"]
+[gd_scene load_steps=4 format=3 uid="uid://bqxcolony001"]
 
 [ext_resource type="Script" uid="uid://dhcv6ijchi3i" path="res://scripts/world/colony.gd" id="1_colony"]
 [ext_resource type="Script" uid="uid://bom8p468tg6xq" path="res://scripts/ui/rts_camera.gd" id="2_camera"]
 [ext_resource type="Script" uid="uid://bcku27doaet1n" path="res://scripts/ui/end_summary_panel.gd" id="3_end"]
+[ext_resource type="PackedScene" path="res://scenes/ui/warren_pick_panel.tscn" id="4_warren_pick"]
 
 [node name="Colony" type="Node3D" unique_id=1401309885]
 script = ExtResource("1_colony")
@@ -106,7 +107,7 @@ text = "Selected: 0 — click a goblin"
 [node name="ThreatLabel" type="Label" parent="UI/HUD" unique_id=351698254]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.75, 0.35, 1)
-text = "Survive 7 days. Build food, faith, and defenses."
+text = "WASD / edge scroll = map north/south/east/west. Home recenters. F5 = overview."
 
 [node name="BriefingLabel" type="Label" parent="UI/HUD" unique_id=943678723]
 layout_mode = 2
@@ -282,3 +283,6 @@ text = "..."
 [node name="RestartButton" type="Button" parent="UI/EndSummary/Panel/Margin/VBox" unique_id=1505588376]
 layout_mode = 2
 text = "Restart"
+
+[node name="WarrenPickPanel" parent="UI" instance=ExtResource("4_warren_pick")]
+visible = false

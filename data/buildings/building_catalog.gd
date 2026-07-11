@@ -17,7 +17,7 @@ static func warren() -> BuildingDef:
 	def.kind = Defs.BuildingKind.WARREN
 	def.display_name = "Warren"
 	def.build_time = 0.0
-	def.footprint = Vector2i(2, 2)
+	def.footprint = Vector2i(4, 4)
 	return def
 
 

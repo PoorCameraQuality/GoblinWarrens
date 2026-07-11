@@ -1,18 +1,20 @@
 shader_type spatial;
 render_mode cull_disabled, depth_draw_opaque, diffuse_lambert, specular_disabled;
 
-// Stylized cursed-forest grass. Base stays planted; tips sway from shared wind globals.
+// Stylized cursed-forest grass. Textured clumps; base stays planted; tips sway from shared wind.
 
 global uniform vec3 gw_wind_direction = vec3(1.0, 0.0, 0.2);
 global uniform float gw_wind_strength = 0.35;
 global uniform float gw_wind_gust = 0.0;
 global uniform float gw_time_of_day = 0.35;
 
+uniform sampler2D albedo_tex : source_color, filter_linear_mipmap, repeat_disable;
 uniform vec4 color_bottom : source_color = vec4(0.18, 0.28, 0.12, 1.0);
 uniform vec4 color_top : source_color = vec4(0.42, 0.55, 0.22, 1.0);
 uniform float blade_height_m : hint_range(0.15, 1.5, 0.01) = 0.55;
 uniform float sway_amplitude : hint_range(0.0, 0.8, 0.01) = 0.28;
 uniform float alpha_scissor : hint_range(0.0, 1.0, 0.01) = 0.35;
+uniform float use_texture : hint_range(0.0, 1.0, 1.0) = 1.0;
 
 varying float v_height_norm;
 varying float v_instance_phase;
@@ -38,14 +40,15 @@ void vertex() {
 }
 
 void fragment() {
-	vec3 col = mix(color_bottom.rgb, color_top.rgb, v_height_norm);
-	// Tiny per-instance tint so fields don't look painted.
+	vec4 tex = texture(albedo_tex, UV);
+	vec3 gradient = mix(color_bottom.rgb, color_top.rgb, v_height_norm);
+	vec3 col = mix(gradient, tex.rgb, use_texture);
 	float tint = 0.92 + 0.16 * _hash11(v_instance_phase * 13.7);
 	col *= tint;
-	// Cooler night cast from shared time-of-day stub (0 day -> 1 night).
 	col = mix(col, col * vec3(0.75, 0.85, 1.05), clamp(gw_time_of_day, 0.0, 1.0) * 0.35);
 	ALBEDO = col;
 	ROUGHNESS = 0.92;
-	ALPHA = 1.0;
+	float a = mix(1.0, tex.a, use_texture);
+	ALPHA = a;
 	ALPHA_SCISSOR_THRESHOLD = alpha_scissor;
 }

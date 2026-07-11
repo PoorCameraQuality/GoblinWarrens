@@ -9,6 +9,7 @@ const AGENT_HALF_HEIGHT := 0.6
 @onready var _agent: Node3D = $TestAgent
 @onready var _overlay: MeshInstance3D = $CompiledGridOverlay
 @onready var _results_label: Label = $UI/ResultsLabel
+@onready var _grass: Node3D = $AuthoredGrass
 
 var _path: Array[Vector2i] = []
 var _path_index := 0
@@ -36,6 +37,22 @@ func _ready() -> void:
 		_overlay.apply_grid(_grid)
 	if _agent and not _path.is_empty():
 		_agent.global_position = _cell_to_world(_path[0])
+	_build_authored_grass(_grid, _path[0] if not _path.is_empty() else Vector2i(175, 175))
+
+
+func _build_authored_grass(grid, focus_cell: Vector2i) -> void:
+	if _grass == null or grid == null:
+		return
+	var Factory = load("res://scripts/world/map/map_definition_factory.gd")
+	var FoliagePlanner = load("res://scripts/world/foliage/foliage_planner.gd")
+	var definition = Factory.load_from_map_root("res://data/maps/three_lane_swamp_valley")
+	if definition == null:
+		return
+	var foliage = FoliagePlanner.plan_from_authored(definition, grid)
+	if foliage == null or foliage.chunks.is_empty():
+		return
+	if _grass.has_method("build_authored"):
+		_grass.build_authored(grid, foliage, focus_cell)
 
 
 func _process(delta: float) -> void:

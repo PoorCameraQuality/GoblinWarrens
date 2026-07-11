@@ -60,7 +60,11 @@
     "mountains_impassable": true,
     "south_warren_buildable": true,
     "north_human_buildable": true,
-    "lane_count": 3
+    "lane_count": 3,
+    "edge_mountains_enabled": true,
+    "edge_forest_enabled": true,
+    "resource_cluster_nodes_min": 2,
+    "resource_cluster_nodes_max": 3
   },
   "terrain3d_direct_import": "01_heightmap.png",
   "semantic_import_note": "All other ID/control maps are Goblin Warrens semantic inputs, not Terrain3D height imports.",

@@ -11,11 +11,14 @@ const _FoliagePlanner := preload("res://scripts/world/foliage/foliage_planner.gd
 ## Orchestrator: MapConfig in, MapPlan out.
 
 
-static func build(config: MapConfig) -> MapPlan:
+static func build(config: MapConfig, override_warren_cell: Vector2i = Vector2i(-1, -1)) -> MapPlan:
 	var plan := MapPlan.new()
 	plan.width = config.width
 	plan.height = config.height
-	plan.warren_cell = _centered_warren_cell(config)
+	if override_warren_cell.x >= 0 and override_warren_cell.y >= 0:
+		plan.warren_cell = override_warren_cell
+	else:
+		plan.warren_cell = _centered_warren_cell(config)
 	plan.storehouse_cell = _storehouse_cell(plan.warren_cell, config)
 
 	var authoring := _resolve_authoring(plan, config)

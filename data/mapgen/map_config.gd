@@ -11,7 +11,7 @@ const DEMO_AUTHORING_PATH := "res://data/mapgen/demo_map_authoring.tres"
 @export var height_scale: float = Constants.MAPGEN_HEIGHT_SCALE
 @export var camp_flat_radius: int = Constants.MAPGEN_CAMP_FLAT_RADIUS
 @export var camp_blend_radius: int = Constants.MAPGEN_CAMP_BLEND_RADIUS
-@export var warren_footprint: Vector2i = Vector2i(2, 2)
+@export var warren_footprint: Vector2i = Vector2i(4, 4)
 @export var authoring_data: MapAuthoringData = null
 
 

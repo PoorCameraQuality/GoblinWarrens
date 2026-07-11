@@ -150,6 +150,9 @@ func _show_day(day: int) -> void:
 func _update_objectives() -> void:
 	if _objectives_label == null or _colony == null:
 		return
+	if _day_sim != null and _day_sim.current_day <= 1:
+		_objectives_label.text = "Goals: food buffer · shrine · defense · survive Day 7 raid"
+		return
 	var stock := _colony.get_stockpile()
 	var food_ok := false
 	if stock != null:

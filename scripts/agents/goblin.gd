@@ -175,6 +175,27 @@ func is_moving() -> bool:
 	return next_cell != grid_cell or _move_progress > 0.0
 
 
+func dev_observation_extra() -> Dictionary:
+	var destination := Vector2i(-1, -1)
+	if not _path.is_empty():
+		destination = _path[_path.size() - 1]
+	var path_cells: Array[Vector2i] = []
+	if _path_index < _path.size():
+		for i in range(_path_index, _path.size()):
+			path_cells.append(_path[i])
+	return {
+		"path_total": _path.size(),
+		"path_index": _path_index,
+		"path_remaining": maxi(0, _path.size() - _path_index),
+		"path_destination": destination,
+		"path_cells": path_cells,
+		"player_owned": _player_owned,
+		"gather_chain": _gather_chain,
+		"target_label": _dev_target_label(),
+		"idle_hint": _dev_idle_hint(),
+	}
+
+
 func tick_worker(delta: float, jobs: JobService) -> void:
 	if not is_alive():
 		return
@@ -494,6 +515,36 @@ func _reset_idle() -> void:
 	job_kind = Defs.JobKind.IDLE
 	worker_phase = Defs.WorkerPhase.IDLE
 	_storehouse = null
+
+
+func _dev_target_label() -> String:
+	if _gather_target != null and is_instance_valid(_gather_target):
+		return "gather@%s" % _gather_target.grid_cell
+	if _build_target != null and is_instance_valid(_build_target):
+		return "build@%s" % _build_target.grid_cell
+	if _forager_target != null and is_instance_valid(_forager_target):
+		return "forage@%s" % _forager_target.grid_cell
+	if _shrine_target != null and is_instance_valid(_shrine_target):
+		return "shrine@%s" % _shrine_target.grid_cell
+	if _storehouse != null and is_instance_valid(_storehouse):
+		return "deliver@%s" % _storehouse.grid_cell
+	if job_kind == Defs.JobKind.MOVE and not _path.is_empty():
+		return "move@%s" % _path[_path.size() - 1]
+	if job_kind == Defs.JobKind.FIGHT:
+		return "fight"
+	return "none"
+
+
+func _dev_idle_hint() -> String:
+	if job_kind != Defs.JobKind.IDLE:
+		return ""
+	if carried_amount > 0:
+		return "pending_deliver"
+	if _player_owned:
+		return "player_command_wait"
+	if _gather_chain:
+		return "gather_chain_no_target"
+	return "awaiting_assignment"
 
 
 func _finish_player_move() -> void:

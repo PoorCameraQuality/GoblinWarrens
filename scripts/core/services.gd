@@ -6,6 +6,11 @@ var movement: MovementAdapter = null
 var job_service: JobService = null
 var storehouse: Storehouse = null
 var map_plan: MapPlan = null
+var terrain3d: Node = null
+
+
+func register_terrain3d(terrain: Node) -> void:
+	terrain3d = terrain
 
 
 func register_map_plan(plan: MapPlan) -> void:

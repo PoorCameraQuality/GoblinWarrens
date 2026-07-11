@@ -49,22 +49,34 @@ func sample_height_at_cell(cell: Vector2i) -> float:
 	return lerpf(hx0, hx1, tz)
 
 
+func sample_height_at_world(world_x: float, world_z: float) -> float:
+	if _heights.is_empty():
+		return 0.0
+	var fx := clampf(world_x / Constants.TILE_SIZE, 0.0, float(_height_point_width - 1))
+	var fz := clampf(world_z / Constants.TILE_SIZE, 0.0, float(_height_point_height - 1))
+	var x0 := int(floor(fx))
+	var z0 := int(floor(fz))
+	var x1 := mini(x0 + 1, _height_point_width - 1)
+	var z1 := mini(z0 + 1, _height_point_height - 1)
+	var tx := fx - float(x0)
+	var tz := fz - float(z0)
+	var h00 := _heights[z0 * _height_point_width + x0]
+	var h10 := _heights[z0 * _height_point_width + x1]
+	var h01 := _heights[z1 * _height_point_width + x0]
+	var h11 := _heights[z1 * _height_point_width + x1]
+	var hx0 := lerpf(h00, h10, tx)
+	var hx1 := lerpf(h01, h11, tx)
+	return lerpf(hx0, hx1, tz)
+
+
 func footprint_center_world(cell: Vector2i, size: Vector2i) -> Vector3:
-	var center := Vector2(cell) + Vector2(size) * 0.5
-	var sample_cell := cell + Vector2i(size.x / 2, size.y / 2)
-	return Vector3(
-		center.x * Constants.TILE_SIZE,
-		sample_height_at_cell(sample_cell),
-		center.y * Constants.TILE_SIZE,
-	)
+	var WorldSurface = load("res://scripts/world/world_surface.gd")
+	return WorldSurface.footprint_center_on_surface(cell, size)
 
 
 func grid_to_world(cell: Vector2i) -> Vector3:
-	return Vector3(
-		(cell.x + 0.5) * Constants.TILE_SIZE,
-		sample_height_at_cell(cell),
-		(cell.y + 0.5) * Constants.TILE_SIZE,
-	)
+	var WorldSurface = load("res://scripts/world/world_surface.gd")
+	return WorldSurface.cell_center_on_surface(cell)
 
 
 func world_to_grid(world: Vector3) -> Vector2i:

@@ -3,6 +3,7 @@ extends Node3D
 
 const _VisualCatalog := preload("res://scripts/art/visual_catalog.gd")
 const _VisualAttacher := preload("res://scripts/core/visual_attacher.gd")
+const _WorldSurface := preload("res://scripts/world/world_surface.gd")
 
 ## Gatherable world node: gold vein, tree, or stone pile.
 
@@ -13,6 +14,7 @@ const _VisualAttacher := preload("res://scripts/core/visual_attacher.gd")
 var remaining: int = 0
 var reserved_by: String = ""
 var grid_cell: Vector2i = Vector2i.ZERO
+var placement_id: String = "" ## Stable bake/save ID for authored maps (Phase 6)
 
 
 func _ready() -> void:
@@ -22,13 +24,33 @@ func _ready() -> void:
 	_apply_visual()
 
 
-func setup(cell: Vector2i, kind: Defs.ResourceKind, amount: int) -> void:
+func setup(cell: Vector2i, kind: Defs.ResourceKind, amount: int, id: String = "") -> void:
 	grid_cell = cell
 	resource_kind = kind
 	total_amount = amount
 	remaining = amount
-	position = _world_from_cell(cell)
+	placement_id = id
+	position = _WorldSurface.cell_center_on_surface(cell)
 	_apply_visual()
+
+
+func export_save_state() -> Dictionary:
+	return {
+		"placement_id": placement_id,
+		"resource_kind": int(resource_kind),
+		"remaining": remaining,
+		"grid_cell": grid_cell,
+	}
+
+
+func apply_save_state(state: Dictionary) -> void:
+	placement_id = str(state.get("placement_id", placement_id))
+	remaining = int(state.get("remaining", remaining))
+	var cell: Variant = state.get("grid_cell")
+	if cell is Vector2i:
+		grid_cell = cell
+	if remaining <= 0:
+		_set_depleted_visual()
 
 
 func is_available() -> bool:

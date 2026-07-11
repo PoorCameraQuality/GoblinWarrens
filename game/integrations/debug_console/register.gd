@@ -129,6 +129,48 @@ static func _register_with_console(colony: GoblinWarrenColony) -> int:
 		"Force firefly night ambience for visual testing",
 		_run_force_night_ambience,
 	) else 0
+	count += 1 if _reg(
+		debug_console,
+		"inspect_goblin",
+		colony,
+		"Inspect one goblin [actor_id or index]",
+		_run_inspect_goblin,
+	) else 0
+	count += 1 if _reg(
+		debug_console,
+		"inspect_goblins",
+		colony,
+		"Inspect all living goblins",
+		_run_inspect_goblins,
+	) else 0
+	count += 1 if _reg(
+		debug_console,
+		"inspect_jobs",
+		colony,
+		"Print colony job target and worker summary",
+		_run_inspect_jobs,
+	) else 0
+	count += 1 if _reg(
+		debug_console,
+		"toggle_walkability_overlay",
+		colony,
+		"Toggle runtime AStar walkability overlay",
+		_run_toggle_walkability_overlay,
+	) else 0
+	count += 1 if _reg(
+		debug_console,
+		"toggle_buildability_overlay",
+		colony,
+		"Toggle procgen buildability overlay",
+		_run_toggle_buildability_overlay,
+	) else 0
+	count += 1 if _reg(
+		debug_console,
+		"toggle_goblin_paths",
+		colony,
+		"Toggle live goblin path polylines",
+		_run_toggle_goblin_paths,
+	) else 0
 	return count
 
 
@@ -257,3 +299,28 @@ static func _run_toggle_grass(colony: GoblinWarrenColony, _args: Array) -> Strin
 
 static func _run_force_night_ambience(colony: GoblinWarrenColony, _args: Array) -> String:
 	return colony.dev_force_night_ambience()
+
+
+static func _run_inspect_goblin(colony: GoblinWarrenColony, args: Array) -> String:
+	var query := str(args[0]) if not args.is_empty() else ""
+	return colony.dev_inspect_goblin(query)
+
+
+static func _run_inspect_goblins(colony: GoblinWarrenColony, _args: Array) -> String:
+	return colony.dev_inspect_goblins()
+
+
+static func _run_inspect_jobs(colony: GoblinWarrenColony, _args: Array) -> String:
+	return colony.dev_inspect_jobs()
+
+
+static func _run_toggle_walkability_overlay(colony: GoblinWarrenColony, _args: Array) -> String:
+	return colony.dev_toggle_walkability_overlay()
+
+
+static func _run_toggle_buildability_overlay(colony: GoblinWarrenColony, _args: Array) -> String:
+	return colony.dev_toggle_buildability_overlay()
+
+
+static func _run_toggle_goblin_paths(colony: GoblinWarrenColony, _args: Array) -> String:
+	return colony.dev_toggle_goblin_paths()

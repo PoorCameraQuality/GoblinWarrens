@@ -11,3 +11,4 @@ var blocks_movement: bool = false
 var resource_kind: int = -1 ## Defs.ResourceKind or -1 for scenery only
 var resource_amount: int = 0
 var terrain_class: int = 0 ## Defs.TerrainClass at scatter cell
+var placement_id: String = "" ## Stable authored/save ID (Phase 6)

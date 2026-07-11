@@ -43,6 +43,12 @@ static func plan(map_plan: MapPlan, config: MapConfig, rng: MapRng):
 	return foliage
 
 
+## Authored-map grass plan from baked semantic layers (Phase 5).
+static func plan_from_authored(definition, grid):
+	var Compiler = load("res://scripts/world/map/decorative_scatter_compiler.gd")
+	return Compiler.compile_from_definition(definition, grid)
+
+
 static func probe_density(
 	map_plan: MapPlan,
 	config: MapConfig,

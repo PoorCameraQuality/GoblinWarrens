@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://bterrain3dmovespike"]
+[gd_scene load_steps=8 format=3 uid="uid://bterrain3dmovespike"]
 
 [ext_resource type="Script" path="res://scripts/dev/terrain3d_movement_spike.gd" id="1_spike"]
 [ext_resource type="Script" path="res://scripts/world/map/debug/compiled_grid_overlay.gd" id="2_overlay"]
+[ext_resource type="Script" path="res://scripts/world/foliage/grass_field_renderer.gd" id="3_grass"]
 
 [sub_resource type="Terrain3DMaterial" id="Terrain3DMaterial_spike"]
 show_checkered = true
@@ -43,6 +44,9 @@ top_level = true
 
 [node name="CompiledGridOverlay" type="MeshInstance3D" parent="."]
 script = ExtResource("2_overlay")
+
+[node name="AuthoredGrass" type="Node3D" parent="."]
+script = ExtResource("3_grass")
 
 [node name="TestAgent" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 175.5, 6, 300.5)

@@ -1,7 +1,9 @@
 class_name WorldRay
 extends RefCounted
 
-## Screen → world helpers for RTS picking on the ground plane (y = 0).
+const _WorldSurface := preload("res://scripts/world/world_surface.gd")
+
+## Screen → world helpers for RTS picking on terrain.
 
 
 static func ground_hit(camera: Camera3D, screen_pos: Vector2) -> Vector3:
@@ -9,11 +11,29 @@ static func ground_hit(camera: Camera3D, screen_pos: Vector2) -> Vector3:
 		return Vector3.ZERO
 	var origin: Vector3 = camera.project_ray_origin(screen_pos)
 	var direction: Vector3 = camera.project_ray_normal(screen_pos)
-	if absf(direction.y) < 0.0001:
+	if direction.length_squared() < 0.0001:
 		return Vector3.ZERO
+	direction = direction.normalized()
+	var viewport := camera.get_viewport()
+	if viewport != null:
+		var space := viewport.get_world_3d().direct_space_state
+		if space != null:
+			var to: Vector3 = origin + direction * 2500.0
+			var query := PhysicsRayQueryParameters3D.create(origin, to)
+			query.collide_with_areas = false
+			query.collide_with_bodies = true
+			var hit: Dictionary = space.intersect_ray(query)
+			if not hit.is_empty():
+				return hit.position
+	return _WorldSurface.snap_world_position(_plane_hit_at_y0(origin, direction))
+
+
+static func _plane_hit_at_y0(origin: Vector3, direction: Vector3) -> Vector3:
+	if absf(direction.y) < 0.0001:
+		return Vector3(origin.x, 0.0, origin.z)
 	var t: float = -origin.y / direction.y
 	if t < 0.0:
-		return Vector3.ZERO
+		return Vector3(origin.x, 0.0, origin.z)
 	return origin + direction * t
 
 

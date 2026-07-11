@@ -17,6 +17,12 @@
 		"start_zone": "res://data/maps/three_lane_swamp_valley/baked/350/04_start_zone.png"
 	},
 	"display_name": "Three-Lane Swamp Valley",
+	"edge_processing": {
+		"blocked_cells": 14916,
+		"border_uplift_depth": 10,
+		"ok": true,
+		"uplifted_cells": 122500
+	},
 	"layer_sizes_native": {
 		"biome_id": "(1254, 1254)",
 		"buildability": "(1254, 1254)",
@@ -41,9 +47,13 @@
 		"all_layers_aligned": true,
 		"errors": [],
 		"gameplay_rules": {
+			"edge_forest_enabled": true,
+			"edge_mountains_enabled": true,
 			"lane_count": 3.0,
 			"mountains_impassable": true,
 			"north_human_buildable": true,
+			"resource_cluster_nodes_max": 3.0,
+			"resource_cluster_nodes_min": 2.0,
 			"south_warren_buildable": true,
 			"swamp_speed_multiplier": 0.1
 		},

@@ -104,7 +104,8 @@ Project folders: `docs/technical/PROJECT_STRUCTURE.md`.
 | Reference doc | [`docs/technical/GODOT_HEADLESS_PITFALLS.md`](technical/GODOT_HEADLESS_PITFALLS.md) |
 | Console binary | `Godot_v4.7-stable_win64_**console**.exe` for CI/smoke |
 | Phase 2 gate | `tools/run_phase2_regression.ps1` |
-| Phase 3 gate | `tests/smoke/test_terrain3d_movement_spike.gd` |
+| **Full smoke battery** | `tools/run_all_smokes.ps1` (~3–6 min) |
+| Authored colony scene | `tools/run_authored_colony_smoke.ps1` |
 | Prefer | Targeted `tests/smoke/*.gd` scripts |
 | Avoid | Loading full dev `.tscn` files headless (Terrain3D + camera scenes may hang); use thin smoke + programmatic nodes |
 | Avoid | Relying on `--check-only` when plugins/MCP active (may hang) |
@@ -118,11 +119,21 @@ Project folders: `docs/technical/PROJECT_STRUCTURE.md`.
 | License | MIT |
 | Official Godot support | 4.4–4.6+ (4.7 must be proven by spike) |
 | Install location | `res://addons/terrain_3d/` |
-| Production dependency | **No** — spike/isolated dev scene only until migration |
+| Production dependency | **Opt-in** — `game/map_mode=authored` on `colony.tscn`; default remains procgen |
 | Gameplay authority | **No** — `AStarGrid2D` + `movement_adapter.gd` remain authoritative |
 | Blender | 4.x LTS recommended | Manual — cleanup pass |
 | AccuRIG | latest free | Manual — production rigs |
 | Cascadeur | free tier+ | Manual — animation polish |
+
+## Colony map settings
+
+| Setting | Default | Values |
+|---|---|---|
+| `game/map_mode` | `procgen` | `procgen`, `authored` |
+| `game/authored_map_root` | `res://data/maps/three_lane_swamp_valley` | Any baked map pack |
+
+Environment overrides: `GC_MAP_MODE`, `GC_AUTHORED_AUTO_WARREN`, `GC_AUTHORED_COLONY_SMOKE`.  
+See [`docs/technical/COLONY_AUTHORED_MAP_INTEGRATION.md`](technical/COLONY_AUTHORED_MAP_INTEGRATION.md).
 
 ## Open questions
 

@@ -19,11 +19,7 @@ static func day_title(day: int) -> String:
 static func briefing(day: int) -> String:
 	match day:
 		1:
-			return (
-				"Six Foblins start the camp — gather wood and stone, haul to the Storehouse.\n"
-				+ "Build: Storage Hut (1), Sleeping Pit (2), then Forager Post (3) or Mushroom Farm (4).\n"
-				+ "Foblins need no food; build food production before Breeder Hut workers arrive."
-			)
+			return "Six Foblins haul wood and stone to the Storehouse. Build Storage Hut (1) and Sleeping Pit (2)."
 		2:
 			return (
 				"Expand food production before rations run dry.\n"

@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://ccolonyauthoredsmoke"]
+
+[ext_resource type="PackedScene" uid="uid://bqxcolony001" path="res://scenes/colony.tscn" id="1_colony"]
+
+[node name="ColonyAuthoredSmokeRunner" type="Node"]
+
+[node name="Colony" parent="." instance=ExtResource("1_colony")]

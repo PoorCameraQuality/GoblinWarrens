@@ -59,15 +59,32 @@ func setup_tree(
 	amount: int,
 	world_pos: Vector3,
 	rotation_y: float = 0.0,
+	id: String = "",
 ) -> void:
 	tree_scene_path = tree_path
 	grid_cell = cell
+	placement_id = id
 	resource_kind = Defs.ResourceKind.WOOD
 	total_amount = amount
 	remaining = amount
 	position = world_pos
 	rotation.y = rotation_y
 	_apply_tree_visual()
+
+
+func export_save_state() -> Dictionary:
+	var state: Dictionary = super.export_save_state()
+	state["felled"] = _felled
+	state["fall_locked"] = _fall_locked
+	return state
+
+
+func apply_save_state(state: Dictionary) -> void:
+	super.apply_save_state(state)
+	_felled = bool(state.get("felled", false))
+	_fall_locked = bool(state.get("fall_locked", false))
+	if _felled and _fall_locked:
+		_lock_fallen_log()
 
 
 func is_felled() -> bool:

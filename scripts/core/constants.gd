@@ -10,48 +10,53 @@ const TILE_SIZE := 1.0 ## meters; one Godot unit per tile
 # Measured from imported Meshy GLBs at scale 1 (see tests/smoke/_measure_visuals.gd).
 const VISUAL_MESHY_BUILDING_WIDTH_M := 1.9 ## warren.glb X/Z extent
 const VISUAL_MESHY_BUILDING_HEIGHT_M := 0.87 ## warren.glb Y extent (Meshy exports squat meshes)
+const VISUAL_MESHY_WATCHTOWER_WIDTH_M := 0.98 ## watchtower.glb X/Z extent (narrower mesh)
 const VISUAL_MESHY_HUMANOID_HEIGHT_M := 1.92 ## worker/foblin.glb Y extent
 const VISUAL_MESHY_TREE_HEIGHT_M := 1.89 ## tree_birch.glb Y extent
 const VISUAL_MESHY_ROCK_SIZE_M := 1.2 ## kaykit/quaternius rock placeholder
 
-const VISUAL_UNIT_WORKER_HEIGHT_M := 1.1
+## Goblin unit hierarchy: Foblin is shortest; all other goblin units are +25% taller.
 const VISUAL_UNIT_FOBLIN_HEIGHT_M := 0.85
-const VISUAL_UNIT_HOBGOBLIN_HEIGHT_M := 1.35
+const VISUAL_UNIT_GOBLIN_STANDARD_HEIGHT_M := VISUAL_UNIT_FOBLIN_HEIGHT_M * 1.25 ## workers + hobgoblins
 const VISUAL_UNIT_ENEMY_HUMAN_HEIGHT_M := 1.8
 const VISUAL_UNIT_BEAST_HEIGHT_M := 1.2
-const VISUAL_BUILDING_FOOTPRINT_M := 2.0 ## most MVP buildings occupy 2×2 tiles
-const VISUAL_BUILDING_WARREN_HEIGHT_M := 3.0 ## landmark silhouette above goblins
-const VISUAL_BUILDING_STANDARD_HEIGHT_M := 2.2
-const VISUAL_BUILDING_WATCHTOWER_FOOTPRINT_M := 1.0
-const VISUAL_BUILDING_WATCHTOWER_HEIGHT_M := 4.0
+## Building hierarchy: Warren is the settlement landmark; Shrine is tallest; all other buildings are half Warren.
+const VISUAL_BUILDING_WARREN_FOOTPRINT_M := 8.0 ## 4×4 tile Warren reads ~2× footprint for silhouette
+const VISUAL_BUILDING_WARREN_HEIGHT_M := 4.5
+const VISUAL_BUILDING_SHRINE_FOOTPRINT_M := 9.0
+const VISUAL_BUILDING_SHRINE_HEIGHT_M := 5.2
+const VISUAL_BUILDING_STANDARD_FOOTPRINT_M := VISUAL_BUILDING_WARREN_FOOTPRINT_M * 0.5
+const VISUAL_BUILDING_STANDARD_HEIGHT_M := VISUAL_BUILDING_WARREN_HEIGHT_M * 0.5
 const VISUAL_ENV_TREE_OAK_HEIGHT_M := 3.0
 const VISUAL_ENV_TREE_PINE_HEIGHT_M := 4.0
 const VISUAL_ENV_ROCK_SIZE_M := 1.5
 const VISUAL_RESOURCE_NODE_SIZE_M := 1.2
 
-const BUILDING_STANDARD_SCALE := Vector3(
-	VISUAL_BUILDING_FOOTPRINT_M / VISUAL_MESHY_BUILDING_WIDTH_M,
-	VISUAL_BUILDING_STANDARD_HEIGHT_M / VISUAL_MESHY_BUILDING_HEIGHT_M,
-	VISUAL_BUILDING_FOOTPRINT_M / VISUAL_MESHY_BUILDING_WIDTH_M,
-)
 const BUILDING_WARREN_SCALE := Vector3(
-	VISUAL_BUILDING_FOOTPRINT_M * 1.25 / VISUAL_MESHY_BUILDING_WIDTH_M,
+	VISUAL_BUILDING_WARREN_FOOTPRINT_M / VISUAL_MESHY_BUILDING_WIDTH_M,
 	VISUAL_BUILDING_WARREN_HEIGHT_M / VISUAL_MESHY_BUILDING_HEIGHT_M,
-	VISUAL_BUILDING_FOOTPRINT_M * 1.25 / VISUAL_MESHY_BUILDING_WIDTH_M,
-) ## ~2.5m footprint, ~3m tall — clearly above 1.1m workers
-const BUILDING_SHRINE_SCALE := BUILDING_WARREN_SCALE
-const BUILDING_WATCHTOWER_SCALE := Vector3(
-	VISUAL_BUILDING_WATCHTOWER_FOOTPRINT_M / VISUAL_MESHY_BUILDING_WIDTH_M,
-	VISUAL_BUILDING_WATCHTOWER_HEIGHT_M / VISUAL_MESHY_BUILDING_HEIGHT_M,
-	VISUAL_BUILDING_WATCHTOWER_FOOTPRINT_M / VISUAL_MESHY_BUILDING_WIDTH_M,
+	VISUAL_BUILDING_WARREN_FOOTPRINT_M / VISUAL_MESHY_BUILDING_WIDTH_M,
 )
-const GOBLIN_WORKER_VISUAL_SCALE := Vector3.ONE * (
-	VISUAL_UNIT_WORKER_HEIGHT_M / VISUAL_MESHY_HUMANOID_HEIGHT_M
+const BUILDING_SHRINE_SCALE := Vector3(
+	VISUAL_BUILDING_SHRINE_FOOTPRINT_M / VISUAL_MESHY_BUILDING_WIDTH_M,
+	VISUAL_BUILDING_SHRINE_HEIGHT_M / VISUAL_MESHY_BUILDING_HEIGHT_M,
+	VISUAL_BUILDING_SHRINE_FOOTPRINT_M / VISUAL_MESHY_BUILDING_WIDTH_M,
+)
+const BUILDING_STANDARD_SCALE := Vector3(
+	VISUAL_BUILDING_STANDARD_FOOTPRINT_M / VISUAL_MESHY_BUILDING_WIDTH_M,
+	VISUAL_BUILDING_STANDARD_HEIGHT_M / VISUAL_MESHY_BUILDING_HEIGHT_M,
+	VISUAL_BUILDING_STANDARD_FOOTPRINT_M / VISUAL_MESHY_BUILDING_WIDTH_M,
+)
+const BUILDING_WATCHTOWER_SCALE := Vector3(
+	VISUAL_BUILDING_STANDARD_FOOTPRINT_M / VISUAL_MESHY_WATCHTOWER_WIDTH_M,
+	VISUAL_BUILDING_STANDARD_HEIGHT_M / VISUAL_MESHY_BUILDING_HEIGHT_M,
+	VISUAL_BUILDING_STANDARD_FOOTPRINT_M / VISUAL_MESHY_WATCHTOWER_WIDTH_M,
 )
 const FOBLIN_VISUAL_SCALE := Vector3.ONE * (VISUAL_UNIT_FOBLIN_HEIGHT_M / VISUAL_MESHY_HUMANOID_HEIGHT_M)
-const HOBGOBLIN_VISUAL_SCALE := Vector3.ONE * (
-	VISUAL_UNIT_HOBGOBLIN_HEIGHT_M / VISUAL_MESHY_HUMANOID_HEIGHT_M
+const GOBLIN_WORKER_VISUAL_SCALE := Vector3.ONE * (
+	VISUAL_UNIT_GOBLIN_STANDARD_HEIGHT_M / VISUAL_MESHY_HUMANOID_HEIGHT_M
 )
+const HOBGOBLIN_VISUAL_SCALE := GOBLIN_WORKER_VISUAL_SCALE
 const ENEMY_HUMAN_VISUAL_SCALE := Vector3.ONE * (
 	VISUAL_UNIT_ENEMY_HUMAN_HEIGHT_M / VISUAL_MESHY_HUMANOID_HEIGHT_M
 )
@@ -177,13 +182,17 @@ const ENEMY_VISUAL_SCALE := 1.0 ## CSG fallback only; rigged enemies use ENEMY_H
 const RAID_MILITIA_COUNT := 5
 const SCOUT_OBSERVE_TIME := 4.0 ## seconds before scout retreats
 
+const WORLD_NORTH := Vector3(0.0, 0.0, -1.0) ## authored map top; grid Y decreases
+const WORLD_SOUTH := Vector3(0.0, 0.0, 1.0) ## authored map bottom; Warren half
+const WORLD_EAST := Vector3(1.0, 0.0, 0.0)
+const WORLD_WEST := Vector3(-1.0, 0.0, 0.0)
 const CAMERA_PAN_SPEED := 48.0 ## meters per second; faster pan on large maps
 const CAMERA_EDGE_SCROLL_MARGIN := 18 ## pixels from viewport edge
 const CAMERA_PAN_SMOOTHING := 10.0 ## focus lerp rate (higher = snappier)
 const CAMERA_ZOOM_SMOOTHING := 12.0 ## orthographic size lerp rate
-const CAMERA_ZOOM_WHEEL_FACTOR := 1.08 ## multiplicative wheel step
+const CAMERA_ZOOM_WHEEL_FACTOR := 1.08 ## multiplicative wheel step; wheel up zooms in
 const CAMERA_MARGIN_M := 8.0 ## meters beyond map edge; keep focus inside dressed border
-const CAMERA_YAW_DEG := 45.0 ## default map rotation in degrees
+const CAMERA_YAW_DEG := 90.0 ## camera south of focus; north is up on screen
 const CAMERA_USER_PITCH_DEFAULT := -55.0 ## user-facing pitch; negative = look down
 const CAMERA_USER_PITCH_MIN := -75.0 ## most overhead (overview)
 const CAMERA_USER_PITCH_MAX := -8.0 ## lowest pitch; near horizon for unit/building detail
@@ -195,16 +204,20 @@ const CAMERA_PERSPECTIVE_FOV := 35.0 ## narrow FOV for inspect mode
 const CAMERA_PERSPECTIVE_DISTANCE_DEFAULT := 90.0 ## meters from focus in inspect mode
 const CAMERA_PERSPECTIVE_DISTANCE_MIN := 4.0
 const CAMERA_PERSPECTIVE_DISTANCE_MAX := 520.0
-const CAMERA_PRESET_CLOSE_PITCH := -22.0
-const CAMERA_PRESET_DEFAULT_PITCH := -55.0
-const CAMERA_PRESET_FAR_PITCH := -62.0
-const CAMERA_PRESET_OVERVIEW_PITCH := -75.0
-const CAMERA_ORTHO_CLOSE := 14.0 ## inspect goblin faces / building detail
-const CAMERA_ORTHO_DEFAULT := 95.0 ## normal play on 350×350
-const CAMERA_ORTHO_FAR := 220.0 ## planning view
-const CAMERA_ORTHO_OVERVIEW := 420.0 ## near full-map view
-const CAMERA_ORTHO_MIN := 6.0 ## slowest zoom — close enough to read worker detail
-const CAMERA_ORTHO_MAX := 520.0
+const CAMERA_PRESET_CLOSE_PITCH := -38.0
+const CAMERA_PRESET_DEFAULT_PITCH := -52.0
+const CAMERA_PRESET_FAR_PITCH := -58.0
+const CAMERA_PRESET_OVERVIEW_PITCH := -68.0
+const CAMERA_ORTHO_CLOSE := 16.0 ## closest colony-management zoom (~32 m tall)
+const CAMERA_ORTHO_DEFAULT := 26.0 ## launch framing: Warren + nearby resources readable
+const CAMERA_ORTHO_FAR := 42.0 ## planning within the camp (~84 m tall)
+const CAMERA_ORTHO_PLAY_MAX := 58.0 ## normal mouse-wheel zoom-out cap
+const CAMERA_ORTHO_STRATEGIC := 200.0 ## deliberate map overview (F5)
+const CAMERA_ORTHO_STRATEGIC_MIN := 150.0
+const CAMERA_ORTHO_STRATEGIC_MAX := 240.0
+const CAMERA_ORTHO_OVERVIEW := CAMERA_ORTHO_STRATEGIC ## legacy alias
+const CAMERA_ORTHO_MIN := CAMERA_ORTHO_CLOSE
+const CAMERA_ORTHO_MAX := CAMERA_ORTHO_PLAY_MAX
 ## Legacy elevation alias (terrain_texture_review.tscn)
 const CAMERA_PITCH_DEG := 55.0
 ## Legacy perspective review scene aliases (terrain_texture_review.tscn)
@@ -255,8 +268,8 @@ const TERRAIN_UV_ZOOM_BOOST_MAX := 16.0 ## cap close-up tiling vs default ortho 
 const FOLIAGE_CHUNK_SIZE_M := 16.0 ## meters per MultiMesh grass chunk
 const FOLIAGE_NEAR_RANGE_M := 70.0 ## full grass detail within this camera distance
 const FOLIAGE_FADE_RANGE_M := 120.0 ## hide grass MultiMeshes beyond this
-const FOLIAGE_SHORT_MAX_PER_CHUNK := 280 ## short blade instances per active chunk
-const FOLIAGE_TALL_MAX_PER_CHUNK := 36 ## tall clump instances per active chunk
+const FOLIAGE_SHORT_MAX_PER_CHUNK := 140 ## textured clump cards per active chunk
+const FOLIAGE_TALL_MAX_PER_CHUNK := 24 ## tall reed/clump cards per active chunk
 const FOLIAGE_MIN_CHUNK_DENSITY := 0.08 ## skip chunks below this average density
 const FOLIAGE_BUILD_RADIUS_CHUNKS := 8 ## only build MultiMeshes near camp at load (rest later)
 const FOLIAGE_AMBIENT_MAX_ZONES := 48 ## hard cap on particle ambient zones

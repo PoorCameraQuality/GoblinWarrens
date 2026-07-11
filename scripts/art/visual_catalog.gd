@@ -71,10 +71,24 @@ const ENV_ROCK_SPIRE := "res://game/art/props/nature/goblin_warrens/rock_spire_c
 const ENV_ROCK_CRAGS := "res://game/art/props/nature/goblin_warrens/rock_triple_crags.glb"
 const ENV_RUINS_TERRACE := "res://game/art/props/nature/goblin_warrens/ruins_terraced_stone.glb"
 const ENV_RUINS_BONE_FORTRESS := "res://game/art/props/nature/goblin_warrens/ruins_bone_fortress.glb"
+const ENV_BORDER_PEAK := "res://game/art/props/nature/goblin_warrens/border_mountains/border_peak.glb"
+const ENV_BORDER_SUMMIT := "res://game/art/props/nature/goblin_warrens/border_mountains/border_summit.glb"
+const ENV_BORDER_RIDGE_A := "res://game/art/props/nature/goblin_warrens/border_mountains/border_ridge_a.glb"
+const ENV_BORDER_RIDGE_B := "res://game/art/props/nature/goblin_warrens/border_mountains/border_ridge_b.glb"
 const ENV_BUSH := "res://game/art/props/nature/quaternius/stylized_nature/bush_common_quaternius.tscn"
 const ENV_GRASS := "res://game/art/props/nature/quaternius/stylized_nature/grass_short_quaternius.tscn"
 const ENV_BARREL := "res://game/art/props/resources/quaternius_fantasy_props/barrel_prop.tscn"
 const ENV_CRATE := "res://game/art/props/resources/quaternius_fantasy_props/crate_prop.tscn"
+
+# Cutout foliage textures (alpha PNGs) — used by GrassFieldRenderer MultiMesh cards.
+const FOLIAGE_TEX_DIR := "res://game/art/props/nature/goblin_warrens/foliage/"
+const FOLIAGE_TEX_GRASS_LUSH := FOLIAGE_TEX_DIR + "grass_clump_lush.png"
+const FOLIAGE_TEX_GRASS_MIXED := FOLIAGE_TEX_DIR + "grass_clump_mixed.png"
+const FOLIAGE_TEX_GRASS_REED := FOLIAGE_TEX_DIR + "grass_clump_reed.png"
+const FOLIAGE_TEX_GRASS_DRY := FOLIAGE_TEX_DIR + "grass_clump_dry.png"
+const FOLIAGE_TEX_BUSH_FERN := FOLIAGE_TEX_DIR + "bush_fern_mound.png"
+const FOLIAGE_TEX_LITTER_LEAVES := FOLIAGE_TEX_DIR + "litter_dry_leaves.png"
+const FOLIAGE_TEX_ROOT_RADIAL := FOLIAGE_TEX_DIR + "root_radial_cluster.png"
 
 
 static func building_visual_scale(kind: Defs.BuildingKind, path: String = "") -> Vector3:
@@ -85,10 +99,10 @@ static func building_visual_scale(kind: Defs.BuildingKind, path: String = "") ->
 			return Constants.BUILDING_SHRINE_SCALE
 		Defs.BuildingKind.WATCHTOWER:
 			return Constants.BUILDING_WATCHTOWER_SCALE
+		Defs.BuildingKind.GUARD_POST, Defs.BuildingKind.BURIAL_GROUNDS:
+			return Constants.BUILDING_STANDARD_SCALE
 		_:
-			if path.ends_with(".glb") or path.ends_with(".tscn"):
-				return Constants.BUILDING_STANDARD_SCALE
-			return Vector3.ONE
+			return Constants.BUILDING_STANDARD_SCALE
 
 
 static func unit_visual_scale(is_foblin: bool, is_hobgoblin_warrior: bool, is_hobgoblin_mage: bool) -> Vector3:
@@ -235,3 +249,12 @@ static func enemy_wrapper(kind: Defs.EnemyKind) -> String:
 			return ENEMY_MILITIA
 		_:
 			return ""
+
+
+static func border_mountain_paths() -> Array[String]:
+	return [
+		ENV_BORDER_PEAK,
+		ENV_BORDER_SUMMIT,
+		ENV_BORDER_RIDGE_A,
+		ENV_BORDER_RIDGE_B,
+	]

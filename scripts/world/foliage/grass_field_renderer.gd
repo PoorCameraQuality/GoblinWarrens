@@ -8,13 +8,15 @@ const _FoliagePlan := preload("res://scripts/world/foliage/foliage_plan.gd")
 const _FoliagePlanner := preload("res://scripts/world/foliage/foliage_planner.gd")
 const _MapConfig := preload("res://data/mapgen/map_config.gd")
 const GRASS_SHADER_PATH := "res://game/art/terrain/materials/stylized_grass.gdshader"
+const TEX_DIR := "res://game/art/props/nature/goblin_warrens/foliage/"
 
 var _map_plan: MapPlan = null
+var _height_grid = null ## CompiledGridMap for authored maps
 var _foliage = null ## FoliagePlan
 var _config = null ## MapConfig
 var _short_mesh: ArrayMesh = null
 var _tall_mesh: ArrayMesh = null
-var _material: ShaderMaterial = null
+var _materials_by_style: Dictionary = {} ## style int -> ShaderMaterial
 var _chunk_nodes: Array[MultiMeshInstance3D] = []
 var _visible: bool = true
 var _active_chunk_count: int = 0
@@ -24,6 +26,7 @@ var _instance_total: int = 0
 func build(map_plan: MapPlan, foliage) -> void:
 	clear()
 	_map_plan = map_plan
+	_height_grid = null
 	_foliage = foliage
 	_config = _MapConfig.default_for_demo()
 	if foliage == null or foliage.chunks.is_empty():
@@ -33,6 +36,27 @@ func build(map_plan: MapPlan, foliage) -> void:
 		map_plan.warren_cell.x / int(foliage.chunk_size),
 		map_plan.warren_cell.y / int(foliage.chunk_size),
 	)
+	_build_near_chunk(camp_chunk, foliage)
+
+
+## Authored map grass near a focus cell (dev / Terrain3D spikes).
+func build_authored(height_grid, foliage, focus_cell: Vector2i) -> void:
+	clear()
+	_map_plan = null
+	_height_grid = height_grid
+	_foliage = foliage
+	_config = _MapConfig.default_for_demo()
+	if foliage == null or foliage.chunks.is_empty():
+		return
+	_ensure_assets()
+	var focus_chunk := Vector2i(
+		focus_cell.x / int(foliage.chunk_size),
+		focus_cell.y / int(foliage.chunk_size),
+	)
+	_build_near_chunk(focus_chunk, foliage)
+
+
+func _build_near_chunk(camp_chunk: Vector2i, foliage) -> void:
 	var build_radius: int = Constants.FOLIAGE_BUILD_RADIUS_CHUNKS
 	var built_instances := 0
 	for chunk in foliage.chunks:
@@ -98,20 +122,72 @@ func suppress_footprint(origin: Vector2i, footprint: Vector2i) -> void:
 			_spawn_chunk(chunk)
 
 
+func _probe_cell_density(cell: Vector2i) -> Dictionary:
+	if _foliage != null and _foliage.density.size() == _foliage.width * _foliage.height:
+		return {
+			"density": _foliage.sample_density(cell),
+			"style": _foliage.sample_style(cell),
+		}
+	if _map_plan != null:
+		return _FoliagePlanner.probe_density(_map_plan, _config, cell, _foliage.blocker_cells)
+	return {"density": 0.0, "style": _FoliagePlan.GrassStyle.NONE}
+
+
+func _sample_world_height(world_x: float, world_z: float) -> float:
+	if _height_grid != null:
+		var cell := Vector2i(int(floor(world_x)), int(floor(world_z)))
+		return _height_grid.sample_height_at_cell(cell)
+	if _map_plan != null:
+		return HeightSampler.sample_world(_map_plan, world_x, world_z)
+	return 0.0
+
+
 func _ensure_assets() -> void:
+	## Textured clump cards (wider than procedural blades — one clump covers more ground).
 	if _short_mesh == null:
-		_short_mesh = _make_blade_mesh(0.42, 0.08)
+		_short_mesh = _make_blade_mesh(0.55, 0.38)
 	if _tall_mesh == null:
-		_tall_mesh = _make_blade_mesh(0.85, 0.11)
-	if _material == null:
-		var shader := load(GRASS_SHADER_PATH) as Shader
-		_material = ShaderMaterial.new()
-		_material.shader = shader
-		_material.set_shader_parameter("color_bottom", Color(0.16, 0.26, 0.11))
-		_material.set_shader_parameter("color_top", Color(0.40, 0.54, 0.20))
-		_material.set_shader_parameter("blade_height_m", 0.55)
-		_material.set_shader_parameter("sway_amplitude", 0.30)
-		_material.set_shader_parameter("alpha_scissor", 0.28)
+		_tall_mesh = _make_blade_mesh(0.95, 0.48)
+	if _materials_by_style.is_empty():
+		_materials_by_style[_FoliagePlan.GrassStyle.SHORT_MOSS] = _make_material(
+			"grass_clump_lush.png", 0.55, 0.28
+		)
+		_materials_by_style[_FoliagePlan.GrassStyle.SHADE_SPARSE] = _make_material(
+			"grass_clump_mixed.png", 0.55, 0.24
+		)
+		_materials_by_style[_FoliagePlan.GrassStyle.WET_REED] = _make_material(
+			"grass_clump_reed.png", 0.9, 0.32
+		)
+		_materials_by_style[_FoliagePlan.GrassStyle.DRY_TUFT] = _make_material(
+			"grass_clump_dry.png", 0.5, 0.22
+		)
+		_materials_by_style[_FoliagePlan.GrassStyle.NONE] = _materials_by_style[
+			_FoliagePlan.GrassStyle.SHORT_MOSS
+		]
+
+
+func _make_material(filename: String, blade_height: float, sway: float) -> ShaderMaterial:
+	var shader := load(GRASS_SHADER_PATH) as Shader
+	var mat := ShaderMaterial.new()
+	mat.shader = shader
+	var tex_path := TEX_DIR + filename
+	if ResourceLoader.exists(tex_path):
+		mat.set_shader_parameter("albedo_tex", load(tex_path))
+		mat.set_shader_parameter("use_texture", 1.0)
+	else:
+		mat.set_shader_parameter("use_texture", 0.0)
+	mat.set_shader_parameter("color_bottom", Color(0.16, 0.26, 0.11))
+	mat.set_shader_parameter("color_top", Color(0.40, 0.54, 0.20))
+	mat.set_shader_parameter("blade_height_m", blade_height)
+	mat.set_shader_parameter("sway_amplitude", sway)
+	mat.set_shader_parameter("alpha_scissor", 0.32)
+	return mat
+
+
+func _material_for_style(style: int) -> ShaderMaterial:
+	if _materials_by_style.has(style):
+		return _materials_by_style[style]
+	return _materials_by_style[_FoliagePlan.GrassStyle.SHORT_MOSS]
 
 
 func _spawn_chunk(chunk: Dictionary) -> void:
@@ -171,7 +247,7 @@ func _make_multimesh_node(
 	var mmi := MultiMeshInstance3D.new()
 	mmi.name = node_name
 	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	mmi.material_override = _material
+	mmi.material_override = _material_for_style(style)
 	mmi.visibility_range_begin = 0.0
 	mmi.visibility_range_end = Constants.FOLIAGE_FADE_RANGE_M
 	mmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
@@ -199,15 +275,13 @@ func _make_multimesh_node(
 			continue
 		if _foliage.suppressed_cells.has(cell):
 			continue
-		var probe: Dictionary = _FoliagePlanner.probe_density(
-			_map_plan, _config, cell, _foliage.blocker_cells
-		)
+		var probe: Dictionary = _probe_cell_density(cell)
 		var density: float = float(probe.get("density", 0.0))
 		if density <= 0.02:
 			continue
 		if not rng.roll(clampf(density, 0.05, 1.0)):
 			continue
-		var y := HeightSampler.sample_world(_map_plan, world_x, world_z)
+		var y := _sample_world_height(world_x, world_z)
 		var yaw := rng.randf_range(0.0, TAU)
 		var local_style: int = int(probe.get("style", style))
 		var scale_y := _scale_for_style(local_style, tall, rng)

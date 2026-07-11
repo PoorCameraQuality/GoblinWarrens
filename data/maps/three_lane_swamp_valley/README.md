@@ -31,6 +31,37 @@ Phase 3 Terrain3D + movement: `scenes/dev/terrain3d_movement_spike.tscn` (editor
 Headless gate: `tests/smoke/test_terrain3d_movement_spike.gd`  
 Terrain3D region cache: `terrain3d_data/` (auto-generated from baked heightmap on first run).
 
+Phase 4 semantic editor: enable **Goblin Map Editor** plugin → **Goblin Map** dock (preview + paint biome/buildable/start/no-scatter).  
+Headless gate: `tests/smoke/test_map_definition_smoke.gd`  
+Report: `docs/technical/PHASE4_SEMANTIC_PAINTER_REPORT.md`
+
+Phase 5 foliage scatter: compiled from `foliage_density` + `no_scatter` semantic layers.  
+Headless gate: `tests/smoke/test_foliage_scatter_smoke.gd`  
+Visual: grass on `scenes/dev/terrain3d_movement_spike.tscn` near path start.  
+Report: `docs/technical/PHASE5_FOLIAGE_SCATTER_REPORT.md`
+
+Phase 6 resource scatter: compiled from `resource_affinity` (+ forest trees).  
+Headless gate: `tests/smoke/test_resource_scatter_smoke.gd`  
+Report: `docs/technical/PHASE6_RESOURCE_SCATTER_REPORT.md`
+
+Phase 7 Warren placement: candidate validation + suitability overlay.  
+Editor: `scenes/dev/warren_placement_spike.tscn` (A/D to cycle candidates).  
+Headless gate: `tests/smoke/test_warren_placement_smoke.gd`  
+Report: `docs/technical/PHASE7_WARREN_PLACEMENT_REPORT.md`
+
+Phase 8 strategic map: paint `raid_entry` / `enemy_camp_zone` in Goblin Map dock; compile raid spawns.  
+Headless gate: `tests/smoke/test_strategic_map_smoke.gd`  
+Report: `docs/technical/PHASE8_STRATEGIC_MAP_REPORT.md`
+
+Phase 9 colony observability: goblin/job inspectors + debug overlays.  
+Headless gate: `tests/smoke/test_colony_observability_smoke.gd`  
+Report: `docs/technical/PHASE9_OBSERVABILITY_REPORT.md`
+
+Phase 10 authored demo: Warren pick + compiled map bootstrap in dev scene.  
+Play: `scenes/dev/authored_demo.tscn`  
+Headless gate: `tests/smoke/test_authored_demo_smoke.gd`  
+Report: `docs/technical/PHASE10_DEMO_MAP_REPORT.md`
+
 ## Notes
 
 - Only `01_heightmap.png` is intended for Terrain3D height import.

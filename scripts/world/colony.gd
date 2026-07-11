@@ -17,6 +17,21 @@ const _VisualCatalog := preload("res://scripts/art/visual_catalog.gd")
 const _GrassFieldRenderer := preload("res://scripts/world/foliage/grass_field_renderer.gd")
 const _AmbientLifeSpawner := preload("res://scripts/world/foliage/ambient_life_spawner.gd")
 const _WindController := preload("res://scripts/world/foliage/wind_controller.gd")
+const _ColonyObservability := preload("res://scripts/debug/colony_observability.gd")
+const _MovementGridOverlay := preload("res://scripts/debug/movement_grid_overlay.gd")
+const _GoblinPathOverlay := preload("res://scripts/debug/goblin_path_overlay.gd")
+const _AuthoredBootstrap := preload("res://scripts/world/map/authored_colony_bootstrap.gd")
+const _StarterEconomyRing := preload("res://scripts/world/starter_economy_ring.gd")
+const _MapEdgeBarrier := preload("res://scripts/world/map_edge_barrier.gd")
+const _WorldSurface := preload("res://scripts/world/world_surface.gd")
+
+const SAVE_SCHEMA_V2 := 2
+const MAP_MODE_PROCGEN := "procgen"
+const MAP_MODE_AUTHORED := "authored"
+const ENV_MAP_MODE := "GC_MAP_MODE"
+const ENV_AUTHORED_AUTO_WARREN := "GC_AUTHORED_AUTO_WARREN"
+const ENV_AUTHORED_COLONY_SMOKE := "GC_AUTHORED_COLONY_SMOKE"
+const ENV_WARREN_PICK := "GC_WARREN_PICK"
 
 ## RTS colony loop: workers gather resources, haul to storehouse, and build structures.
 
@@ -28,6 +43,8 @@ const TREE_RESOURCE_SCENE := preload("res://scenes/world/tree_resource.tscn")
 const STOREHOUSE_SCENE := preload("res://scenes/buildings/storehouse.tscn")
 const BUILDING_SCENE := preload("res://scenes/buildings/building.tscn")
 const CONSTRUCTION_SCENE := preload("res://scenes/buildings/construction_site.tscn")
+
+@export var defer_world_setup: bool = false
 
 @onready var _goblins_root: Node3D = $Goblins
 @onready var _resources_root: Node3D = $Resources
@@ -81,6 +98,12 @@ var _terrain_material: ShaderMaterial = null
 var _class_overlay_active: bool = false
 var _transition_overlay_active: bool = false
 var _composition_overlay_active: bool = false
+var _walkability_overlay_active: bool = false
+var _buildability_overlay_active: bool = false
+var _goblin_paths_overlay_active: bool = false
+var _walkability_overlay: MeshInstance3D = null
+var _buildability_overlay: MeshInstance3D = null
+var _goblin_path_overlay: Node3D = null
 var _beauty_mode: bool = false
 var _prop_scatter_stats: Dictionary = {}
 var _map_validation: Dictionary = {}
@@ -91,6 +114,14 @@ var _ambient_life = null ## AmbientLifeSpawner
 var _wind_controller = null ## WindController
 var _grass_visible: bool = true
 var _force_night_ambience: bool = false
+var _authored_mode: bool = false
+var _terrain3d_root: Node = null
+var _pending_strategic_map = null
+var _authored_map_root: String = ""
+var _authored_map_id: String = ""
+var _authored_map_version: int = 0
+var _warren_pick_panel: Control = null
+var _world_ready: bool = false
 
 
 func _ready() -> void:
@@ -105,10 +136,99 @@ func _ready() -> void:
 	_threats = ThreatScheduler.new()
 	_threats.name = "ThreatScheduler"
 	add_child(_threats)
+	if _should_use_authored_map():
+		defer_world_setup = true
+	if defer_world_setup:
+		if _should_show_warren_pick_panel():
+			call_deferred("_open_warren_pick_panel")
+		else:
+			_begin_authored_world(_default_authored_warren_cell())
+		return
 	_setup_world()
+	_bootstrap_runtime_after_world()
+
+
+func _resolve_map_mode() -> String:
+	var env_mode := OS.get_environment(ENV_MAP_MODE)
+	if not env_mode.is_empty():
+		return env_mode
+	return str(ProjectSettings.get_setting("game/map_mode", MAP_MODE_PROCGEN))
+
+
+func _resolve_authored_map_root() -> String:
+	var env_root := OS.get_environment("GC_AUTHORED_MAP_ROOT")
+	if not env_root.is_empty():
+		return env_root
+	return str(ProjectSettings.get_setting("game/authored_map_root", _AuthoredBootstrap.DEFAULT_MAP_ROOT))
+
+
+func _should_use_authored_map() -> bool:
+	if defer_world_setup:
+		return true
+	return _resolve_map_mode() == MAP_MODE_AUTHORED
+
+
+func _default_authored_warren_cell() -> Vector2i:
+	return _AuthoredBootstrap.top_warren_cell(_resolve_authored_map_root())
+
+
+func _should_show_warren_pick_panel() -> bool:
+	if OS.get_environment(ENV_WARREN_PICK) == "1":
+		return DisplayServer.get_name() != "headless"
+	return false
+
+
+func _should_auto_pick_warren() -> bool:
+	if OS.get_environment(ENV_AUTHORED_AUTO_WARREN) == "1":
+		return true
+	return DisplayServer.get_name() == "headless"
+
+
+func _open_warren_pick_panel() -> void:
+	_warren_pick_panel = get_node_or_null("UI/WarrenPickPanel") as Control
+	if _warren_pick_panel == null:
+		Log.error("WarrenPickPanel missing on colony scene", "colony")
+		get_tree().quit(1)
+		return
+	_warren_pick_panel.visible = true
+	if _warren_pick_panel.has_method("setup"):
+		_warren_pick_panel.setup(_resolve_authored_map_root())
+	if _warren_pick_panel.has_signal("warren_chosen"):
+		if not _warren_pick_panel.warren_chosen.is_connected(_on_warren_pick_chosen):
+			_warren_pick_panel.warren_chosen.connect(_on_warren_pick_chosen)
+
+
+func _on_warren_pick_chosen(origin: Vector2i, _report: Dictionary) -> void:
+	if _warren_pick_panel != null:
+		_warren_pick_panel.visible = false
+	_begin_authored_world(origin)
+
+
+func _begin_authored_world(warren_cell: Vector2i) -> void:
+	var package: Dictionary = _AuthoredBootstrap.build(_resolve_authored_map_root(), warren_cell)
+	var error_text: String = apply_authored_world(package)
+	if not error_text.is_empty():
+		Log.error(error_text, "colony")
+		get_tree().call_deferred("quit", 1)
+		return
+	finish_deferred_startup(package.get("strategic_map"))
+
+
+func finish_deferred_startup(strategic_map = null) -> void:
+	if not defer_world_setup:
+		return
+	_pending_strategic_map = strategic_map
+	_bootstrap_runtime_after_world()
+
+
+func _bootstrap_runtime_after_world() -> void:
 	_job_service.setup(_movement, _storehouse, self)
-	_threats.setup(self, _day_sim)
+	if _pending_strategic_map != null:
+		_threats.setup(self, _day_sim, _pending_strategic_map)
+	else:
+		_threats.setup(self, _day_sim)
 	_spawn_initial_goblins()
+	_ensure_starter_economy_ring()
 	_setup_player_controls()
 	_setup_demo_guide()
 	Bus.warren_destroyed.connect(_on_warren_destroyed)
@@ -118,12 +238,158 @@ func _ready() -> void:
 	_update_hud()
 	if OS.is_debug_build():
 		_update_map_debug_hud()
-		Log.info(dev_print_mapgen_status(), "mapgen")
+		if _map_plan != null:
+			Log.info(dev_print_mapgen_status(), "mapgen")
 		GoblinWarrensDebugRegister.try_register(self)
 	set_process_input(true)
+	if OS.get_environment(ENV_AUTHORED_COLONY_SMOKE) == "1":
+		call_deferred("_authored_colony_smoke_quit")
+	_world_ready = true
+	_spawn_map_edge_barrier()
+	_focus_camera_on_warren()
+
+
+func _focus_camera_on_warren() -> void:
+	if _camera == null or _map_plan == null:
+		return
+	var warren_def := BuildingCatalog.warren()
+	var center_cell := _map_plan.warren_cell + warren_def.footprint / 2
+	var world := _movement.grid_to_world(center_cell)
+	_camera.focus_colony_view(world.x, world.z)
+
+
+func _authored_colony_smoke_quit() -> void:
+	await get_tree().process_frame
+	if _demo_outcome != Defs.DemoOutcome.NONE:
+		push_error(
+			"[authored-colony-smoke] unexpected demo outcome=%d before quit"
+			% int(_demo_outcome)
+		)
+		get_tree().call_deferred("quit", 1)
+		return
+	var resource_count: int = _resources_root.get_child_count()
+	if resource_count < 10 or _warren == null or _storehouse == null:
+		push_error(
+			"[authored-colony-smoke] bootstrap incomplete resources=%d"
+			% resource_count
+		)
+		get_tree().call_deferred("quit", 1)
+		return
+	print(
+		"[authored-colony-smoke] ok resources=%d warren=%s raids=%d"
+		% [
+			resource_count,
+			str(_map_plan.warren_cell if _map_plan != null else Vector2i.ZERO),
+			int(_pending_strategic_map.stats.get("raid_entry_count", 0))
+			if _pending_strategic_map != null
+			else 0,
+		]
+	)
+	get_tree().call_deferred("quit", 0)
+
+
+func apply_authored_world(package: Dictionary) -> String:
+	if not _should_use_authored_map():
+		return "apply_authored_world requires authored map mode"
+	if not bool(package.get("ok", false)):
+		return "authored bootstrap failed: %s" % str(package.get("errors", []))
+	var grid = package.get("grid")
+	var map_plan: MapPlan = package.get("map_plan")
+	if grid == null or map_plan == null:
+		return "authored bootstrap missing grid or map_plan"
+	_authored_mode = true
+	_authored_map_root = str(package.get("map_root", _resolve_authored_map_root()))
+	var definition = package.get("definition")
+	if definition != null:
+		_authored_map_id = str(definition.map_id)
+		_authored_map_version = int(definition.map_version)
+	_map_plan = map_plan
+	Services.register_map_plan(_map_plan)
+	grid.apply_to_movement(_movement)
+	var terrain_error := _apply_authored_terrain(str(package.get("map_root", "")))
+	if not terrain_error.is_empty():
+		return terrain_error
+	_stockpile.amounts[Defs.ResourceKind.GOLD] = Constants.INITIAL_STOREHOUSE_GOLD
+	_stockpile.amounts[Defs.ResourceKind.WOOD] = Constants.INITIAL_STOREHOUSE_WOOD
+	_stockpile.amounts[Defs.ResourceKind.STONE] = Constants.INITIAL_STOREHOUSE_STONE
+	_stockpile.amounts[Defs.ResourceKind.FOOD] = Constants.INITIAL_FOOD
+	_warren = Warren.new()
+	_warren.setup_warren(_map_plan.warren_cell, BuildingCatalog.warren())
+	_buildings_root.add_child(_warren)
+	_block_footprint(_warren.grid_cell, _warren.footprint)
+	_storehouse = STOREHOUSE_SCENE.instantiate() as Storehouse
+	_buildings_root.add_child(_storehouse)
+	_storehouse.setup_store(_map_plan.storehouse_cell, null, _stockpile)
+	Services.register_storehouse(_storehouse)
+	_block_footprint(_storehouse.grid_cell, _storehouse.footprint)
+	_apply_prop_placements(_map_plan)
+	_apply_foliage(_map_plan)
+	_update_map_debug_hud()
+	return ""
+
+
+func _apply_authored_terrain(map_root: String) -> String:
+	var ground := get_node_or_null("Ground") as CSGBox3D
+	if ground != null:
+		ground.visible = false
+	var procgen_mesh := get_node_or_null("TerrainMesh") as MeshInstance3D
+	if procgen_mesh != null:
+		procgen_mesh.visible = false
+	if _terrain3d_root != null:
+		_terrain3d_root.queue_free()
+		_terrain3d_root = null
+	if not ClassDB.class_exists("Terrain3D"):
+		return "Terrain3D extension missing for authored demo"
+	_terrain3d_root = ClassDB.instantiate("Terrain3D") as Node
+	_terrain3d_root.name = "AuthoredTerrain3D"
+	add_child(_terrain3d_root)
+	_terrain3d_root.set("top_level", true)
+	_terrain3d_root.set("vertex_spacing", 1.0)
+	var Loader = load("res://scripts/world/terrain/authored_terrain3d_loader.gd")
+	var report: Dictionary = Loader.ensure_loaded(
+		_terrain3d_root,
+		map_root,
+		Vector2i(_map_plan.width, _map_plan.height),
+	)
+	if not bool(report.get("ok", false)):
+		return "authored terrain load failed: %s" % str(report.get("errors", []))
+	Services.register_terrain3d(_terrain3d_root)
+	_enable_terrain3d_collision(_terrain3d_root)
+	_ensure_world_environment()
+	return ""
+
+
+func _enable_terrain3d_collision(terrain: Node) -> void:
+	if terrain == null:
+		return
+	var collision: Object = terrain.get("collision")
+	if collision != null and collision.has_method("set"):
+		collision.set("enabled", true)
+		collision.set("mode", 0) ## Terrain3DCollision.MODE_DYNAMIC
+
+
+func _spawn_map_edge_barrier() -> void:
+	var root := get_node_or_null("MapEdgeBarrier") as Node3D
+	if root == null:
+		root = Node3D.new()
+		root.name = "MapEdgeBarrier"
+		add_child(root)
+	for child in root.get_children():
+		child.queue_free()
+	var width := _map_plan.width if _map_plan != null else Constants.GRID_WIDTH
+	var height := _map_plan.height if _map_plan != null else Constants.GRID_HEIGHT
+	var placed: int = _MapEdgeBarrier.spawn(root, width, height, 424242)
+	if OS.is_debug_build():
+		Log.info("map edge barrier placed=%d" % placed, "colony")
 
 
 func _input(event: InputEvent) -> void:
+	if event is InputEventKey:
+		var key := event as InputEventKey
+		if key.pressed and not key.echo and key.keycode == KEY_HOME:
+			_focus_camera_on_warren()
+			get_viewport().set_input_as_handled()
+			return
 	if _camera != null:
 		_camera.handle_input_event(event)
 
@@ -169,7 +435,7 @@ func _setup_demo_guide() -> void:
 	_demo_guide.name = "DemoGuide"
 	$UI.add_child(_demo_guide)
 	_demo_guide.setup(self, _day_sim)
-	_demo_guide.pulse_banner("Welcome to the Warren — survive 7 days!")
+	_demo_guide.pulse_banner("Survive 7 days — build food, faith, and defense.")
 
 
 func is_raid_cleared() -> bool:
@@ -253,6 +519,8 @@ func try_place_building(origin: Vector2i, def: BuildingDef, placement_yaw: float
 
 
 func _physics_process(delta: float) -> void:
+	if not _world_ready:
+		return
 	if OS.is_debug_build():
 		_update_map_debug_hud()
 	if _demo_outcome != Defs.DemoOutcome.NONE:
@@ -620,12 +888,24 @@ func dev_toggle_beauty_mode() -> String:
 		_class_overlay_active = false
 		_transition_overlay_active = false
 		_composition_overlay_active = false
+		_walkability_overlay_active = false
+		_buildability_overlay_active = false
+		_goblin_paths_overlay_active = false
 		var terrain := get_node_or_null("TerrainMesh") as MeshInstance3D
 		if terrain != null:
 			terrain.material_override = _terrain_material
 		if _composition_overlay_root != null:
 			_composition_overlay_root.queue_free()
 			_composition_overlay_root = null
+		if _walkability_overlay != null:
+			_walkability_overlay.queue_free()
+			_walkability_overlay = null
+		if _buildability_overlay != null:
+			_buildability_overlay.queue_free()
+			_buildability_overlay = null
+		if _goblin_path_overlay != null:
+			_goblin_path_overlay.queue_free()
+			_goblin_path_overlay = null
 	_update_map_debug_hud()
 	return "beauty mode ON (HUD hidden)" if _beauty_mode else "beauty mode OFF"
 
@@ -651,9 +931,109 @@ func dev_force_night_ambience() -> String:
 	return "night ambience FORCED" if _force_night_ambience else "night ambience AUTO"
 
 
+func dev_collect_goblins() -> Array:
+	return _collect_goblins()
+
+
+func dev_inspect_goblin(query: String = "") -> String:
+	if not OS.is_debug_build():
+		return "inspect_goblin is debug-only"
+	var goblin := _ColonyObservability.find_goblin(_collect_goblins(), query)
+	if goblin == null:
+		return "Goblin not found for query '%s'." % query
+	return _ColonyObservability.format_goblin(
+		_ColonyObservability.snapshot_goblin(goblin, _movement)
+	)
+
+
+func dev_inspect_goblins() -> String:
+	if not OS.is_debug_build():
+		return "inspect_goblins is debug-only"
+	return _ColonyObservability.format_all_goblins(_collect_goblins(), _movement)
+
+
+func dev_inspect_jobs() -> String:
+	if not OS.is_debug_build():
+		return "inspect_jobs is debug-only"
+	return _ColonyObservability.format_job_report(self)
+
+
+func dev_toggle_walkability_overlay() -> String:
+	if not OS.is_debug_build():
+		return "toggle_walkability_overlay is debug-only"
+	if _movement == null:
+		return "movement adapter not ready"
+	_walkability_overlay_active = not _walkability_overlay_active
+	if _walkability_overlay != null:
+		_walkability_overlay.queue_free()
+		_walkability_overlay = null
+	if _walkability_overlay_active:
+		_walkability_overlay = _MovementGridOverlay.new()
+		_walkability_overlay.name = "WalkabilityOverlay"
+		_walkability_overlay.apply_walkability(_movement)
+		add_child(_walkability_overlay)
+	_update_map_debug_hud()
+	return "walkability overlay ON" if _walkability_overlay_active else "walkability overlay OFF"
+
+
+func dev_toggle_buildability_overlay() -> String:
+	if not OS.is_debug_build():
+		return "toggle_buildability_overlay is debug-only"
+	if _map_plan == null:
+		return "map_plan not ready"
+	_buildability_overlay_active = not _buildability_overlay_active
+	if _buildability_overlay != null:
+		_buildability_overlay.queue_free()
+		_buildability_overlay = null
+	if _buildability_overlay_active:
+		_buildability_overlay = _MovementGridOverlay.new()
+		_buildability_overlay.name = "BuildabilityOverlay"
+		_buildability_overlay.apply_buildability(_map_plan, 0.18)
+		add_child(_buildability_overlay)
+	_update_map_debug_hud()
+	return "buildability overlay ON" if _buildability_overlay_active else "buildability overlay OFF"
+
+
+func dev_toggle_goblin_paths() -> String:
+	if not OS.is_debug_build():
+		return "toggle_goblin_paths is debug-only"
+	if _movement == null:
+		return "movement adapter not ready"
+	_goblin_paths_overlay_active = not _goblin_paths_overlay_active
+	if _goblin_path_overlay != null:
+		_goblin_path_overlay.queue_free()
+		_goblin_path_overlay = null
+	if _goblin_paths_overlay_active:
+		_goblin_path_overlay = _GoblinPathOverlay.new()
+		_goblin_path_overlay.name = "GoblinPathOverlay"
+		_goblin_path_overlay.setup(_movement, dev_collect_goblins)
+		add_child(_goblin_path_overlay)
+		_goblin_path_overlay.set_active(true)
+	else:
+		if _goblin_path_overlay != null:
+			_goblin_path_overlay.set_active(false)
+	_update_map_debug_hud()
+	return "goblin paths ON" if _goblin_paths_overlay_active else "goblin paths OFF"
+
+
 func dev_print_mapgen_status() -> String:
 	if _map_plan == null:
 		return "terrain_mode=none map_plan=null"
+	if _authored_mode:
+		var scatter_stats: Dictionary = _map_plan.scatter_stats
+		var resource_by_kind: Dictionary = scatter_stats.get("resource_by_kind", {})
+		return (
+			"map_size=%dx%d terrain_mode=authored map_id=%s "
+			% [_map_plan.width, _map_plan.height, str(scatter_stats.get("authored", true))]
+			+ "warren_cell=%s storehouse_cell=%s "
+			% [str(_map_plan.warren_cell), str(_map_plan.storehouse_cell)]
+			+ "resource_nodes=%s trees=%d placements=%d"
+			% [
+				str(resource_by_kind),
+				int(scatter_stats.get("tree_count", 0)),
+				_map_plan.prop_placements.size(),
+			]
+		)
 	var config := _MapConfig.default_for_demo()
 	var vertex_count := _terrain_mesh_vertex_count(_map_plan.mesh)
 	var class_counts := _terrain_class_counts()
@@ -794,13 +1174,17 @@ func _update_map_debug_hud() -> void:
 	_tick_label.visible = true
 	var config := _MapConfig.default_for_demo()
 	var cam_line := _camera.debug_hud_line() if _camera != null else ""
-	_tick_label.text = "Map %dx%d seed %d | %s%s%s\n%s" % [
+	var mode_label := "authored" if _authored_mode else "procgen"
+	_tick_label.text = "Map %dx%d seed %d | %s%s%s%s%s%s\n%s" % [
 		_map_plan.width,
 		_map_plan.height,
 		config.seed,
-		"procgen",
+		mode_label,
 		" | CLASS OVERLAY" if _class_overlay_active else "",
 		" | TRANSITION OVERLAY" if _transition_overlay_active else "",
+		" | WALK" if _walkability_overlay_active else "",
+		" | BUILD" if _buildability_overlay_active else "",
+		" | PATHS" if _goblin_paths_overlay_active else "",
 		cam_line,
 	]
 
@@ -836,8 +1220,10 @@ func try_spawn_goblin_worker_near(building: BreederHut) -> bool:
 	return true
 
 
-func spawn_enemy(kind: Defs.EnemyKind) -> void:
-	var cell := Vector2i(Constants.GRID_WIDTH - 2, randi_range(2, Constants.GRID_HEIGHT - 3))
+func spawn_enemy(kind: Defs.EnemyKind, spawn_cell: Vector2i = Vector2i(-1, -1)) -> void:
+	var cell := spawn_cell
+	if cell.x < 0 or cell.y < 0:
+		cell = Vector2i(Constants.GRID_WIDTH - 2, randi_range(2, Constants.GRID_HEIGHT - 3))
 	var enemy := ENEMY_SCENE.instantiate() as EnemyUnit
 	_enemies_root.add_child(enemy)
 	enemy.setup(kind, cell, _movement, self)
@@ -1071,6 +1457,7 @@ func _apply_procgen_terrain(plan: MapPlan) -> void:
 	_transition_overlay_active = false
 	terrain.material_override = _terrain_material
 	_sync_terrain_uv_scale()
+	Services.register_terrain3d(null)
 	_ensure_world_environment()
 
 
@@ -1138,11 +1525,7 @@ func _apply_prop_placements(plan: MapPlan) -> void:
 			if _VisualCatalog.is_tree_path(placement.scene_path):
 				_spawn_tree_resource(placement)
 			else:
-				_spawn_resource_if_walkable(
-					placement.grid_cell,
-					placement.resource_kind as Defs.ResourceKind,
-					placement.resource_amount,
-				)
+				_spawn_resource_from_placement(placement)
 			_prop_scatter_stats["spawned"] = int(_prop_scatter_stats.get("spawned", 0)) + 1
 			_record_prop_spawn(placement)
 			continue
@@ -1153,7 +1536,7 @@ func _apply_prop_placements(plan: MapPlan) -> void:
 		var instance := _VisualAttacher.spawn_scenery(
 			root,
 			placement.scene_path,
-			placement.world_pos,
+			_WorldSurface.snap_world_position(placement.world_pos),
 			placement.scale,
 		)
 		if instance == null:
@@ -1279,10 +1662,27 @@ func _apply_debug_showcase() -> void:
 	spawn_shaman_hut(base + Vector2i(9, -5), BuildingCatalog.shaman_hut())
 
 
-func _spawn_resource(cell: Vector2i, kind: Defs.ResourceKind, amount: int) -> void:
+func _spawn_resource_from_placement(placement) -> void:
+	if placement == null:
+		return
+	if not _movement.is_walkable(placement.grid_cell):
+		Log.warn("Skipping resource spawn on blocked tile %s" % str(placement.grid_cell), "colony")
+		return
 	var node := RESOURCE_SCENE.instantiate() as ResourceNode
 	_resources_root.add_child(node)
-	node.setup(cell, kind, amount)
+	node.setup(
+		placement.grid_cell,
+		placement.resource_kind as Defs.ResourceKind,
+		placement.resource_amount,
+		str(placement.placement_id),
+	)
+	_movement.set_solid(placement.grid_cell, true)
+
+
+func _spawn_resource(cell: Vector2i, kind: Defs.ResourceKind, amount: int, placement_id: String = "") -> void:
+	var node := RESOURCE_SCENE.instantiate() as ResourceNode
+	_resources_root.add_child(node)
+	node.setup(cell, kind, amount, placement_id)
 	_movement.set_solid(cell, true)
 
 
@@ -1296,8 +1696,9 @@ func _spawn_tree_resource(placement) -> void:
 		placement.grid_cell,
 		placement.scene_path,
 		placement.resource_amount,
-		placement.world_pos,
+		_WorldSurface.snap_world_position(placement.world_pos),
 		placement.rotation_y,
+		placement.placement_id,
 	)
 	_movement.set_solid(placement.grid_cell, true)
 
@@ -1324,12 +1725,35 @@ func _on_construction_finished(site: ConstructionSite, kind: Defs.BuildingKind) 
 	Bus.building_completed.emit(kind, cell)
 
 
+func try_spawn_starter_resource(cell: Vector2i, kind: Defs.ResourceKind, amount: int) -> bool:
+	if not _movement.is_walkable(cell):
+		return false
+	for node in _resources_root.get_children():
+		if node is ResourceNode and (node as ResourceNode).grid_cell == cell:
+			return false
+	_spawn_resource(cell, kind, amount, "starter/%d_%d" % [cell.x, cell.y])
+	return true
+
+
+func _ensure_starter_economy_ring() -> void:
+	if _map_plan == null:
+		return
+	_StarterEconomyRing.ensure(self, _map_plan.warren_cell)
+
+
 func _spawn_initial_goblins() -> void:
-	var spawn_cell := _map_plan.warren_cell + Vector2i(1, 3) if _map_plan != null else Vector2i(9, 10)
+	var warren_def := BuildingCatalog.warren()
+	var origin := (
+		_map_plan.warren_cell + Vector2i(-1, -(warren_def.footprint.y + 3))
+		if _map_plan != null
+		else Vector2i(9, 10)
+	)
 	for i in range(Constants.INITIAL_FOBLIN_COUNT):
 		var foblin := FOBLIN_SCENE.instantiate() as Foblin
 		foblin.actor_id = "foblin_%d" % i
-		var cell := spawn_cell + Vector2i(i % 3, i / 3)
+		var cell := origin + Vector2i(i % 3, i / 3)
+		if not _movement.is_walkable(cell):
+			cell = origin + Vector2i(i % 2, i / 2)
 		_goblins_root.add_child(foblin)
 		foblin.setup_foblin(cell, _movement, self)
 		Bus.goblin_spawned.emit(foblin)
@@ -1445,6 +1869,8 @@ func _evaluate_demo() -> void:
 
 
 func _finish_demo(outcome: Defs.DemoOutcome) -> void:
+	if not _world_ready:
+		return
 	if _demo_outcome != Defs.DemoOutcome.NONE:
 		return
 	_demo_outcome = outcome
@@ -1557,6 +1983,7 @@ func _apply_ground_visual() -> void:
 
 func capture_save_data() -> ColonySaveData:
 	var data := ColonySaveData.new()
+	data.schema_version = SAVE_SCHEMA_V2 if _authored_mode else 1
 	data.tick = _tick
 	for child in _goblins_root.get_children():
 		if child is Goblin:
@@ -1564,12 +1991,27 @@ func capture_save_data() -> ColonySaveData:
 			data.goblin_cells.append(goblin.grid_cell)
 			data.goblin_hunger.append(goblin.hunger)
 			data.goblin_energy.append(goblin.energy)
+	if _authored_mode:
+		data.map_id = _authored_map_id
+		data.map_version = _authored_map_version
+		if _map_plan != null:
+			data.warren_cell = _map_plan.warren_cell
+		for child in _resources_root.get_children():
+			if child.has_method("export_save_state"):
+				data.resource_states.append(child.call("export_save_state"))
 	return data
 
 
 func apply_save_data(data: ColonySaveData) -> Error:
 	if data == null:
 		return ERR_INVALID_PARAMETER
+	if data.schema_version >= SAVE_SCHEMA_V2 and _authored_mode:
+		if not data.map_id.is_empty() and data.map_id != _authored_map_id:
+			Log.warn(
+				"Save map_id=%s does not match loaded map=%s" % [data.map_id, _authored_map_id],
+				"save",
+			)
+		_apply_resource_save_states(data.resource_states)
 	_tick = data.tick
 	for child in _goblins_root.get_children():
 		child.queue_free()
@@ -1582,3 +2024,23 @@ func apply_save_data(data: ColonySaveData) -> Error:
 		goblin.setup(data.goblin_cells[i], _movement, self)
 		Bus.goblin_spawned.emit(goblin)
 	return OK
+
+
+func _apply_resource_save_states(states: Array) -> void:
+	var by_id: Dictionary = {}
+	for state in states:
+		if state is Dictionary:
+			var id := str(state.get("placement_id", ""))
+			if not id.is_empty():
+				by_id[id] = state
+	for child in _resources_root.get_children():
+		if child is ResourceNode:
+			var resource := child as ResourceNode
+			if resource.placement_id.is_empty() or not by_id.has(resource.placement_id):
+				continue
+			resource.apply_save_state(by_id[resource.placement_id])
+		elif child is TreeResource:
+			var tree := child as TreeResource
+			if tree.placement_id.is_empty() or not by_id.has(tree.placement_id):
+				continue
+			tree.apply_save_state(by_id[tree.placement_id])
